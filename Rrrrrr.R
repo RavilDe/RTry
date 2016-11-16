@@ -1,8 +1,76 @@
+#### Урок 1.2.5
+help("sin")
+help.search("sin")
+
+#### Урок 1.2.8
+2+1
+sin(pi/3)
+sin(pi/2)
+
+cats <- 3
+dogs <- 4
+pets <- cats+dogs
+
+?rnorm # нормальное распределение
+rnorm(15)
+rnorm(15, mean = 5, sd = 3) # mean - среднее, sd - стандартное отклонение
+
+# Функции
+
+return_two <- function() {
+  y <- 2
+  return(y)
+}
+return_two()
+
+# Окружение функции
+addten <- function(x) {
+  x <- x+10
+}
+addten(cats)  # не работает, т.к. мы переприсвоили Х в локальном окружении, а вглобальном он так и остался
+
+addten <- function(x) {
+  return(x+10)
+}
+addten(cats)  # вот теперь все верно
+
+# Глобальное присваивание (лучше не использовать)
+addten <- function(x) {
+  moredogs <<- (x+10)
+}
+addten(dogs); dogs; moredogs
+# Функции меняющие глобальные переменные - это функции со сторонним эффектом (side effect)
+
+# Удаление переменных из окружения
+ls() # List Object
+rm(dogs) # Remove
+rm(moredogs)
+rm(list = ls()) # Remove all
+ls()
+
+#### Урок 1.3.2 - Векторы
+x <- c(5,8); x # c - combine; данная функция может быть вложенной и принимать переменные
+1:10
+3:-7  # оператор : - создание числовых последовательностей с шагом 1
+
+seq(1,2, by=0.25) # seq - Sequence Generation; by - по сколько делить
+seq(3,4, length.out = 5)  # length.out - на сколько частей делить
+seq(3,4, length= 5) # сокращенное написанеи
+
+rep(1:3,times=4)       # rep - replicate; times - сколько раз повторять САМ вектор
+rep(1:3,each=3)        # each - сколко раз повторить КАЖДЫЙ элемент
+rep(1:3,length.out=7)  # length.out - длинна повторения всего вектора
+
+
+#### Урок 1.3.5
+
 hello <- "Hello world"
 print(hello)
 hello
 c(1,3,2)
 0.1+0.1==0.2
+
+
 all.equal(0.1+0.05,0.15)
 u <- seq(0,1,1/3)
 v <- seq(0,1,1/7)
