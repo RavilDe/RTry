@@ -53,13 +53,13 @@ x <- c(5,8); x # c - combine; данная функция может быть в
 1:10
 3:-7  # оператор : - создание числовых последовательностей с шагом 1
 
-seq(1,2, by=0.25) # seq - Sequence Generation; by - по сколько делить
+seq(1,2, by =0.25) # seq - Sequence Generation; by - по сколько делить
 seq(3,4, length.out = 5)  # length.out - на сколько частей делить
-seq(3,4, length= 5) # сокращенное написанеи
+seq(3,4, length = 5) # сокращенное написанеи
 
-rep(1:3,times=4)       # rep - replicate; times - сколько раз повторять САМ вектор
-rep(1:3,each=3)        # each - сколко раз повторить КАЖДЫЙ элемент
-rep(1:3,length.out=7)  # length.out - длинна повторения всего вектора
+rep(1:3, times = 4)       # rep - replicate; times - сколько раз повторять САМ вектор
+rep(1:3, each = 3)        # each - сколко раз повторить КАЖДЫЙ элемент
+rep(1:3, length.out = 7)  # length.out - длинна повторения всего вектора
 
 
 #### Урок 1.3.5
@@ -67,20 +67,85 @@ rep(1:3,length.out=7)  # length.out - длинна повторения всег
 hello <- "Hello world"
 print(hello)
 hello
-c(1,3,2)
-0.1+0.1==0.2
 
+0.1 + 0.1 == 0.2
+0.1 + 0.05 == 0.15 
+all.equal(0.1 + 0.05, 0.15)
+# http://stackoverflow.com/questions/9508518/why-are-these-numbers-not-equal 
 
-all.equal(0.1+0.05,0.15)
-u <- seq(0,1,1/3)
-v <- seq(0,1,1/7)
-c(u,v)
+u <- seq(0, 1, 1/3)
+v <- seq(0, 1, 1/7)
+c(u, v)
 help.search('sort')
-get_fractions <- function(m,n) {
-  u <- seq(0,1,1/3)
-  v <- seq(0,1,1/7)
+w <- sort(c(u,v))
+unique(w)
+
+#### Урок 1.3.7
+# Типы векторов:
+# - logical (T/F)
+# - integer (целые числа)
+# - numeric/double (числа с плавающей точкой)
+# - complex (комплексные)
+# - character (строки)
+# - raw (байтовые последовательности)
+
+# typeof и is.*
+a <- c("Дуб - дерево", "Роза - цветок", "Воробей - птица", "Учится - круто")
+typeof(a)
+is.character(a)
+s.logical(a)
+
+# Приведение типов
+# logical ---> integer ---> double ---> character
+
+b <- c(FALSE, 1.5)
+typeof(b)
+b <- c(5, b, "abc")
+typeof(b)
+
+as.numeric(b)
+as.integer(b)
+
+# Длина вектора: length
+x <- 1:100
+length(x)
+
+length(x) <- 4; x
+length(x) <- 7; x
+
+# Именованные вектора
+a <- c(uno = 1, dos = 2, "universal answer" = 42, 99)
+names(a)
+names(a) <- c("one", "two", "forty two", "ninety nine")
+a
+names(a) <- NULL
+
+# Векторная арифметика
+1:3 + c(-1, 2, 0)
+1:3 * c(-1, 2, 0)
+c(TRUE, TRUE, TRUE) & c(0, 1, 999)
+
+# Векторизация
+# vectorized
+sqrt(1:4)
+# vectorized
+floor(seq(0, 3, by = 0.25))
+# not vectorized
+sum(1:100)
+
+#### Урок 1.4.2
+
+
+
+
+
+
+
+get_fractions <- function(m, n) {
+  u <- seq(0, 1, 1/3)
+  v <- seq(0, 1, 1/7)
 }
-if (sqrt(2)<1.5) {
+if (sqrt(2) < 1.5) {
   print("Меньше")
 } else {
   print("Больше")
@@ -88,13 +153,13 @@ if (sqrt(2)<1.5) {
 
 i <- 0
 repeat {
-  i <- i +runif(1)
+  i <- i + runif(1)
   print(i)
-  if (i>5) break
+  if (i > 5) break
 }
 
-i <- 2^14
-while (i>1000) {
+i <- 2 ^ 14
+while (i > 1000) {
   i <- i/2
   print(i)
 }
