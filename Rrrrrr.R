@@ -278,8 +278,90 @@ x[x > 77 & x < 99]
 a[c("one", "two", "forty two")]
 
 # all и any
+all(x < 200); all(x > 150)
+any(x < 150); any(x > 5)
 
+# функция which
 
+which(x >= 50)
+which.min(x); which.max(x)
+
+# Атрибуты объектов
+# length - свойство объекта, оно есть всегда
+# Атрибуты (names, dimnames, dim, ...) могут присутствовать если это необходимо
+
+x <- c(5, 3 ,9)
+names(x) <- c("V", "III", "IX"); x
+
+attr(x, "autor") <- "Caesar"
+attributes(x)
+attributes(x) <- NULL
+
+##### Урок 1.5.6  
+# fizz-buzz imperative style
+y <- vector(mode = "character", length = 100) # резервируем пустой вектор на 100
+y <- character(100) # так кроче
+for (i in 1:100) {
+  if (i %% 15 ==0) {
+    y[i] <- "fizz buzz"
+  } else if (i %% 3 ==0) {
+    y[i] <- "fizz"
+  } else if (i %% 5 ==0) {
+    y[i] <- "buzz"
+  } else {
+    y[i] <- i
+  }
+}
+
+# fizz-buzz vector-orientesd style
+x <- 1:100
+z <- 1:100
+x %% 5
+x %% 5 == 0
+z[x %% 5 == 0] <- "buzz"
+z[x %% 3 == 0] <- "fizz"
+z[x %% 15 == 0] <- "fizz buzz"
+all.equal(y,z)
+
+##### Урок 1.5.8
+(0:7)/7
+# Geometric progression
+x <- 2 ^ (0:10)
+x
+log2(x)
+
+# Some randomes
+set.seed(42)
+x <- sample(1:100, 50)
+x
+
+# Neighbors with greatest diff
+x[-1]
+x[-length(x)]
+x[-1] - x[-length(x)]
+k <- which.max(abs(x[-1] - x[-length(x)]))
+x[c(k, k + 1)]
+
+# Multiply min/max
+x <- sample(1:100, 50, replace = T) # replace - с повторами или без (T/F)
+min(x)
+which.min(x)
+which((x == min(x))) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+# Packing into function
+
+maxdiff <- function(x) {
+  y <- abs(x[-1] - x[-length(x)])
+  k <- which(y == max(y))
+  print("First neighbour (s):")
+  print(x[k])
+  print("Second neighbour (s):")
+  print(x[k+1])
+  print("Maximum absolute diff is:")
+  print(max(y))
+}
+
+xx <- sample(1:100, 1e4, replace = T)
 
 ##### 2.1 Матрицы и списки
 
@@ -364,3 +446,21 @@ all.equal(rowMeans(m), apply(m, 1, mean))
 mat <- matrix(0, 3, 2)
 mat[3, 2]
 mat > 5
+
+##### Задача 2.1.4
+a1 <- c(5, 2, 7, 7, 7, 2, 0, 0)
+b1 <- 1
+
+a2 <- 10:1
+b2 <- 4.5
+
+find_closest <- function(v, n) {
+  r <- abs(v-n)
+  which(r == min(r))
+}
+
+##### Урок 2.1.5
+# bind matrices  diagonally
+bind_diag <- function(m1, m2, full) {
+  
+}
