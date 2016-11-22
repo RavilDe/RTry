@@ -10,3 +10,5 @@ Trying to learn R
  R Studio & GitHub - https://support.rstudio.com/hc/en-us/articles/200532077-Version-Control-with-Git-and-SVN
  
  R Operators - http://www.programiz.com/r-programming/operator
+ 
+ http://r-analytics.blogspot.ru
