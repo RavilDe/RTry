@@ -461,6 +461,138 @@ find_closest <- function(v, n) {
 
 ##### Урок 2.1.5
 # bind matrices  diagonally
-bind_diag <- function(m1, m2, full) {
-  
+bind_diag <- function(m1, m2, fill) {
+  m3 <- matrix(fill, 
+               nrow = nrow(m1) + nrow(m2),
+               ncol = ncol(m1) + ncol(m2))
+  m3[1:nrow(m1), 1:ncol(m1)] <- m1
+  m3[nrow(m1) + 1:nrow(m2), ncol(m1) + 1:ncol(m2)] <- m2 # у двоеточия приоритет выше!!!
+  m3
 }
+
+m1 <- matrix(1:12, nrow = 3)
+m2 <- matrix(10:15, nrow = 3)
+bind_diag(m1, m2, fill = NA)
+bind_diag(m1, m2, fill = 0)
+
+#### Задача 2.1.6
+zikkurat <- function(n) {
+  m <- matrix(nrow = 2 * n - 1, ncol = 2 * n - 1)
+  for (i in 1:n) {
+    m[i:(2 * n - i),i:(2 * n - i)] <- i
+  }
+  print(m)
+}
+
+#### Урок 2.1.7 
+# Списки
+list(1:5, "my_data", matrix(0, 2, 2))
+list(a = 1, b = 2, "1to5" = 1:5, 42 )
+list(a = list(1, 2, 3), b = list(list(4), 5, 6)) # немного рекурсии
+
+# Конкатенация списков (объединение)
+l1 <- list(name = "Jhon", salary = 1000)
+l2 <- list(has_car = T, car = "lambo")
+c(l1, l2)
+
+# конверсия между списком  вектором
+
+# любой вектор легко свести к списку:
+v <- 1:5
+l <- list(v)
+
+# но не наоборт; если сведение осмыслено, то есть unlist
+l <- list(1:3, 4:5, last = 6)
+unlist(l)
+unlist(c(l, "spy"))
+
+# доступ к элементам списка
+l[3:2]; l[-(1:2)]
+l[c(F, T, F)]; l["last"]
+
+# доступ к конкретному элементу [[]]
+l[[1]]
+l[['last']]
+
+# доступ по имени с частичным дополнением, $
+l$last
+l$l
+l$la
+l$las
+
+# Одинарные скобки
+#   действуют векторные правила индексирования
+#   возвращаемое значение -- подсписок
+# Двойные скобки
+#   (скалярный) номер элемента или его полное имя
+#   возвращаемое значение -- элемент списка
+# Знак доллара
+#   частичное имя элемента
+#   возвращаемое значение -- элемент списка
+
+
+
+# Замена и добавление элементов списка
+l <- list(1:3, 4:5, last = 6)
+l[[3]] <- NULL; l
+l[[4]] <- 99; l # не обязательно указывать элементы подряд
+
+l <- list(vec = 1:7, fun = sqrt) # l$fun(4)
+names(l)
+is.null(l$string) # проверка на наличие такого элемента по названию
+l$string <- "Cititus, altius, fortius" # элемент добавляется в конец
+l
+
+# Применение функции к списку  lapply
+l <- list(a = c("12", "34"), b = LETTERS[5:10], c = 1:5)
+lapply(l, length)
+lapply(l, paste, collapse = "|")
+lapply(l, function(s) paste(s, collapse = "|")) # то же самое, но через анонимную функцию
+
+sapply(l, paste, collapse = "|") # simplify apply - преобразует в вектор
+
+# частичное дополнение по $ и аргументам функции
+l <- list(some_name = 1, incredibly_long_name = 2)
+l$inc + 1   # чтобы каждый раз не писать длинное имя
+f <- function(x, ridiculously_long_arg) x + ridiculously_long_arg
+f(3, ridic = 5) # в функции не обязательно писать имя аргуента полностью
+f(3, 5)
+
+# NA -- это пропущенное значение ("not available"). Например, респондент не ответил 
+#  на все вопросы предложенной анкеты, или данные с метеостанции за определённый период потерялись 
+#  из-за сбоя оборудования. NA в этом случае обозначает, что эти данные существуют и имеют смысл, 
+#  но их не удалось узнать.
+# NaN -- "not-a-number" -- результат недопустимой арифметической операции, 
+#  например 0/0 или Inf - Inf.
+# NULL -- отсутствие объекта, "пустота". Применяется в тех случаях, 
+#  когда объект действительно не существует, не может иметь осмысленного значения.
+# Для проверки значений есть три функции, is.na, is.nan и is.null, соответственно.
+
+#### урок 2.1.10
+
+get_longest <- function(l) {
+  len <- sapply(l, length)
+  ind <- which.max(len)
+  list(number = ind, element = l[[ind]])
+}
+
+gen_list <- function(n_elements, max_len, seed = 111) {  # seed = 111 - аргумент по умолчанию, если не задать третий аргумент
+  set.seed(seed)
+  len <- sample(1:max_len, n_elements)
+  lapply(1:n_elements, function(i) rnorm(len[i]))
+}
+
+l1 <- gen_list(4, 10) 
+l1
+gl1 <- get_longest(l1)
+gl1$number
+
+l2 <- gen_list(4, 10, 777)
+l2
+gl2 <- get_longest(l2)
+gl2$number
+
+
+#### Задача 2.1.11
+
+
