@@ -594,5 +594,87 @@ gl2$number
 
 
 #### Задача 2.1.11
+count_elements <- function(x) {
+ y <- sort(unique(x))
+ rbind(y, colSums(sapply(y, function(i) ifelse(i == x, 1 , 0.))))
+}
+
+count_elements_2 <- function(x) sapply(sort(unique(x)), function (n) c(n, sum(x == n))) # не мое
+
+#### Задача 2.1.13
+
+bastille <- list(
+       "La Chapelle Tower" = rbinom(5, 10, 1/2), 
+       "Tresor Tower" = rbinom(8, 12, 1/4), 
+       "Comte Tower" = rbinom(14, 3, 1/5) + 1,
+       "Baziniere Tower" = rbinom(8, 4, 4/5), 
+       "Bertaudiere Tower" = rbinom(4, 8, 2/3),
+       "Liberte Tower" = rbinom(1, 100, 0.1), 
+       "Puits Tower" = rbinom(5, 5, 0.7),
+       "Coin Tower" = rbinom(3, 16, 0.4)
+   )
+
+bb8 <- lapply(bastille, sum)
+bb <- unlist(bb8)
+c <- sum(unlist(bb8))
+a <- names(which.min(unlist(bb8)))
+b <- bb[which.min(bb)]
+names(b) <- NULL
+a; b; c
+
+#### Урок 2.2.2
+# Data frame!!!!!!!
+
+df <- data.frame(x = 1:4, y = LETTERS[1:4], z = c(T, F))
+str(df)
+
+# имена
+df <- data.frame(x = 1:4, y = LETTERS[1:4], z = c(T, F),
+                 row.names = c("Alpha", "Bravo", "Charlie", "Delta" ))
+rownames(df); colnames(df) 
+dimnames(df) # лист из имен строк и столбцов
+
+# размерности
+nrow(df)
+ncol(df)
+
+# особенности
+# length(df) - возвращает кол-во столбцов (переменных), 
+# names(df) - так же возвращает имена столбцов
+length(df); names(df)
+
+# индексация data frame
+   # индексация в матричном стиле
+df[3:4, -1]
+df[c(F, T), c("z", "x")]
+df[ ,1]; df[ , 1, drop = F] # drop - читобы колонка не схлопнулась в строку
+
+   # индексация как для списка
+# если необходимо обратится к столбцу, это проще сделать через $
+df$z; df[[3]]; df[["z"]]
+
+# фильтрация по условию
+df[df$x > 2,]
+subset(df, x > 2) # нет повтора названия df, нет $, не нужны кавычки для имени столбца
+subset(df, x > 2, select = c(x, z)) # select - условия на столбцы
+
+# Комбинирование data frame
+rbind(df, data.frame(x = 5:6, y = c("K", "Z"), z = TRUE, row.names = c("Kappa", "Zulu")))
+cbind(df, data.frame(season = c("Summer", "Autumn", "Winter", "Spring"), temp = c(20, 5 , -10, 5)))
+
+# Комбинирование data frame: merge
+df
+df_salary <- data.frame(x = c(3, 2, 6, 1), salary = c(100, 1000, 300, 500))
+df_salary
+merge(df, df_salary, by = "x") # inner join 
+merge(df, df_salary, by = "x", all = TRUE) # outer join
+merge(df, df_salary, by = "x", all.df = TRUE) # left outer
+merge(df, df_salary, by = "x", all.df_salary = TRUE) # right outer
+merge(df, df_salary, by = NULL) # right outer
+
+# Задача 2.2.5
+which.max(rowSums(attitude[order(-attitude$lear),][1:5,][c("complaints", "raises", "advance")]))
+# слизал с подсказки((((    АД
+
 
 
