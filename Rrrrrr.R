@@ -626,7 +626,8 @@ a; b; c
 # Data frame!!!!!!!
 
 df <- data.frame(x = 1:4, y = LETTERS[1:4], z = c(T, F))
-str(df)
+str(df) # структура
+summary(df) # более полная картина)
 
 # имена
 df <- data.frame(x = 1:4, y = LETTERS[1:4], z = c(T, F),
@@ -662,7 +663,7 @@ subset(df, x > 2, select = c(x, z)) # select - условия на столбц�
 rbind(df, data.frame(x = 5:6, y = c("K", "Z"), z = TRUE, row.names = c("Kappa", "Zulu")))
 cbind(df, data.frame(season = c("Summer", "Autumn", "Winter", "Spring"), temp = c(20, 5 , -10, 5)))
 
-# Комбинирование data frame: merge
+# Комбинирование data frame'ов: merge
 df
 df_salary <- data.frame(x = c(3, 2, 6, 1), salary = c(100, 1000, 300, 500))
 df_salary
@@ -676,5 +677,83 @@ merge(df, df_salary, by = NULL) # right outer
 which.max(rowSums(attitude[order(-attitude$lear),][1:5,][c("complaints", "raises", "advance")]))
 # слизал с подсказки((((    АД
 
+# Задача 2.2.8
+# Количество станций, зарегистрировавших землетрясение, записанное третьим
+quakes[3,]["stations"]
+
+# Медианная глубина землетрясений (км)
+median(quakes$depth)
+summary(quakes)
+
+# Средняя глубина землетрясений (км)
+mean(quakes$depth)
+summary(quakes)
+
+# Минимальная сила землетрясений по шкале Рихтера
+min(quakes$mag)
+summary(quakes)
+
+# Максимальная сила землетрясений по шкале Рихтера
+max(quakes$mag)
+summary(quakes)
+
+# Количество станций, зарегистрировавших землетрясение, записанное предпоследним
+quakes[nrow(quakes) - 1, ]["stations"]
+
+#### Урок 2.2.9 практика
+
+# importing and inspecting data
+avian <- read.csv("D:/Miheykin/Desktop/avianHabitat_sewardPeninsula_McNew_2012.csv")
+# P* -  процентные переменные
+# *Ht -  переменные с высотой
+
+# checking data
+str(avian)
+summary(avian)
+head(avian) # выводит нескоько первых строк таблицы
+tail(avian) # выводит нескоько последних строк таблицы
+
+any(!complete.cases(avian)) # проверка на пропуски
+any(avian$PDB < 0) # есть ли проценты меньше нуля
+any(avian$PDB > 100) # есть ли проценты больше сотни
+
+check_percent_range <- function(x) {
+  any(x < 0 | x > 100)
+}
+
+# tranforming variables
+names(avian)
+coverage_variables <- names(avian)[-(1:4)][c(T,F)] # остекаем первые 4 имени столбцов и берем только первый из двух
+avian$total_coverage <- rowSums(avian[, coverage_variables]) # создаем новую переменную(столбец) и заносим туда сумму по строке
+summary(avian$total_coverage)
+
+#### Задача 2.2.10
+avian_2 <- read.csv("D:/Miheykin/Desktop/avianHabitat_2.csv", 
+                    dec = ".",
+                    skip = 5, # пропускаем первые пять строк
+                    comment.char = "%", # убираем комментарии, начинающиеся с %
+                    na.strings = "Don't remember", # убиваем нечисловые значения
+                    sep = ";"); avian_2
+
+any(!complete.cases(avian_2))
+which(!complete.cases(avian_2))
+
+str(avian)
+str(avian_2)
+
+avian_2$total_coverage <- rowSums(avian_2[, coverage_variables]) # добавляем переменную итогового покрытия
+avian_2$Observer <- NA # добавляем пустую переменную Observer
+str(avian_2)
+
+summary(rbind(avian, avian_2))
+summary(avian)
+
+#### Задача 2.2.11
+names(avian)
+height_variables <- names(avian)[-(1:4)][c(F, T)][-7]; height_variables
+names(sort(colSums(avian[,height_variables]), decreasing = TRUE))
+summary(avian[, height_variables]) # чит; не вывел упорядоченный вектор имен ((((((
+
+names(sort(unlist(lapply(avian[,height_variables],max)), decreasing = TRUE)) # об дошло)))
 
 
