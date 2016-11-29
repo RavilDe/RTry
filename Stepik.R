@@ -930,15 +930,45 @@ rm(list = ls())
 # проверяем рабочую директорию
 getwd()
 
-source(avianHabitad.R)
+# запускаем все еще раз
+source("avianHabitad.R")
 
+head(avian) # проверяем образовался ли data.frame
 
+# попробуем найти avianHabitad(..).csv самостоятельно
+list.files() # если слишком много файлов, то попробуем задать паттерн
 
+list.files(pattern = ".*\\.csv$")
+# расшифровка wildcard'ов
+# точка - любой символ
+# звездочка после точки - означает что точка может повторяться какое угодно кол-во раз, т.е. нам не важно название файла
+# два бэкслэша - чтобы экранировать настоящую точку перед буквами csv
+# доллар - конец строки
 
+# если файл слишком большой и открыть его сложно (съест всю память)
+readLines("avianHabitat_sewardPeninsula_McNew_2012.csv", 5)
 
+# удостоверямся в верности файла и загружаем его
+avian <- read.csv("avianHabitat_sewardPeninsula_McNew_2012.csv")
+# а если нет, то загружаем более осторожно
+avian <- read.table("avianHabitat_sewardPeninsula_McNew_2012.csv", header = T, sep = ",", dec = ".")
+head(avian)
 
+# анализируем таблицу в Enviroment->Data->Avian (стрелочка вниз):
+# у Observer всего три уровня фактора, а у Site целых 101 - это много!
+# см файл avianHabitad.R с новым строками, которые переводят Observer в строковый тип (character)
+# см файл на предмет автоматизации проверки процентов в соответствующих столбцах
 
+unique(avian$Site)
 
+#### задача 2.3.13
+sort(tapply(avian$total_coverage, avian$Site_name, mean), decreasing = T)
 
+#### задача 2.3.14
+(height_variables <- names(avian)[str_detect(names(avian), ".*Ht$")])
 
+tapply(avian$height_variables, avian$Observer, max)
+sapply(height_variables, function(hght) tapply(avian$Observer, hght, max))
+sapply(height_variables, function(hght) max(avian[,height_variables]))
 
+tapply(avian$total_coverage, avian$Observer, max)
