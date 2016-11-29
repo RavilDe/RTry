@@ -916,8 +916,21 @@ summary(warpbreaks)
 tapply(warpbreaks$breaks, warpbreaks$wool, max)
 ?tapply
 
+##### Задача 2.3.10
+sort(table(cut(quakes$mag, breaks = seq(4, 6.5, 0.5), right = F)), decreasing = T)
+# границы сделал в лоб, наверное можно по-другому
 
+##### Практика 2.3.11
 
+# какой-то негодяй удалил все переменный в окружении
+rm(list = ls())
+
+# копируем урок 2.2.9 в отдельный файл avianHabitad.R,
+# кладем его в рабочую папку проекта, туда же кидаем .csv с данными
+# проверяем рабочую директорию
+getwd()
+
+source(avianHabitad.R)
 
 
 

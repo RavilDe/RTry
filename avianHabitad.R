@@ -1,7 +1,8 @@
 #### Урок 2.2.9 практика
 
 # importing and inspecting data
-avian <- read.csv("D:/Miheykin/Desktop/avianHabitat_sewardPeninsula_McNew_2012.csv")
+# avian <- read.csv("D:/Miheykin/Desktop/avianHabitat_sewardPeninsula_McNew_2012.csv")
+avian <- read.csv("avianHabitat_sewardPeninsula_McNew_2012.csv") # т.к. все в одной директории, то не нужно писать полный путь
 # P* -  процентные переменные
 # *Ht -  переменные с высотой
 
