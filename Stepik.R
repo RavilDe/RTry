@@ -574,7 +574,7 @@ l
 l <- list(a = c("12", "34"), b = LETTERS[5:10], c = 1:5)
 lapply(l, length)
 lapply(l, paste, collapse = "|")
-lapply(l, function(s) paste(s, collapse = "|")) # то же самое, но через анонимную функцию
+lapply(l, function(s) paste(s, collapse = "|")) # то же самое, но через анонимную функцию; и длинно
 
 sapply(l, paste, collapse = "|") # simplify apply - преобразует в вектор
 
