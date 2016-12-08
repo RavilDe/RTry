@@ -605,20 +605,18 @@ get_longest <- function(l) {
 
 gen_list <- function(n_elements, max_len, seed = 111) {  # seed = 111 - аргумент по умолчанию, если не задать третий аргумент
   set.seed(seed)
-  len <- sample(1:max_len, n_elements)
+  len <- sample(1:max_len, n_elements)  # создаем вектор случайных длин;
+                                        # из ветора 1:max_len выбираем n_elements-элементов
   lapply(1:n_elements, function(i) rnorm(len[i]))
 }
 
-l1 <- gen_list(4, 10) 
-l1
+l1 <- gen_list(4, 10); l1
 gl1 <- get_longest(l1)
 gl1$number
 
-l2 <- gen_list(4, 10, 777)
-l2
+l2 <- gen_list(4, 10, 777); l2
 gl2 <- get_longest(l2)
 gl2$number
-
 
 #### Задача 2.1.11
 count_elements <- function(x) {
@@ -629,42 +627,45 @@ count_elements <- function(x) {
 count_elements_2 <- function(x) sapply(sort(unique(x)), function (n) c(n, sum(x == n))) # не мое
 
 #### Задача 2.1.13
-
+set.seed(1789)
 bastille <- list(
        "La Chapelle Tower" = rbinom(5, 10, 1/2), 
-       "Tresor Tower" = rbinom(8, 12, 1/4), 
-       "Comte Tower" = rbinom(14, 3, 1/5) + 1,
-       "Baziniere Tower" = rbinom(8, 4, 4/5), 
+       "Tresor Tower"      = rbinom(8, 12, 1/4), 
+       "Comte Tower"       = rbinom(14, 3, 1/5) + 1,
+       "Baziniere Tower"   = rbinom(8, 4, 4/5), 
        "Bertaudiere Tower" = rbinom(4, 8, 2/3),
-       "Liberte Tower" = rbinom(1, 100, 0.1), 
-       "Puits Tower" = rbinom(5, 5, 0.7),
-       "Coin Tower" = rbinom(3, 16, 0.4)
-   )
+       "Liberte Tower"     = rbinom(1, 100, 0.1), 
+       "Puits Tower"       = rbinom(5, 5, 0.7),
+       "Coin Tower"        = rbinom(3, 16, 0.4)
+       )
 
-bb8 <- lapply(bastille, sum)
-bb <- unlist(bb8)
-c <- sum(unlist(bb8))
-a <- names(which.min(unlist(bb8)))
-b <- bb[which.min(bb)]
-names(b) <- NULL
-a; b; c
+bb <- unlist(lapply(bastille, sum)); bb # именованый вектор сумм солдат на каждой башне
+c <- sum(bb); c                         # сумма всех солдат
+a <- names(which.min(bb)); a            # название башни с минимальным кол-вом солдат
+b <- bb[which.min(bb)]; b               # кол-во солдат на этой башне
+names(b) <- NULL; b                     # убираем имя
+a; b; c                                 # выводим
 
 #### Урок 2.2.2
 # Data frame!!!!!!!
 
 df <- data.frame(x = 1:4, y = LETTERS[1:4], z = c(T, F))
 str(df) # структура
-summary(df) # более полная картина)
+summary(df) # более полная картина; obs - obserwation, наблюдение
 
 # имена
-df <- data.frame(x = 1:4, y = LETTERS[1:4], z = c(T, F),
+df <- data.frame(x = 1:4,
+                 y = LETTERS[1:4],
+                 z = c(T, F),
                  row.names = c("Alpha", "Bravo", "Charlie", "Delta" ))
+
 rownames(df); colnames(df) 
-dimnames(df) # лист из имен строк и столбцов
+dimnames(df) # список (list) из имен строк и столбцов
 
 # размерности
 nrow(df)
 ncol(df)
+dim(df)
 
 # особенности
 # length(df) - возвращает кол-во столбцов (переменных), 
@@ -680,6 +681,7 @@ df[ ,1]; df[ , 1, drop = F] # drop - читобы колонка не схлоп
    # индексация как для списка
 # если необходимо обратится к столбцу, это проще сделать через $
 df$z; df[[3]]; df[["z"]]
+df[[1]]; df[1] # равносильно предыдущему "матричному" вызову
 
 # фильтрация по условию
 df[df$x > 2,]
