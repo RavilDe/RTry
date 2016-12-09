@@ -603,7 +603,8 @@ get_longest <- function(l) {
   list(number = ind, element = l[[ind]])
 }
 
-gen_list <- function(n_elements, max_len, seed = 111) {  # seed = 111 - аргумент по умолчанию, если не задать третий аргумент
+gen_list <- function(n_elements, max_len, seed = 111) {  # seed = 111 - аргумент по умолчанию, 
+                                                         # если не задать третий аргумент
   set.seed(seed)
   len <- sample(1:max_len, n_elements)  # создаем вектор случайных длин;
                                         # из ветора 1:max_len выбираем n_elements-элементов
@@ -696,11 +697,11 @@ cbind(df, data.frame(season = c("Summer", "Autumn", "Winter", "Spring"), temp = 
 df
 df_salary <- data.frame(x = c(3, 2, 6, 1), salary = c(100, 1000, 300, 500))
 df_salary
-merge(df, df_salary, by = "x") # inner join 
-merge(df, df_salary, by = "x", all = TRUE) # outer join
-merge(df, df_salary, by = "x", all.df = TRUE) # left outer
+merge(df, df_salary, by = "x")                       # inner join 
+merge(df, df_salary, by = "x", all = TRUE)           # outer join
+merge(df, df_salary, by = "x", all.df = TRUE)        # left outer
 merge(df, df_salary, by = "x", all.df_salary = TRUE) # right outer
-merge(df, df_salary, by = NULL) # right outer
+merge(df, df_salary, by = NULL)                      # right outer
 
 # Задача 2.2.5
 which.max(rowSums(attitude[order(-attitude$lear),][1:5,][c("complaints", "raises", "advance")]))
@@ -934,7 +935,8 @@ table(cut(rnorm(1e3), -5:5)) # распредеение всех испытан�
 # error -- поведение при ошибке
 # width -- длина строки при печати векторов и матриц
 options()
-# По умолчанию, все строковые переменные становятся факторами, отменить такое поведение можно вызовом options(stringsAsFactors = FALSE)
+# По умолчанию, все строковые переменные становятся факторами, 
+# отменить такое поведение можно вызовом options(stringsAsFactors = FALSE)
 
 # возвращаемся у факторам - tapply
 # Факторы чаще всего встречаются как переменные в дата фреймах
