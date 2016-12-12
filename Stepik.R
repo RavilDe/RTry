@@ -704,12 +704,95 @@ merge(df, df_salary, by = "x", all.df_salary = TRUE) # right outer
 merge(df, df_salary, by = NULL)                      # right outer
 
 # Задача 2.2.5
-which.max(rowSums(attitude[order(-attitude$lear),][1:5,][c("complaints", "raises", "advance")]))
+names(which.max(rowSums(attitude[order(-attitude$lear),][1:5,][c("complaints", "raises", "advance")])))
 # слизал с подсказки((((    АД
 
+#### Урок 2.2.6
+# Импорт данных
+
+# Из файла:
+# Comma separated values (.csv), tab separated values
+# Неструктурированный текст -- readLines, scan
+# XML, HTML -- library(XML), library(httr), ...
+# JSON, YAML -- library(rjson), library(RJSONIO), ...
+# Excel -- library(XLConnect), library(readxl)
+# SAS, Stata, SPSS, MATLAB -- library(foreign), library(sas7bdat)
+# Web -- library(rvest)
+# Базы данных:
+#   Реляционные -- library(DBI), library(RSQLite), ...
+# Нереляционные -- library(rmongodb), ...
+# ...
+
+# Основной инструмент: read.table
+# file -- имя файла
+# header -- наличие или отсутствие заголовка в первой строке
+# sep -- разделитель значений, dec -- десятичная точка
+# quote -- символы, обозначающие кавычки (для строкового типа)
+# na.strings -- строки, кодирующие пропущенное значение
+# colClasses -- типы столбцов (для быстродействия и указания типа: строка-фактор-дата/время)
+# comment.char -- символ, обозначающий комментарий (после этого символа все выкидывпется)
+# skip -- количество строк пропускаемых c начала файла
+
+# Функции read.csv, read.csv2, read.delim и read.delim2 суть оболочки над read.table с расставленными умолчаниями
+
+# Типичные этапы (пред)обработки данных
+
+# Импорт в дата фрейм
+# Очистка значений, проверка типов
+# Работа со строками: имена, переменные строкового типа, факторы
+# Пропущенные значения: идентификация, способ обработки
+# Манипулирование переменными: преобразование, создание, удаление
+# Подсчёт описательных статистик: split-apply-combine
+# Визуализация данных
+# Экспорт
+# Очистка значений, проверка типов
+ 
+# Типы переменных, на которых легко ошибиться при импорте:
+  
+#   Числовые типы становятся строковыми
+# из-за пропущенных значений, отмеченных не как NA na.strings = c("NA", "Not Available", "Missing")
+# из-за неверно указанных разделителя, десятичного знака 
+# sep = ",", dec = "."
+# из-за кавычек, сопроводительного текста или комментариев 
+# quote, comment.char, skip
+# Строковые типы становятся факторами либо наоборот 
+# as.character, as.factor
+# Тип "дата/время" остаётся строковым as.POSIXct, as.POSIXlt, as.Date
+# . . .
+ 
+# Функции str, summary, head и tail помогут определить, всё ли в порядке
+
+# Работа с переменными
+
+# Функции complete.cases и na.omit для удаления наблюдений с пропущенными значениями: 
+#   df[complete.cases(df), ] либо na.omit(df)
+# Замена NA на некоторые значения может быть потенциально опасной
+# заполнение средним может вносить смещение в данные
+# заполнение нулями в большинстве случаев вообще некорректно!
+#   Создание, изменение и удаление переменных выполняется конструкциями 
+# df$new_var <- <...>, 
+# df$old_var <- f(df$old_var), 
+# df$old_var <- NULL
+# Кроме того, для работы сразу с большим количеством переменных есть функция within
+
+#### Задача 2.2.7
+# Какими из нижеуказанных способов можно выбрать только те строки, 
+# которые соответствуют департаментам с рейтингом (rating) ниже пятидесяти, 
+# при этом сохранив все столбцы, кроме rating?
+
+attitude[attitude$rating < 50, -"rating"]                   # нет
+attitude[rating < 50, names(attitude) != "rating"]          # нет
+subset(sel = -rating, sub = rating < 50, attitude)          # да
+subset(attitude, rating < 50, -rating)                      # да
+attitude[attitude$rating < 50, names(attitude) != "rating"] # да
+
+
 # Задача 2.2.8
+
 # Количество станций, зарегистрировавших землетрясение, записанное третьим
 quakes[3,]["stations"]
+quakes$stations[3]
+head(quakes)
 
 # Медианная глубина землетрясений (км)
 median(quakes$depth)
