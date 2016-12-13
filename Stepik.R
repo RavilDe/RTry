@@ -859,17 +859,19 @@ avian_2$Observer <- NA # добавляем пустую переменную Ob
 str(avian_2)
 
 summary(rbind(avian, avian_2))
-summary(avian)
+summary(rbind(avian, avian2)$total_coverage) # так тоже можно)))
 
 #### Задача 2.2.11
 names(avian)
 height_variables <- names(avian)[-(1:4)][c(F, T)][-7]; height_variables
+(hight_variables <- names(avian)[str_detect(names(avian), "Ht$")]) # можно еще вот так!) wildcard $ - это окончание строки
 names(sort(colSums(avian[,height_variables]), decreasing = TRUE))
 summary(avian[, height_variables]) # чит; не вывел упорядоченный вектор имен ((((((
+names(sort(unlist(lapply(avian[,height_variables], max)), decreasing = TRUE)) # об дошло)))
 
-names(sort(unlist(lapply(avian[,height_variables],max)), decreasing = TRUE)) # об дошло)))
+sort(sapply(avian[, hight_variables], max), decreasing = T) # добавлено 13/12/2016 - упорядоченный именованиый вектор с ответами
 
-#### Урок 2.3.1
+#### Урок 2.3.2
 # Факторы и строкиы
 # строка (string) - это элемент типа  character
 s <-c("Терпение и труд все перетрут",
@@ -901,7 +903,7 @@ strsplit(s, "[[:punct:]]")
 # метаязык поиска и манипуляции подстрок
 # образец для поиска может включать обычные символы и т.н. wildcards
 
-grep("труд", s) # в какие элементы вектора входит слово "труд" 
+grep("труд", s) # в какие элементы вектора s входит слово "труд" 
 grepl("труд", s) # логический grep
 gsub("\\b[[:alpha:]]{4,5}\\b", "####", s) # ВАЩЕ КОСМОС!) замена всех слов длинной 4 и 5 букв на решетки
 
