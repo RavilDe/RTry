@@ -952,6 +952,7 @@ print("трус\tбалбес\nбывалый"); cat("трус\tбалбес\nб
 # escape-последовательности
 # \t - табуляция
 # \n - новая строка
+# подробнее - ?Quotes
 
 #### 2.3.6 Задача
 
@@ -964,10 +965,10 @@ And by opposing end them?"
 hamlet <- str_replace_all(hamlet, "[:punct:]", "") # убираем все знаки препинания
 hamlet <- tolower(unlist(str_split(hamlet, "[:space:]")))
 
-length(grep("\\bto\\b", hamlet)) # кол-во слов "to"  
-length(grep("[fqw]",hamlet)) # кол-во слов, содержащих "f" , "q" или "w"
-length(grep("[b.]",hamlet)) # кол-во слов содержащих букву b и еще одну (хотя бы) после нее
-length(grep("\\b[[:alpha:]]{7}\\b",hamlet)) # кол-во 7-буквенных слов 
+length(grep("to", hamlet)) # кол-во слов "to"  
+length(grep("[fqw]", hamlet)) # кол-во слов, содержащих "f" , "q" или "w"
+length(grep("b.",hamlet)) # кол-во слов содержащих букву b и еще одну (хотя бы) после нее
+length(grep("\\b[[:alpha:]]{7}\\b",hamlet)) # кол-во 7-буквенных слов; без \\b выдает все слова от 7-ми букв и больше 
 
 # а еще можно было сделать через sum(str_count())
 sum(str_count(hamlet, "\\bto\\b"))
