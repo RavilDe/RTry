@@ -1025,7 +1025,7 @@ options()
 # По умолчанию, все строковые переменные становятся факторами, 
 # отменить такое поведение можно вызовом options(stringsAsFactors = FALSE)
 
-# возвращаемся у факторам - tapply
+# возвращаемся к факторам - tapply
 # Факторы чаще всего встречаются как переменные в дата фреймах
 # Одна из наиболее распространённых задач -- подсчёт некоторой статистики по группам
 ?warpbreaks
@@ -1036,7 +1036,7 @@ tapply(warpbreaks$breaks, warpbreaks$wool, max)
 
 ##### Задача 2.3.10
 sort(table(cut(quakes$mag, breaks = seq(4, 6.5, 0.5), right = F)), decreasing = T)
-# границы сделал в лоб, наверное можно по-другому
+# границы взял в лоб, наверное можно по-другому
 
 ##### Практика 2.3.11
 
@@ -1064,7 +1064,7 @@ list.files(pattern = ".*\\.csv$")
 # доллар - конец строки
 
 # если файл слишком большой и открыть его сложно (съест всю память)
-readLines("avianHabitat_sewardPeninsula_McNew_2012.csv", 5)
+readLines("avianHabitat_sewardPeninsula_McNew_2012.csv", 5) # печатает перве 5 строк
 
 # удостоверямся в верности файла и загружаем его
 avian <- read.csv("avianHabitat_sewardPeninsula_McNew_2012.csv")
@@ -1083,10 +1083,9 @@ unique(avian$Site)
 sort(tapply(avian$total_coverage, avian$Site_name, mean), decreasing = T)
 
 #### задача 2.3.14
-(height_variables <- names(avian)[str_detect(names(avian), ".*Ht$")])
+# находим названия переменных с высотами
+height_variables <- names(avian)[str_detect(names(avian), ".*Ht$")]
 
-tapply(avian$height_variables, avian$Observer, max)
-sapply(height_variables, function(hght) tapply(avian$Observer, hght, max))
-sapply(height_variables, function(hght) max(avian[,height_variables]))
+# 
+t(sapply(height_variables, function(htht) tapply(avian[[htht]], avian$Observer, max)))
 
-tapply(avian$total_coverage, avian$Observer, max)
