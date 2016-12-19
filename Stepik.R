@@ -1089,3 +1089,90 @@ height_variables <- names(avian)[str_detect(names(avian), ".*Ht$")]
 # 
 t(sapply(height_variables, function(htht) tapply(avian[[htht]], avian$Observer, max)))
 
+#### Урок 3.1.2
+# Функция как объект
+str(c(mean, max))
+fun_list <- c(mean, max)
+sapply(fun_list, function(f) f(1:100))
+
+# функция как аргумент
+apply_f <- function(f, x) f(x)
+sapply(fun_list, apply_f, x = 1:100)
+
+# анонимная функция тоже подойдет
+apply_f(function(x) sum(x^2), 1:10)
+
+# Функция как возвращаемое значение (return value)
+square <- function() function(x) x^2
+square()
+square()(2)
+
+# Функции внутри функций
+f <- function(x) {
+  g <- function(y) if (y > 0) 1 else if (y < 0) -1 else 0
+  sapply(x, g)
+}
+all.equal(f(-100:100), sign(-100:100)) # можно проще))
+
+# Исходный код функции
+# Простейший случай: напечатать имя функции без скобок (напр., sd)
+(f <- function(x) x^5)
+# Если в выводе есть .C, .Call, .Fortran, .External, .Internal, .Primitive, 
+# то это обращение к скомпилированному коду: нужно смотреть исходный код R (напр., var)
+# Если в выводе есть UseMethod или standardGeneric, то это method dispatch для классов S3/S4 (полиморфизм; напр., plot)
+methods(plot)[1:20]
+
+# Возвращаемое значение функции
+# определяется ключевым словом return
+has_na <- function(v) {
+  for (k in v) if (is.na(k)) return(TRUE) 
+  return(FALSE)
+} # после return работа функции прекращается
+# либо последним вычисленным значением (если нет return'a)
+has_na <- function(v) any(is.na(v)) # узнали, что ф-я is.na векторизована; упрощаем
+
+# Аргументы по умолчанию
+seq(from = 1, to = 1, by = ((to - from)/(length.out - 1)),
+    length.out = NULL, along.with = NULL, ...)
+seq() # from = 1, to = 1
+seq(1, 5, length.out = 11) # by = (5 - 1)/(11 - 1)
+
+# Правила разбора аргументов
+# Рассмотрим на примере:
+  
+  f <- function(arg1, arg2, remove_na = TRUE, ..., optional_arg) {}
+f(1, arg2 = 2, remove = F, optional_arg = 42, do_magic = TRUE)
+
+# Разбор аргументов проходит в три этапа:
+  
+# 1. Точное совпадение имени аргумента - arg2, optional_arg
+# 2. Частичное совпадение имени аргумента (только до ...) - remove_na
+# 2. Разбор аргументов по позиции - arg1
+# Неразобранные аргументы попадают в ... - do_magic
+
+# Проброс аргументов
+# Один случай использования ellipsis - "произвольное количество передаваемых объектов", функции sum, c, cbind, paste
+# Другой характерный случай - "проброс аргументов":
+  
+f <- function(x, pow = 2) x^pow
+integrate(f, 0, 1) # lower = 0, upper = 1, pow = 2
+integrate(f, 0, 1, pow = 5) # same, but pow = 5
+# неразобранный для ф-ии integrate арг-т paw попадает в ... и передается дальше в ф-ию f 
+
+# Бинарные оперторы
+# Оператор x %in% y: есть ли вхождение элементов x в y?
+1:5 %in% c(1, 2, 5)
+"%nin%" <- function(x, y) !(x %in% y)
+
+#### Задача 3.1.4
+
+decorate_string <- function(pattern, x, ...) {
+  rev_pattern <- paste(rev(strsplit(pattern, NULL)[[1]]), collapse = "")
+  paste0(pattern, paste(x, ...), rev_pattern)
+}
+
+
+
+
+
+
