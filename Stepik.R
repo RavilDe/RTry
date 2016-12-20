@@ -1171,8 +1171,129 @@ decorate_string <- function(pattern, x, ...) {
   paste0(pattern, paste(x, ...), rev_pattern)
 }
 
+#### Урок 3.1.6 (практика)
+
+# Generate deck card
+values <- c("Ace", 2:10, "Jack", "Qeen", "King")
+suits <- c("Clubs", "Diamonds", "Hearts", "Spades")
+card_deck <- outer(values, suits, paste, sep = " of ") # outer - возвращает все возможные комбинации двух векторов; результат ф-ии paste
+card_deck # визуально проверим
+length(card_deck) # 52 Ok
+
+# Function factory
+generator <- function(set) function(n) sample(set, n, replace = T)
+
+# Define generators
+card_gen <- generator(card_deck)
+coin_gen <- generator(c("Heads", "Tails"))
+
+# let's play
+card_gen(7)
+coin_gen(15)
+
+#### Задача 3.1.7
+generator <- function(set, prob = rep(1/length(set), length(set))) { 
+  function(n) sample(set, n, replace = TRUE, prob)
+}
+
+roulette_values <- c("Zero!", 1:36)
+fair_roulette <- generator(roulette_values)
+rigged_roulette <- generator(c(roulette_values, "Zero!"))
+
+fair_roulette(10); rigged_roulette(10)
+
+# проверка вероятностей
+plot(table(fair_roulette(1e5)))
+plot(table(rigged_roulette(1e5))) 
+
+#### Задача 3.1.8
+svd # ответ
+base::norm() # - если необходимо обратится к функции из другого пакета при совпадении имен
+detach(package:QuantPsyc) # отключение пакета
+
+#### Задача 3.1.9
+# пишем бинарник
+
+"%+%" <- function(x, y) {
+  max_l <- max(length(x),length(y))
+  min_l <- min(length(x),length(y))
+  a <- c(rep(NA, max_l))
+  a[1:min_l] <- x[1:min_l] + y[1:min_l]
+  return(a)
+}
+
+# крутое решение Сергея Козырева
+'%+%' <- function(x, y) {
+  length(x) <- length(y) <- max(length(x), length(y))
+  x + y
+}
 
 
+#### Урок 3.2.2
+# Объектно-ориентированные системы
+ 
+# В R их сразу три:
+   
+# 1. S3
+#  - Нет формальной декларации класса
+#  - Функция может иметь разное поведение (method dispatch) в зависимости от класса
+#  - Такие функции называются generic
+# 2.  S4
+#  - Строгое определение класса и его полей
+#  - Больше возможностей для поведения методов
+# 3. Reference classes
+ 
+# Больше об объектно-ориентированном программировании можно узнать в "Advanced R"
 
 
+# Generic функции
+# Например, функция print - generic:
+   
+length(methods(print))
+# То есть, если x - дата фрейм, то вызовется print.data.frame(x); если x - функция, то print.function(x) и так далее
+# Если ни один из методов не подходит, то print.default(x)
+print.data.frame <- function(df) print(dim(df))
+print(warpbreaks)
 
+
+# Функции без сторонних эффектов
+# В R нет указателей на объекты, все объекты передаются "по значению" (есть нюансы!)
+# При попытке изменить переданный объект заводится его копия в локальном окружении (copy-on-modify semantics)
+f <- function(k) {
+  k <- k + 1
+  a <- a + k^2
+  a
+}
+k <- 5
+f(k)
+a <- 10
+c(f(k), k, a)
+
+# функция replicate
+# Многократный вызов функции, зависящей от датчика случайных чисел
+
+# Устройство работает исправно (0) либо ломается (1)
+# моделирование работы такого устройства с подсчетом кол-ва поломок
+get_status <- function(n, p = 0.1) {
+  x <- rbinom(n, 1, p)
+  sum(x)
+}
+replicate(5, get_status(100)) # повторяем 5 раз вызов функции get_status
+
+# функция mapply
+# Многомерная sapply
+mapply(seq, from = 1:4, to = 2:5, by = 1 / (1 + 1:4))
+# суть результатов:
+list(
+  seq(1, 2, 1/2), seq(2, 3, 1/3),
+  seq(3, 4, 1/4), seq(4, 5, 1/5)
+)
+
+# функция outer
+# Перебор всех возможных комбинаций элементов
+m <- outer(LETTERS, letters, paste0)
+dim(m)
+diag(m)
+m[1:5, 1:5]
+str(m)
+summary(m)
