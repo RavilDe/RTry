@@ -1297,3 +1297,172 @@ diag(m)
 m[1:5, 1:5]
 str(m)
 summary(m)
+
+# Vectorize
+# это способ векторизовать функцию, которая таковой не является
+lp_norm <- function(x, p = 2) {
+  if (p >= 1) sum(abs(x)^p)^(1/p) else NaN
+}
+lp_norm(1:10, -1:4)
+lp_norm <- Vectorize(lp_norm, "p")
+
+# Вызов ф-ии на списке аргументов - do.call
+df1 <- data.frame(id = 1:2, value = rnorm(2))
+df2 <- data.frame(id = 3:4, value = runif(2))
+df3 <- data.frame(id = 222, value = 7)
+rbind(df1, df2, df3)
+do.call(rbind, list(df1, df2, df3))
+# Но зачем? А для тех случаем, когда объектов неизвестно сколько:
+do.call(rbind, lapply(list.files(), function(file) read.csv(file)))
+
+#### Задача 3.2.4
+# Просмотр всех функций семейства apply
+ls(pos = "package:base", pattern = "apply")
+
+#### Задача 3.2.5
+# Про котиков
+cat_temper <- c("задиристый", "игривый", "спокойный", "ленивый")
+cat_color <- c("белый", "серый", "чёрный", "рыжий")
+cat_age <- c("кот", "котёнок")
+cat_trait <- c("с умными глазами", "с острыми когтями", "с длинными усами")
+
+
+cat_catalogue <- do.call(outer, list(cat_temper, cat_color, cat_age, cat_trait))
+outer(outer(cat_temper, cat_color, paste), outer(cat_age, cat_trait, paste), paste)
+
+mapply(outer, list(cat_temper, cat_color, cat_age, cat_trait), paste)
+
+replicate()
+
+# решение в лоб((((((
+a <- outer(cat_temper, cat_color, paste)
+b <- outer(cat_age, cat_trait, paste)
+c <- outer(a, b, paste)
+library(stringi)
+stri_sort(c)[42]
+
+# через 
+cat_catalogue1 <- expand.grid(cat_temper, cat_color, cat_age, cat_trait)
+
+#### Урок 3.2.6 (практика)
+# Random walk with absorption
+simulate_walk <- function(lower = -10, upper = 10, n_max = 200, p = 1e-3) {
+  current_position <- (lower + upper) / 2
+  for (i in 1:n_max) {
+    is_absorbed <- rbinom(1, 1, p)
+    if (is_absorbed) return(list(status = "Absorbed", 
+                                 position = current_position, 
+                                 steps = i))
+    current_position <- current_position + rnorm(1)
+    if (current_position < lower) return(list(status = "Left breach", 
+                                              position = current_position, 
+                                              steps = i))
+    if (current_position > upper) return(list(status = "Right breach", 
+                                              position = current_position, 
+                                              steps = i))
+  }
+  return(list(status = "Max steps reached", 
+              position = current_position,
+              steps = n_max))
+}
+
+# Simulate results
+result <- replicate(10000, simulate_walk(), simplify = FALSE)
+result <- data.frame(
+  status = sapply(result, function(x) x$status),
+  position = sapply(result, function(x) x$position),
+  steps = sapply(result, function(x) x$steps)
+)
+
+# Inspect results
+# сумма всех испытаний по категориям
+tapply(result$position, result$status, length)
+# Средняя длина траектории
+tapply(result$steps, result$status, mean)
+
+#### Задача 3.2.7
+# Теперь на плоскости
+simulate_walk_2 <- function(x = 0, y = 0, border = 6, n_max = 100, p = 1e-2) {
+  current_position <- sqrt(x^2 + y^2)
+  for (i in 1:n_max) {
+    is_absorbed <- rbinom(1, 1, p)
+    if (is_absorbed) return(1)
+    x <- x + rnorm(1)
+    y <- y + rnorm(1)
+    current_position <- sqrt(x^2 + y^2)
+    if (current_position > border) return(2)
+  }
+  return(3)
+}
+system.time({
+  result_2 <- replicate(100000, simulate_walk_2(), simplify = TRUE)
+})
+table(result_2)
+
+#### Задача 3.2.8
+
+ls(pos = "package:graphics", pattern = "^plot[.]")
+ls(pos = "package:base", pattern = "^summary[.]")
+ls(pos = "package:base", pattern = "^print[.]")
+# на рабоче компе нет print.default
+# проверял тут - http://www.r-fiddle.org/
+
+
+sapply(c("matrix", "function", "default"), function(pat) grep(pat, methods(print)))
+
+#### Задача 3.2.9
+# сам не ответил(((
+f <- function(y) {
+  y <- x + y
+  y
+}
+
+g <- function(x) {
+  y <- f(x)
+  f <- function(x) {
+    y - x
+  }
+  y - f(x)
+}
+
+x <- 10
+y <- 1
+f(x); f(y)
+g(x); g(y)
+x; y
+
+#### Задача 3.2.10
+m1 <- function(x, y) {
+  m <- matrix(0, length(x), length(y))
+  for (i in 1:length(x)) 
+    for (j in 1:length(y)) {
+      m[i, j] = x[i] * y[j]
+    }
+  m
+}
+
+m2 <- function(x, y) {
+  vapply(y, function(i) i * x, numeric(length(x)))
+}
+
+m3 <- function(x, y) x %o% y
+
+x <- rnorm(100)
+y <- runif(1000)
+all.equal(m1(x, y), m2(x, y))
+all.equal(m2(x, y), m3(x, y))
+
+library(microbenchmark)
+microbenchmark(m1(x, y), m2(x, y), m3(x, y))
+
+#### Урок 3.3.2
+# пакет tidyr
+set.seed(1122)
+df <- data.frame(Name = c("Jhon", "Piter", "Mary", "Caroline"),
+                 DrugA_T1 = runif(4, 35, 36),
+                 DrugA_T2 = runif(4, 36, 39),
+                 DrugB_T1 = runif(4, 36, 36.6),
+                 DrugB_T2 = runif(4, 37, 38.5)
+); df
+
+
