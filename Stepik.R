@@ -1456,7 +1456,7 @@ library(microbenchmark)
 microbenchmark(m1(x, y), m2(x, y), m3(x, y))
 
 #### Урок 3.3.2
-# пакет tidyr
+# Пакет tidyr
 set.seed(1122)
 df <- data.frame(Name = c("Jhon", "Piter", "Mary", "Caroline"),
                  DrugA_T1 = runif(4, 35, 36),
@@ -1464,5 +1464,60 @@ df <- data.frame(Name = c("Jhon", "Piter", "Mary", "Caroline"),
                  DrugB_T1 = runif(4, 36, 36.6),
                  DrugB_T2 = runif(4, 37, 38.5)
 ); df
+install.packages("tidyr")
+library(tidyr)
+# Связка gather-spread
+df <- gather(df, Variable, Temperature, -Name)
+# Связка separate-unite
+df <- separate(df, Variable, c("DrugType", "Time"), "_")
 
+# Пакет dplyr
+library(dplyr)
+select(df, Time, Temperature)
+select(df, 3:4)
+select(df, -Name, -Time)
+select(df, starts_with("T"))
+
+filter(df, Temperature>37, Name %in% c("Mary","Piter"))
+
+# select - работает по столбцам
+# filter - по строкам
+# subset - аналог из base
+
+# сортировка сначала по Name, потом (внутри каждогоимени) по убыванию Т
+arrange(df, Name, -Temperature)
+
+# изменение переменных
+mutate(df, DrugType = gsub("Drug", "", DrugType))
+
+# связка ф-ий group_by и summarise
+summarize(group_by(df, Time),
+          AvgTemp = mean(Temperature))
+
+# Полезные ссылки
+library(data.table)
+# Cheat sheet по tidyr и dplyr: https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf
+# Современный взгляд на предобработку данных: dplyr, tidyr и magrittr. https://github.com/tonytonov/spbr-1-dataproc
+
+
+#### Задача 3.3.4
+dfdf <- data.frame(first_name = "Eugene",
+                   last_name  = "Oldman",
+                   email_address  = "ping@pong.org",
+                   postal_address = "Somewhere in Rusland",
+                   date_added = "22/12/2016")
+#### Урок 3.3.5
+# Конвеерная запись
+df <- data.frame(type = c(1, 1, 2, 2, 3, 3), value = c(5, 10, 50, 100, 7, 7))
+arrange(
+  summarize(
+    group_by(df, type),
+    Total = sum(value)
+  ),
+  -Total
+)
+
+a <- group_by(df, type)
+b <- summarise(a, Total = sum(value))
+c <- arrange(b, -Total)
 
