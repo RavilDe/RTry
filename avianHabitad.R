@@ -43,3 +43,44 @@ avian$Site_name <- factor(str_replace(avian$Site, "[:digit:]+", ""))
 
 tapply(avian$DBHt, avian$Site_name, mean)
 
+# Изменения урока 3.3.9
+# WIth dplyr
+library(dplyr)
+library(stringr)
+options(stringsAsFactors = FALSE)
+
+# First approach
+avian <- read.csv("avianHabitat_sewardPeninsula_McNew_2012.csv")
+# оставляем данные только по DB и только там, где есть покрытие 
+avian <- subset(avian, PDB > 0 & DBHt > 0, c("Site", "Observer", "PDB", "DBHt"))
+# см выше
+avian$Site <- factor(str_replace(avian$Site, "[:digit:]+", ""))
+subset(
+  # aggregate  немного похож на tapply; первый - tidy data, второй - сводная таблица
+  aggregate(avian$DBHt, list(Site = avian$Site, Observer = avian$Observer), max),
+  x >= 5
+)
+
+# Second approach (using pipes)
+avian <- read.csv("avianHabitat_sewardPeninsula_McNew_2012.csv")
+avian <- 
+  avian %>% 
+  subset(PDB > 0 & DBHt > 0, c("Site", "Observer", "PDB", "DBHt")) %>% 
+  transform(Site = factor(str_replace(.$Site, "[:digit:]+", "")))
+
+aggregate(avian$DBHt, list(Site = avian$Site, Observer = avian$Observer), max) %>% 
+  subset(x >= 5)
+
+# Third approach (using both pipes and dplyr)
+avian <- read.csv("avianHabitat_sewardPeninsula_McNew_2012.csv")
+
+avian %>% 
+  filter(PDB > 0, DBHt > 0) %>% 
+  select(Site, Observer, contains("DB")) %>% 
+  mutate(Site = factor(str_replace(Site, "[:digits:]+", ""))) %>% 
+  group_by(Site, Observer) %>% 
+  summarize(MaxHt = max(DBHt)) %>% 
+  filter(MaxHt >= 5)
+
+
+

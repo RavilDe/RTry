@@ -1506,6 +1506,7 @@ dfdf <- data.frame(first_name = "Eugene",
                    email_address  = "ping@pong.org",
                    postal_address = "Somewhere in Rusland",
                    date_added = "22/12/2016")
+
 #### Урок 3.3.5
 # Конвеерная запись
 df <- data.frame(type = c(1, 1, 2, 2, 3, 3), value = c(5, 10, 50, 100, 7, 7))
@@ -1520,4 +1521,36 @@ arrange(
 a <- group_by(df, type)
 b <- summarise(a, Total = sum(value))
 c <- arrange(b, -Total)
+
+df %>%
+  group_by(type) %>%
+  summarise(Total = sum(value)) %>%
+  arrange(-Total)
+
+# Эквивалентная запись:
+
+#   x %>% f 
+# f(x)
+
+#  x %>% f(y) 
+# f(x, y)
+
+#  x %>% f(y, param = .) 
+# f(y, param = x)
+
+#### Задача 3.3.6
+?transmute
+?sample_n
+?inner_join 
+
+#### Урок 3.3.9 (практика)
+# см avianHabitad.R после 
+
+#### Задача 3.3.11
+avian <- read.csv("avianHabitat_sewardPeninsula_McNew_2012.csv")
+summary(avian)
+str(avian)
+
+avian %>% mutate(Site = factor(str_replace(Site, "[:digits:]+", "")))
+
 
