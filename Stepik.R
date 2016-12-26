@@ -1176,7 +1176,8 @@ decorate_string <- function(pattern, x, ...) {
 # Generate deck card
 values <- c("Ace", 2:10, "Jack", "Qeen", "King")
 suits <- c("Clubs", "Diamonds", "Hearts", "Spades")
-card_deck <- outer(values, suits, paste, sep = " of ") # outer - возвращает все возможные комбинации двух векторов; результат ф-ии paste
+card_deck <- outer(values, suits, paste, sep = " of ") # outer - возвращает все возможные комбинации двух векторов; 
+                                                      # результат ф-ии paste
 card_deck # визуально проверим
 length(card_deck) # 52 Ok
 
