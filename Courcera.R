@@ -155,5 +155,81 @@ source("data.R")
 str(file)
 
 ## Subsetting - Basics
+x <- c("a", "b", "c", "c", "d", "a")
+x[1]
+x[2]
+x[1:4]
+x[x > "a"]
+u <- x > "a"
+u
+x[u]
 
+## Subsetting - Lists
+x <- list(foo = 1:4, bar = 0:6)
+x[1]
+x[[1]]
+x$foo
+x[["bar"]]
+x["bar"]
+x <- list(foo = 1:4, bar = 0.6, baz = "hello")
+x
+x[c(1,3)]
 
+# The [[ operator can be used with computed indices; $ can only be used with literal names
+name <- "foo"
+x[[name]] # computed index for "foo"
+x$name  # element "name" doesn't exist!!
+x$foo  # element "foo" does exist
+
+# The [[ can take an integer sequence
+x <- list(a = list(10, 12, 14), b = c(3.14, 2.81))
+x[[c(1, 3)]]
+x[[1]][[3]]
+x[[2]][[1]]
+
+## Subsetting - Matrices
+x <- matrix(1:6, 2, 3)
+x
+x[1, 2]
+x[2, 1]
+x[1, ]
+x[, 3]
+
+# drop 
+x[1, 2, drop = FALSE]
+x[1, ]
+x[1, , drop = FALSE]
+
+## Subsetting - Partial Matching
+x <- list(aardvark = 1:5)
+x$a
+x[["a"]] # null
+x[["a", exact = FALSE]]
+
+## Subsetting - Removing Missing Values
+x <- c(1, 2, NA, 4, NA, 5)
+bad <- is.na(x)
+x[!bad]
+
+y <- c("a", "b", NA, "d", NA, "f")
+(good <- complete.cases(x, y))
+x[good]
+y[good]
+
+airquality[1:6,]
+good <- complete.cases(airquality)
+airquality[good, ][1:6, ]
+
+## Vectorized Operations
+x <- 1:4; y <- 6:9
+x + y
+x > 2
+x >= 2
+y == 8
+y
+x / y
+
+x <- matrix(1:4, 2, 2); y <- matrix(rep(10, 4), 2, 2)
+x * y # element-wise multiplication
+x / y
+x %*% y # true matrix multiplication
