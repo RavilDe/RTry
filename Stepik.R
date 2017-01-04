@@ -620,6 +620,7 @@ gl2 <- get_longest(l2)
 gl2$number
 
 #### Задача 2.1.11
+x <- c(5, 2, 7, 7, 7, 2, 0, 0)
 count_elements <- function(x) {
  y <- sort(unique(x))
  rbind(y, colSums(sapply(y, function(i) ifelse(i == x, 1 , 0.))))
