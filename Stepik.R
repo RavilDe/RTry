@@ -1183,6 +1183,8 @@ card_deck # визуально проверим
 length(card_deck) # 52 Ok
 
 # Function factory
+# внутренняя функция выбирает n случайных чисел из набора set с повтарениями
+# внешняя функция 
 generator <- function(set) function(n) sample(set, n, replace = T)
 
 # Define generators
@@ -1555,4 +1557,27 @@ str(avian)
 
 avian %>% mutate(Site = factor(str_replace(Site, "[:digits:]+", "")))
 
+#### 3.4.1
 
+# Что дальше?
+
+# Визуализация (base R, ggplot2, lattice, ...)
+# Огромное количество методов и алгоритмов в разных областях (CRAN Task Views)
+# knitr/rmarkdown
+# Разработка и поддержка пакетов
+# Advanced R
+# Параллельные алгоритмы и оптимизация кода
+
+# Intro to ggplot2: https://github.com/tonytonov/ggplot-lecture
+
+# Rmarkdown: https://github.com/tonytonov/tcts-rmarkdown
+
+# dplyr, tidyr, magrittr: https://github.com/tonytonov/spbr-1-dataproc
+
+# R and С++, Parallel R, plotting, etc.: SPb R user group http://vk.com/spbrug
+
+# Послесловие
+
+# Материалы курса: https://github.com/tonytonov/Rcourse
+# Увидимся! Всем спасибо!..
+# ... with best Regards, Антон Антонов
