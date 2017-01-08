@@ -233,3 +233,37 @@ x <- matrix(1:4, 2, 2); y <- matrix(rep(10, 4), 2, 2)
 x * y # element-wise multiplication
 x / y
 x %*% y # true matrix multiplication
+
+### Week 2
+
+## Control Structures - Introduction
+## Control Structures - If-else
+
+if(x > 3) {
+  y <- 10
+} else {
+  y <- 0
+}
+
+y <- if(x >0) {
+  10
+} else {
+  3
+}
+
+## Control Structures - For loops
+x <- c("a", "b", "c", 'd')
+
+for (i in 1:4) {
+  print(x[i])
+}
+
+for (i in seq_along(x)) {
+  print(x[i])
+}
+
+for (letter in x) {
+  print(letter)
+}
+
+for (i in 1:4) print(x[i])
