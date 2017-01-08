@@ -27,7 +27,8 @@ return_two()
 addten <- function(x) {
   x <- x + 10
 }
-addten(cats)  # не работает, т.к. мы переприсвоили Х в локальном окружении, а вглобальном он так и остался
+addten(cats)  # не работает, т.к. мы переприсвоили Х в локальном окружении, 
+              # а вглобальном он так и остался
 
 addten <- function(x) {
   return(x + 10)
@@ -39,7 +40,8 @@ addten <- function(x) {
   moredogs <<- (x + 10)
 }
 addten(dogs); dogs; moredogs
-# Функции меняющие глобальные переменные - это функции со сторонним эффектом (side effect)
+# Функции меняющие глобальные переменные - это функции со сторонним эффектом 
+#                                                                (side effect)
 
 # Удаление переменных из окружения
 ls() # List Object
@@ -1500,8 +1502,10 @@ summarize(group_by(df, Time),
 
 # Полезные ссылки
 library(data.table)
-# Cheat sheet по tidyr и dplyr: https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf
-# Современный взгляд на предобработку данных: dplyr, tidyr и magrittr. https://github.com/tonytonov/spbr-1-dataproc
+# Cheat sheet по tidyr и dplyr: 
+# https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf
+# Современный взгляд на предобработку данных: dplyr, tidyr и magrittr:
+# https://github.com/tonytonov/spbr-1-dataproc
 
 
 #### Задача 3.3.4

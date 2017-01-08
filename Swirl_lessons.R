@@ -175,3 +175,46 @@ class(my_data)
 cnames <- c("patient", "age", "weight", "bp", "rating", "test")
 colnames(my_data) <- cnames
 my_data
+
+### 8
+### Logical
+TRUE == TRUE
+(FALSE == TRUE) == FALSE
+
+6 == 7
+6 < 7
+10 <= 10
+5 != 7
+!(5 == 7)
+
+FALSE & FALSE
+
+TRUE & c(TRUE, FALSE, FALSE)
+TRUE && c(TRUE, FALSE, FALSE)
+
+TRUE | c(TRUE, FALSE, FALSE)
+TRUE || c(TRUE, FALSE, FALSE)
+
+5> 8 || 6 != 8 && 4 > 3.9
+
+TRUE && FALSE || 9 >= 4 && 3 < 6  # T
+TRUE && 62 < 62 && 44 >= 44       # F
+99.99 > 100 || 45 < 7.3 || 4 != 4.0 # F
+FALSE || TRUE && FALSE # F
+
+6 >= -9 && !(6 > 7) && !(!TRUE) # T
+FALSE || TRUE && 6 != 4 || 9 > 4 # T
+FALSE && 6 >= 6 || 7 >= 8 || 50 <= 49.5 # F
+!(8 > 4) ||  5 == 5.0 && 7.8 >= 7.79 # T
+
+isTRUE(6 > 4)
+
+identical("twins", "twins")
+
+xor(5 == 6, !FALSE)
+
+ints <- sample(10)
+which(ints > 7)
+
+
+
