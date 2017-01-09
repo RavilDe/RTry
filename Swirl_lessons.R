@@ -44,11 +44,13 @@ setwd("testdir") # задает новую рабочую директорию
 
 file.create("mytest.R") #  создаем новый файл 
 file.exists("mytest.R") # проверка существования файла
-file.info("mytest.R") # информация о файле; выводит таблицу! поэтому к ней можно обращаться напримерк file.info("mytest.R")$mode 
+file.info("mytest.R") # информация о файле; выводит таблицу! 
+          # поэтому к ней можно обращаться напримерк file.info("mytest.R")$mode 
 
 file.rename("mytest.R", "mytest2.R")# переименовываем файл
 file.copy("mytest2.R", "mytest3.R") # копируем файл
-file.path("mytest3.R") # с помощью этой функции можно составлять пути к файлам вне зависимости от операционки
+file.path("mytest3.R")  # с помощью этой функции можно составлять пути к файлам 
+                        # вне зависимости от операционки
 file.path("folder1", "folder2")
 dir.create(file.path("testdir2","testdir3"), recursive = TRUE)
 
@@ -64,7 +66,8 @@ pi:10 # очень интересный пример! начинаем с 3,14 �
 
 seq(1, 20) # то же самое, что и 1:20
 seq(0, 10 , by = 0.5) # с шагом 0,5
-my_seq <- seq(5, 10, length = 30) # не знае мшаг, но знаем на сколько частей нужно раздробить
+my_seq <- seq(5, 10, length = 30) # не знаем шаг, но знаем на сколько частей 
+                                  # нужно раздробить
 length(my_seq) # длинна полученного вектора
 
 1:length(my_seq) # от одного до длинны вектора 
@@ -87,8 +90,10 @@ num_vect >= 6
 # Other logical operators include `>`, `<=`, `==` for exact equality, and
 # `!=` for inequality.
 
-# If we have two logical expressions, A and B, we can ask whether at least one is TRUE with A | B (logical 'or' a.k.a. 'union') 
-# or whether they are| both TRUE with A & B (logical 'and' a.k.a. 'intersection'). 
+# If we have two logical expressions, A and B, we can ask whether at least one 
+# is TRUE with A | B (logical 'or' a.k.a. 'union') 
+# or whether they are| both TRUE with A & B 
+# (logical 'and' a.k.a. 'intersection'). 
 # Lastly, !A is the negation of A and is TRUE when A is FALSE and vice versa.
 
 my_char <- c("My", "name", "is")
@@ -106,13 +111,16 @@ x <- c(44, NA, 5, NA)
 x * 3
 y <- rnorm(1000) # 1000 рандомных чисел
 z <- rep(NA, 1000) # 1000 NA-шек
-my_data <- sample(c(y, z), 100) # случайная выборка 100 чисел из 2000 смешанных чисел и NAшек
+my_data <- sample(c(y, z), 100) # случайная выборка 100 чисел из 2000 
+                                # смешанных чисел и NAшек
 my_na <- is.na(my_data)
 my_na # получаем смесь из 100 TRUE и FALSE
 
 my_data == NA # в ответ получаем 100 NA
-# The reason you got a vector of all NAs is that NA is not really a value, but just a placeholder for a quantity that is not available.
-# Therefore the logical expression is incomplete and R has no choice but to return a vector of the same length as my_data that contains all NAs.
+# The reason you got a vector of all NAs is that NA is not really a value, 
+# but just a placeholder for a quantity that is not available.
+# Therefore the logical expression is incomplete and R has no choice but 
+# to return a vector of the same length as my_data that contains all NAs.
 
 sum(my_na)
 my_data
@@ -156,7 +164,8 @@ my_vector
 dim(my_vector) # т.к. это пока вектор, у него нет dimensions
 length(my_vector) # а вот длина есть
 dim(my_vector) <- c(4, 5)
-dim(my_vector) # оп! появилась матрица; мы присвоиили атрибуту dim нашего вектора размерность 4х5 и вектор преобразовался в матрицу
+dim(my_vector) # оп! появилась матрица; мы присвоиили атрибуту dim нашего 
+              # вектора размерность 4х5 и вектор преобразовался в матрицу
 attributes(my_vector)
 my_vector
 class(my_vector) # выдает нам класс объекта
@@ -215,6 +224,101 @@ xor(5 == 6, !FALSE)
 
 ints <- sample(10)
 which(ints > 7)
+
+### 9
+### Functions
+Sys.Date()
+mean(c(2, 4, 5))
+
+boring_function <- function(x) {
+  x
+}
+submit()
+
+my_mean <- function(my_vector) {
+  # Write your code here!
+  # Remember: the last expression evaluated will be returned!
+  sum(my_vector) / length(my_vector)
+}
+submit()
+
+remainder <- function(num, divisor = 2) {
+  # Write your code here!
+  # Remember: the last expression evaluated will be returned! 
+  num %% divisor
+}
+submit()
+
+remainder(5)
+remainder(11, 5)
+remainder(divisor = 11, num = 5)
+remainder(4, div = 2)
+args(remainder)
+
+evaluate <- function(func, dat){
+  # Write your code here!
+  # Remember: the last expression evaluated will be returned!
+  func(dat)
+}
+submit()
+
+?paste
+paste("Programming", "is", "fun!")
+
+mad_libs <- function(...){
+  # Do your argument unpacking here!
+  args <- list(...)
+  place <- args[["place"]]
+  adjective <- args[["adjective"]]
+  noun <- args[["noun"]]
+  
+  # Don't modify any code below this comment.
+  # Notice the variables you'll need to create in order for the code below to
+  # be functional!
+  paste("News from", place, 
+        "today where", adjective, 
+        "students took to the streets in protest of the new", noun, 
+        "being installed on campus.")
+}
+submit()
+
+mad_libs(place = "Covent Garden", adjective = "Fucking", noun = "Dude")
+
+### 14
+### Dates and Times
+
+d1 <- Sys.Date()
+class(d1)
+unclass(d1)
+d1
+d2 <- as.Date("1969-01-01")
+unclass(d2)
+
+t1 <- Sys.time()
+t1
+class(t1)
+unclass(t1)
+
+t2 <- as.POSIXlt(Sys.time())
+class(t2)
+t2
+unclass(t2)
+str(unclass(t2))
+t2$min
+
+weekdays(d1)
+months(t1)
+quarters(t2)
+
+t3 <- "October 17, 1986 08:24"
+t4 <- strptime(t3, "%B %d, %Y %H:%M")
+t4
+class(t4)
+
+Sys.time() > t1
+Sys.time() - t1
+
+difftime(Sys.time(), t1, units = 'days')
 
 
 
