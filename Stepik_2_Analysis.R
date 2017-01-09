@@ -101,5 +101,101 @@ my_vector_2 <- my_vector[(my_vector > mean(my_vector) - sd(my_vector)) &
 # корректное решение
 my_vector_2 <- my_vector[abs(my_vector - mean(my_vector)) < sd(my_vector)]
 
+### 1.3.3
+
+?read.table # основной инструмент
+?read.csv   # read.table с определенными умолчаниями
+
+mydata <- read.csv("evals.csv")
+
+head(mydata)    # 6 верхних строчек
+head(mydata, 3) # 3 верхних строчек
+tail(mydata)    # 6 нижних строк дф
+tail(mydata, 4) # 4 нижних строки дф
+
+View(mydata) #команда rStudio - открывает дф в виде таблицы (до 1000 строк)
+
+str(mydata)
+summary(mydata)
+
+a <- names(mydata)
+
+### 1.3.4
+# обращаемся к переменным
+
+b <- mydata$score
+mean(mydata$score)
+summary(mydata$score)
+
+mydata$score * 2
+mydata$ten_point_scale <- mydata$score * 2
+summary(mydata$ten_point_scale)
+
+mydata$new_variable <- 0
+summary(mydata$new_variable)
+
+mydata$number <- 1:nrow(mydata)
+summary(mydata$number) 
+
+nrow(mydata)
+ncol(mydata)
+
+# Subsetting
+
+mydata$score[1:10]
+mydata[1, 1]
+mydata[c(2, 193, 225), 1]
+mydata[101:200, 1]
+
+mydata[5, ]
+mydata[, 1] == mydata$score
+
+mydata[, 2:5]
+head(mydata[, 2:5])
+
+### 1.3.5
+# Subsetting with conditions
+mydata$gender
+mydata$gender == "female"
+mydata[mydata$gender == "female",1] # только реподавательт женщины
+head(mydata[mydata$gender == "female",1:3])
+
+head(subset(mydata, gender == "female"))
+head(subset(mydata, score > 3.5), 10)
+
+# rbind, cbind
+
+mydata2 <- subset(mydata, gender == "female")
+mydata3 <- subset(mydata, gender == "male")
+mydata4 <- rbind(mydata2, mydata3) # складываем строки
+
+mydata5 <- mydata[, 1:10]
+mydata6 <- mydata[, 11:24]
+mydata7 <- cbind(mydata5, mydata6)
+
+### 1.3.6
+sessionInfo()
+library(help = "datasets")
+ls(pos = "package:datasets")
+data(mtcars) # добавит датасет в рабочую среду
+help(mtcars) # выведет информацию о датасете
+my_data <- mtcars # запишет датасет в новую переменную
+
+### 1.3.7
+data(mtcars); mtcars # возврат
+mtcars$gear %% 2 == 1 
+mtcars$even_gear <- abs(mtcars$gear %% 2 - 1); mtcars
+
+# чужие решения
+mtcars$even_gear <- 1 - mtcars$gear %% 2 # самое изящное
+mtcars$even_gear <- as.numeric(mtcars$gear %% 2 == 0)
+
+### 1.3.8
+mpg_4 <- subset(mtcars, cyl == 4, mpg)[[1]]
+
+# чужие решения
+mpg_4 <- mtcars$mpg[mtcars$cyl == 4]
+mpg_4 <- mtcars[mtcars$cyl == 4, "mpg"]
 
 
+mini_mtcars <- mtcars[c(3, 7, 10, 12, nrow(mtcars)),]
