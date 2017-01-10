@@ -1,3 +1,4 @@
+#### Переменные
 #### 1.2.2
 #### 1.2.3
 my_var1 <- 42
@@ -101,6 +102,8 @@ my_vector_2 <- my_vector[(my_vector > mean(my_vector) - sd(my_vector)) &
 # корректное решение
 my_vector_2 <- my_vector[abs(my_vector - mean(my_vector)) < sd(my_vector)]
 
+#*******************************************************************************
+### Работа с data frame
 ### 1.3.3
 
 ?read.table # основной инструмент
@@ -198,4 +201,167 @@ mpg_4 <- mtcars$mpg[mtcars$cyl == 4]
 mpg_4 <- mtcars[mtcars$cyl == 4, "mpg"]
 
 
+### 1.3.9
 mini_mtcars <- mtcars[c(3, 7, 10, 12, nrow(mtcars)),]
+
+#*******************************************************************************
+### Элементы синтаксиса
+### 1.4.2
+a <- 0
+if (a > 0) {
+  print("positive")
+} else {
+  print("negativ")
+  print(a + 1)
+}
+
+if (a > 0) {
+  print("positive")
+} else print("negativ")
+
+if (a > 0) {
+  print("positive")
+} else if (a < 0) {
+  print("negativ")
+} else {
+  print("zero")
+}
+
+# короткая запись (крайне полезная)
+a <- 10
+ifelse(a < 0, "negativ", "positive")
+a <- c(-1, 1)
+
+### 1.4.3
+for (i in 1:10) {
+  print(i)
+}
+
+for (i in 1:nrow(mydata)) {
+  print(mydata$score[i])
+}
+
+for (i in 1:nrow(mydata)) {
+  if (mydata$gender[i] == "male") {
+    print(mydata$score[i])
+  }
+}
+
+mydata$quality <- rep(NA, nrow(mydata))
+for (i in 1:nrow(mydata)) {
+  if (mydata$score[i] > 4) {
+    mydata$quality[i] <- "good"
+  } else mydata$quality[i] <- "bad"
+}
+
+mydata$quality2 <- ifelse(mydata$score > 4, "good", "bad")
+
+
+i <- 1
+while (i < 51) {
+  print(mydata$score[i])
+  i <- i + 1
+}
+
+### 1.4.4
+
+str(mtcars)
+mtcars$new_var <- ifelse(mtcars$carb >= 4 | mtcars$cyl > 6, 1, 0)
+
+### 1.4.5
+
+if (mean(my_vector) > 20) {
+  result <- "My mean is great"
+} else {
+  result <- "My mean is not so great"
+}
+
+### 1.4.6
+# слизал с ответов(((
+good_months <- AirPassengers[-1][AirPassengers[-1] > AirPassengers[-144]] 
+  
+### 1.4.7
+
+moving_average <- c()
+for (i in 1:135) moving_average[i] <- mean(AirPassengers[i:(i+9)])
+
+#*******************************************************************************
+### Описательные статистики
+### 1.5.3
+?mtcars
+df <- mtcars
+str(df)
+# преобразовываем тип двигателя в фактор
+df$vs <- factor(df$vs, labels = c("V", "S"))
+df$am <- factor(df$am, labels = c("Auto", "Manual"))
+
+### 1.5.4
+median(df$mpg) # медиана
+mean(df$disp)  # среднее
+sd(df$hp)      # стандартное отклонение
+range(df$cyl)  # размах (мин и макс)
+
+mean_disp <- mean(df$disp)
+mean_disp
+
+mean(df$mpg[df$cyl == 6])
+mean(df$mpg[df$cyl == 6 & df$vs == "V"])
+
+sd(df$hp[df$cyl != 3 & df$am == "Auto"])
+
+### 1.5.5 Задача
+any(df$cyl == 3) # нет таких)))
+result <- mean(df$qsec[df$cyl != 3 & df$mpg > 20])
+
+### 1.5.6
+?aggregate
+mean_hp_vs <- aggregate(x = df$hp, by = list(df$vs), FUN = mean)
+colnames(mean_hp_vs) <- c("VS", "Mean HP")
+# другой способ записи:
+aggregate(hp ~ vs, df, mean)
+
+mean_hp_vs_am <- aggregate(hp ~ vs + am, df, mean)
+# по классике. Отличия в названиях результирующих столбцов
+mean_hp_vs <- aggregate(x = df$hp, by = list(df$vs, df$am), FUN = mean)
+
+aggregate(x = df[, -c(8, 9)], by = list(df$am), FUN = median)
+
+aggregate(df[, c(1, 3)], by = list(df$am, df$vs), FUN = sd)
+aggregate(cbind(mpg, disp) ~ am + vs, df, sd)
+
+### 1.5.7 Задача
+
+descriptions_stat <- aggregate(cbind(hp, disp) ~ am, mtcars, sd)
+
+### 1.5.8
+
+install.packages("psych")
+library(psych)
+library(ggplot2)
+ls(pos = "package:psych")
+
+?describe
+describe(x = df)
+descr <- describe(x = df[, -c(8, 9)])
+
+### 1.5.9
+# прокачанный aggregate
+descr2 <- describeBy(x = df[, -c(8, 9)], group = df$vs) # как лист
+descr2$V
+descr2$S
+
+descr2 <- describeBy(x = df[, -c(8, 9)], 
+                     group = df$vs, 
+                     mat = T, # как матрица (дф)
+                     digits = 3) # так красивше
+
+descr3 <- describeBy(x = df[, -c(8, 9)], 
+                     group = df$vs, 
+                     mat = T, # как матрица (дф)
+                     fast = T, # короткая выводная запись
+                     digits = 3) # так красивше
+describeBy(df$qsec, 
+           group = list(df$vs, df$am), 
+           mat = T, 
+           digits = 1,
+           fast = T)
