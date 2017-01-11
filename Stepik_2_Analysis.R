@@ -345,7 +345,7 @@ describe(x = df)
 descr <- describe(x = df[, -c(8, 9)])
 
 ### 1.5.9
-# прокачанный aggregate
+# прокачанный aggregate (применение статистик для всего дата-сета)
 descr2 <- describeBy(x = df[, -c(8, 9)], group = df$vs) # как лист
 descr2$V
 descr2$S
@@ -365,3 +365,111 @@ describeBy(df$qsec,
            mat = T, 
            digits = 1,
            fast = T)
+
+### 1.5.10
+# Пропущенные значения
+
+sum(is.na(df)) # выдаст нуль
+
+df$mpg[1:10] <- NA # усложним себе жизнь
+
+mean(df$mpg) # выдаст NA
+mean(df$mpg, na.rm = T)
+
+aggregate(mpg ~ am, df, sd) # по умолчанию игнорируе NA В ТАКОМ НАПИСАНИИ!!!
+aggregate(df$mpg, by = list(df$am), FUN = sd, na.rm = T)
+
+describe() # по умолчанию пропускает NA; na.rm = T - удаляет строки с NA
+
+### 1.5.11
+airquality
+a <- subset(airquality, Month %in% c(7, 8, 9))
+(result <- aggregate(Ozone ~ Month, a, length))
+
+### 1.5.12
+describeBy(airquality, 
+           group = list(airquality$Month), 
+           #mat = T, 
+           digits = 2)
+
+### 1.5.13
+iris
+str(iris)
+describe(iris[,-ncol(iris)], fast = T)
+
+### 1.5.14
+a <- describeBy(iris[,-ncol(iris)], 
+           group = list(iris$Species), 
+           #mat = T, 
+           fast = T,
+           digits = 2)$virginica
+a[,order(a$mean, decreasing = T)]
+
+b <- aggregate(iris[, -ncol(iris)], by = list(iris$Species), mean)[3,]
+b[order(b, decreasing = T)]
+
+### 1.5.15
+# подготовка
+my_vector <- rnorm(30)
+my_vector[sample(1:30, 10)] <- NA
+
+# мое решение 1
+fixed_vector <- my_vector
+fixed_vector[is.na(my_vector)] <- mean(my_vector, na.rm = T)
+
+# мое решение 2 с подсказой зала
+ifelse(is.na(my_vector), 
+       mean(my_vector, na.rm = T),
+       my_vector)
+
+# решение из зала
+fixed_vecto2 <- replace(my_vector, is.na(my_vector), mean(my_vector, na.rm = T))
+
+#*******************************************************************************
+### Описательные статистики. ГРАФИКИ
+### 1.6.3
+df <- mtcars
+df$vs <- factor(df$vs, labels = c("V", "S")) 
+df$am <- factor(df$am, labels = c("Auto", "Manual")) 
+
+hist(df$mpg, breaks = 20, xlab = "MPG", main ="Histogram of MPG", 
+     col = "green", cex.lab = 1.3, cex.axis = 1.3)
+
+boxplot(mpg ~ am, df, ylab = "MPG")
+
+boxplot(df$mpg[df$am == "Auto"], 
+        df$mpg[df$am == "Manual"], 
+        ylab = "MPG", 
+        main ="MPG and AM", 
+        col = "green", 
+        cex.lab = 1.3, 
+        cex.axis = 1.3)
+
+plot(df$mpg, df$hp, pch = 22)
+
+### 1.6.4
+
+library(ggplot2)
+
+ggplot(df, aes(x = mpg))+
+  geom_histogram(fill = "white", col = "black", binwidth = 2)
+
+ggplot(df, aes(x = mpg))+
+  geom_dotplot(aes(fill = ..x..))+
+  scale_fill_gradient(low = "red", high = "yellow")
+
+ggplot(df, aes(x = hp, fill = am))+
+  geom_dotplot()
+
+ggplot(df, aes(x = mpg))+
+  geom_density(fill = "red") # функция плотности
+
+ggplot(df, aes(x = mpg, fill = am))+
+  geom_density(alpha = 0.5) # alpha - прозрачность
+
+### 1.6.4
+ggplot(df, aes(x = am, y = hp, col = vs))+
+  geom_boxplot()+
+  ggtitle("Gross horsepower and engine type")
+
+
