@@ -468,8 +468,120 @@ ggplot(df, aes(x = mpg, fill = am))+
   geom_density(alpha = 0.5) # alpha - прозрачность
 
 ### 1.6.4
-ggplot(df, aes(x = am, y = hp, col = vs))+
+gp1 <- ggplot(df, aes(x = am, y = hp, col = vs))+
   geom_boxplot()+
   ggtitle("Gross horsepower and engine type")
+str(gp1)
+
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# ggplot сломался
+packageurl <- "https://cran.rstudio.com/bin/macosx/mavericks/contrib/3.3/ggplot2_2.2.1.tgz"
+install.packages(packageurl, repos = NULL)
+# не помогло в этот раз( установил через Packages -> Install 
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+ggplot(df, aes(x = mpg, y = hp, col = vs, size = qsec)) + 
+  geom_point()
+
+# Модульность ggplot'a ; можно сохранить заготовку
+
+my_plot2 <- ggplot(df, aes(x = mpg, y = hp, col = vs, size = qsec))
+my_plot2 + geom_point()
+
+# пример с githab'a ggplot'a
+?mpg
+ggplot(mpg, aes(displ, hwy, colour = class)) + 
+  geom_point()
+str(mpg)
+
+### 1.6.5
+str(airquality)
+# для boxplot'а необходима факторная переменная для x
+ggplot(airquality, aes(x = factor(airquality$Month), y = Ozone )) + 
+  geom_boxplot()
+
+# это было в предупреждении gglot'a
+ggplot(airquality, aes(x = Month, y = Ozone, group = Month )) + 
+  geom_boxplot()
+
+# через простой boxplot
+boxplot(Ozone ~ Month, airquality)
+
+### 1.6.6
+str(mtcars)
+ggplot(mtcars, aes(x = mpg, y = disp, col = hp)) + 
+  geom_point()
 
 
+### 1.6.8
+ggplot(iris, aes(x = Sepal.Length, 
+                 y = Sepal.Width, 
+                 col = Species, 
+                 size = Petal.Length)) + 
+  geom_point()
+
+#*******************************************************************************
+### Сохранение результатов
+### 1.7.2
+
+df <- mtcars
+str(df)
+
+library(ggplot2)
+library(psych)
+
+mean_mpg <- mean(df$mpg)
+descr_df <- describe(df[ , -c(8, 9)])
+
+
+boxplot <- ggplot(df, aes(x = factor(am), y = disp))+
+  geom_boxplot() + 
+  xlab("Transmission")+
+  ylab("Displacemrnt (cu.in.")+
+  ggtitle("Box - plot")
+
+oldwd <- getwd() # проверяем текущую рабочую директорию
+list.files() # список файлов в рабочей директории
+list.dirs(getwd(), recursive = F) # папки в рабочей директории
+
+dir.create("Stepik 2 Analysis") # создаем в рабочей директории новую папку
+unlink("Stepik 2 Analysis", recursive = TRUE) # удаляем папку (на попробовать)
+
+setwd("Stepik 2 Analysis") # переходим в новую папку
+getwd()
+
+# сохранение таблиц
+write.csv(df, "df-mtcars.csv")
+write.csv(descr_df, "descr-df.csv")
+
+# сохранение переменных
+my_mean <- mean(10^6:10^8)
+save(my_mean, file="my_mean.Rdata")
+
+# загрузка ранее сохраненных переменных 
+load("~/RTry_01/Stepik 2 Analysis/my_objects.RData")
+
+#*******************************************************************************
+### Анализ номинативных данных
+### 2.1.2
+# Номинативные данные говорят к какому классу принадлежат наши наблюдения.
+
+### 2.1.3
+# Categorical data
+
+oldwd <- getwd()
+list.dirs(recursive = F)
+setwd("Stepik 2 Analysis")
+df <- read.csv("grants.csv")
+setwd(oldwd)
+rm(oldwd)
+
+str(df)
+summary(df)
+sapply(df[,-c(2,4)], unique) # видно, что нужно переделать в фактор
+
+df$status <- as.factor(df$status)
+levels(df$status) <- c("Not funded", "Funded")
+# или
+df$status <- factor(df$status, labels = c("Not funded", "Funded"))
+ 

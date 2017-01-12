@@ -11,6 +11,7 @@ library(ggplot2)
 
 # RStudio качает 0.6.0 а нужно 0.6.1
 packageurl <- "https://cran.rstudio.com/bin/macosx/mavericks/contrib/3.3/tidyr_0.6.1.tgz"
+packageurl <- "https://cran.rstudio.com/bin/macosx/mavericks/contrib/3.3/ggplot2_2.2.1.tgz"
 install.packages(packageurl, repos = NULL)
 library(tidyr)
 
