@@ -580,8 +580,47 @@ str(df)
 summary(df)
 sapply(df[,-c(2,4)], unique) # видно, что нужно переделать в фактор
 
+# factor: lable vs level
 df$status <- as.factor(df$status)
 levels(df$status) <- c("Not funded", "Funded")
 # или
 df$status <- factor(df$status, labels = c("Not funded", "Funded"))
- 
+
+
+### 2.1.4
+# Таблица 1-dimention
+tb1 <- table(df$status)
+dim(tb1)
+
+# Таблица 2-dimention
+tb2 <- table(df$status, df$field)
+dim(tb2) 
+
+tb2 <- table(status = df$status, field = df$field) # с именами полей
+
+prop.table(tb2) # сумма = 1 по всем данным
+prop.table(tb2, 1) # сумма = 1 по строкам
+prop.table(tb2, 2) # сумма = 1 по столбцам
+
+# Таблица 3-dimention
+tb3 <- table(Year = df$years_in_uni, field = df$field, status = df$status)
+
+### 2.1.5
+HairEyeColor
+str(HairEyeColor)
+dim(HairEyeColor)
+
+red_men <- prop.table(HairEyeColor[, "Blue", "Male" ] )[3]
+# ответ из урока
+prop.table(HairEyeColor[ , ,'Male'],2)['Red','Blue']
+
+### 2.1.6
+sum(HairEyeColor[,"Green","Female"]) # сумма зеленоглазых)
+
+### 2.1.7
+
+
+
+
+
+
