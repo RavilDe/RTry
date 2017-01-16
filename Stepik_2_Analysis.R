@@ -690,6 +690,7 @@ fisher_test <- fisher.test(table(mtcars$am, mtcars$vs))$p.value
 #*******************************************************************************
 ### Сравнение двух групп
 ### 2.2.2 - 2.2.4
+library(ggplot2)
 ?iris
 df <- iris
 str(df)
@@ -710,4 +711,71 @@ ggplot(df1, aes(Species, Sepal.Length))+
   geom_boxplot()
 
 ### 2.2.5
-shapiro.test()
+shapiro.test(df1$Sepal.Length)
+shapiro.test(df1$Sepal.Length[df1$Species == "versicolor"])
+shapiro.test(df1$Sepal.Length[df1$Species == "virginica"])
+
+bartlett.test(Sepal.Length ~ Species, df1)
+
+### 2.2.6
+
+tt <- t.test(Sepal.Length ~ Species, df1)
+# количественную переменную (Sepal.Length) разбиваем на группы (Species) 
+# в датасете (fd1)
+str(tt)
+tt$p.value
+
+t.test(Sepal.Length ~ Species, df) # выдаст ошибку, т.к. группирующий фактор 
+                                    # должен иметь строго два уровня
+t.test(df1$Sepal.Length, mu = 8) # сравнение истинного среднего с мнимым (8)
+mean(df1$Sepal.Length)
+ 
+### 2.2.7
+t.test(df1$Petal.Length, df1$Petal.Width, paired = T)
+
+### 2.2.8
+# t-Критерий Стьюдента для НЕзависимых выборок
+t.test(Var1 ~ Var2, data) # если первая переменная количественная, 
+                          # а вторая фактор
+t.test(data$Var1, data$Var2) # если обе переменные количественные
+
+# t-Критерий Стьюдента для зависимых выборок
+t.test(data$Var1, data$Var2, paired = T)
+
+# Проверка на нормальность распределения
+shapiro.test(Var1) # проверка на нормальность распределения переменной Var1
+# но не удобно когда есть группирующая факторная переменная
+
+# Поможет функция by(), которая применяет различные функции на каждом 
+                                                            # уровне фактора.  
+# проверка на нормальность переменной 
+by(iris$Sepal.Length, INDICES = iris$Species, shapiro.test) 
+
+# Sepal.Length в трех разных группах в соответствии с переменной Species
+
+# Проверка на гомогенность дисперсий
+bartlett.test(mpg ~ am, mtcars) #Критерий Бартлетта 
+
+### 2.2.9
+str(ToothGrowth)
+head(ToothGrowth)
+
+tg1 <- subset(ToothGrowth, dose == 0.5 & supp == "OJ")
+tg2 <- subset(ToothGrowth, dose == 2 & supp == "VC")
+t_stat <- t.test(tg1$len, tg2$len)$statistic
+
+# решение из проврки
+correct_data <- subset(ToothGrowth, supp=='OJ' & dose==0.5 | supp=='VC' & dose==2)    
+t_stat <- t.test(len ~ supp, correct_data)$statistic
+
+### 2.2.10
+# смотрим какие есть папки
+list.dirs(getwd(), recursive = F)
+#смотрим что есть в нужной папке
+list.files("/Users/macmini/RTry_01/Stepik 2 Analysis")
+# читаем нужный файл
+dfdf <- read.csv("Stepik 2 Analysis/lekarstva.csv")
+str(dfdf)
+table(dfdf$Group)
+
+t.test(dfdf$Pressure_before, dfdf$Pressure_after, paired = T)
