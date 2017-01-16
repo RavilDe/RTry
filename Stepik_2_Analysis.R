@@ -618,9 +618,96 @@ prop.table(HairEyeColor[ , ,'Male'],2)['Red','Blue']
 sum(HairEyeColor[,"Green","Female"]) # сумма зеленоглазых)
 
 ### 2.1.7
+barplot(tb1)
+barplot(tb2)
+barplot(tb2, 
+        legend.text = T, 
+        args.legend = list(x = "topright"))
 
+barplot(tb2, 
+        legend.text = T, 
+        args.legend = list(x = "topright"),
+        beside = T)
 
+mosaicplot(tb2)
 
+### 2.1.8
 
+library(ggplot2)
+mydata <- as.data.frame(HairEyeColor)
+str(mydata)
+a <- subset(mydata, Sex == "Female")
 
+obj <- ggplot(subset(mydata, Sex == "Female"), 
+       aes(x =  Hair, y = Freq, fill = Eye))+
+  geom_bar(stat = "identity", position = "dodge")+
+  scale_fill_manual(values = c("Brown", "Blue", "Darkgrey", "Darkgreen"))
 
+ggplot(mydata, aes(x =  Hair, y = Freq, fill = Eye))+
+  geom_bar(stat = "identity", position = "dodge")+
+  scale_fill_manual(values = c("Brown", "Blue", "Darkgrey", "Darkgreen"))
+
+### 2.1.8
+# Биномиальный тест
+binom.test(x = 5, n = 20, p = 0.5)
+binom.test(tb1)
+
+### 2.1.9
+# критерий хи-квадрат пирсона
+
+chisq.test(tb1)
+chi <- chisq.test(tb1)
+chi$exp
+tb2
+chi <- chisq.test(tb2)
+
+### 2.1.10
+# точный критерий фишера
+fisher.test(tb2)
+
+### 2.1.11
+chisq.test(HairEyeColor["Brown", ,"Female"])
+str(HairEyeColor)
+
+### 2.1.12
+str(diamonds)
+a <- table(diamonds$cut, diamonds$color)
+main_stat <- chisq.test(a)$statistic
+
+### 2.1.13
+mean_pr <- mean(diamonds$price)
+mean_cr <- mean(diamonds$carat)
+factor_price <- factor(diamonds$price >= mean_pr)
+factor_carat <- factor(diamonds$carat >= mean_cr)
+a <- table(factor_carat, factor_price)
+main_stat <- chisq.test(a)$statistic
+str(chisq.test(a))
+
+### 2.1.14
+str(mtcars)
+fisher_test <- fisher.test(table(mtcars$am, mtcars$vs))$p.value
+
+#*******************************************************************************
+### Сравнение двух групп
+### 2.2.2 - 2.2.4
+?iris
+df <- iris
+str(df)
+df1 <- subset(df, Species != "setosa")
+table(df1$Species)
+hist(df1$Sepal.Length)
+
+ggplot(df1, aes(x = Sepal.Length)) + 
+  geom_histogram(binwidth = 0.4,
+                 fill = "white", 
+                 col = "black") + # fill - заливка, col - граница
+  facet_grid(Species ~ .)
+
+ggplot(df1, aes(Sepal.Length, fill = Species))+
+  geom_density(alpha = 0.5)
+
+ggplot(df1, aes(Species, Sepal.Length))+
+  geom_boxplot()
+
+### 2.2.5
+shapiro.test()
