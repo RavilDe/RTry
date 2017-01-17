@@ -1,3 +1,6 @@
+#### Анализ даных в R
+#### https://stepik.org/129
+
 #### Переменные
 #### 1.2.2
 #### 1.2.3
@@ -103,7 +106,7 @@ my_vector_2 <- my_vector[(my_vector > mean(my_vector) - sd(my_vector)) &
 my_vector_2 <- my_vector[abs(my_vector - mean(my_vector)) < sd(my_vector)]
 
 #*******************************************************************************
-### Работа с data frame
+### 1.3 Работа с data frame
 ### 1.3.3
 
 ?read.table # основной инструмент
@@ -205,7 +208,7 @@ mpg_4 <- mtcars[mtcars$cyl == 4, "mpg"]
 mini_mtcars <- mtcars[c(3, 7, 10, 12, nrow(mtcars)),]
 
 #*******************************************************************************
-### Элементы синтаксиса
+### 1.4 Элементы синтаксиса
 ### 1.4.2
 a <- 0
 if (a > 0) {
@@ -286,7 +289,7 @@ moving_average <- c()
 for (i in 1:135) moving_average[i] <- mean(AirPassengers[i:(i+9)])
 
 #*******************************************************************************
-### Описательные статистики
+### 1.5 Описательные статистики
 ### 1.5.3
 ?mtcars
 df <- mtcars
@@ -426,7 +429,7 @@ ifelse(is.na(my_vector),
 fixed_vecto2 <- replace(my_vector, is.na(my_vector), mean(my_vector, na.rm = T))
 
 #*******************************************************************************
-### Описательные статистики. ГРАФИКИ
+### 1.6 Описательные статистики. ГРАФИКИ
 ### 1.6.3
 df <- mtcars
 df$vs <- factor(df$vs, labels = c("V", "S")) 
@@ -521,7 +524,7 @@ ggplot(iris, aes(x = Sepal.Length,
   geom_point()
 
 #*******************************************************************************
-### Сохранение результатов
+### 1.7 Сохранение результатов
 ### 1.7.2
 
 df <- mtcars
@@ -562,7 +565,7 @@ save(my_mean, file="my_mean.Rdata")
 load("~/RTry_01/Stepik 2 Analysis/my_objects.RData")
 
 #*******************************************************************************
-### Анализ номинативных данных
+### 2.1 Анализ номинативных данных
 ### 2.1.2
 # Номинативные данные говорят к какому классу принадлежат наши наблюдения.
 
@@ -688,7 +691,7 @@ str(mtcars)
 fisher_test <- fisher.test(table(mtcars$am, mtcars$vs))$p.value
 
 #*******************************************************************************
-### Сравнение двух групп
+### 2.2 Сравнение двух групп
 ### 2.2.2 - 2.2.4
 library(ggplot2)
 ?iris
@@ -733,7 +736,7 @@ mean(df1$Sepal.Length)
 ### 2.2.7
 t.test(df1$Petal.Length, df1$Petal.Width, paired = T)
 
-### 2.2.8
+### 2.2.9
 # t-Критерий Стьюдента для НЕзависимых выборок
 t.test(Var1 ~ Var2, data) # если первая переменная количественная, 
                           # а вторая фактор
@@ -756,7 +759,7 @@ by(iris$Sepal.Length, INDICES = iris$Species, shapiro.test)
 # Проверка на гомогенность дисперсий
 bartlett.test(mpg ~ am, mtcars) #Критерий Бартлетта 
 
-### 2.2.9
+### 2.2.10
 str(ToothGrowth)
 head(ToothGrowth)
 
@@ -768,14 +771,125 @@ t_stat <- t.test(tg1$len, tg2$len)$statistic
 correct_data <- subset(ToothGrowth, supp=='OJ' & dose==0.5 | supp=='VC' & dose==2)    
 t_stat <- t.test(len ~ supp, correct_data)$statistic
 
-### 2.2.10
+### 2.2.11
 # смотрим какие есть папки
 list.dirs(getwd(), recursive = F)
 #смотрим что есть в нужной папке
 list.files("/Users/macmini/RTry_01/Stepik 2 Analysis")
 # читаем нужный файл
 dfdf <- read.csv("Stepik 2 Analysis/lekarstva.csv")
+# подсмотрел в ответах
+dfdf <- read.csv(url('https://stepic.org/media/attachments/lesson/11504/lekarstva.csv'))
 str(dfdf)
 table(dfdf$Group)
 
 t.test(dfdf$Pressure_before, dfdf$Pressure_after, paired = T)
+
+### 2.2.12
+# визуализация 
+library(ggplot2)
+t.test(Sepal.Length ~ Species, df1)
+
+ggplot(df1, aes(Species, Sepal.Length))+
+  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0.1)
+
+# эту функцию можно использовать отдельно
+mean_cl_normal(df1$Sepal.Length) # среднее и доверительные интервалы
+
+### 2.2.13
+# на предыдущем графике нет среднего значения, исправляем
+ggplot(df1, aes(Species, Sepal.Length))+
+  stat_summary(fun.data = mean_cl_normal, geom = "errorbar", width = 0.1)+
+  stat_summary(fun.y = mean, geom = "point", size = 4)
+
+ggplot(df1, aes(Species, Sepal.Length))+
+  stat_summary(fun.data = mean_cl_normal, geom = "pointrange", size = 1)
+
+### 2.2.14
+# мало данных или не очень нормальное распределение?
+# тошда t.test не подходит
+# берем wilcox.test
+
+length(ls(pos = "package:stats", pattern = ".*\\.test$")) # это все тесты
+
+?wilcox.test
+test2 <- wilcox.test(Petal.Length ~ Species, df1)
+str(test2)
+
+ggplot(df1, aes(Species, Petal.Length))+
+  geom_boxplot()
+
+wilcox.test(df1$Petal.Length, df1$Petal.Width, paired = T) # зависимые выборки
+# V = 5050 - значение критерия
+# p-value - p-уровень значимости; 
+# т.к. p-value < 0,05 то гипотеза о равенстве характеристик не верна
+
+### 2.2.15
+list.dirs(getwd(), recursive = F)
+df <- read.table("D:/Miheykin/Documents/RTry_01/Stepik 2 Analysis/dataset_11504_15.txt")
+str(df)
+table(df$V2)
+#Критерий Бартлетта 
+b_answ <- bartlett.test(V1 ~ V2, df)$p.value
+print("Бартлет:")
+print(b_answ)
+if (b_answ >= 0.05) {
+  t_answ <- t.test(V1 ~ V2, df, var.equal = TRUE)$p.value
+  print("Стьюдент:")
+} else {
+  t_answ <- wilcox.test(V1 ~ V2, df)$p.value
+  print("Вилкокс:")
+}
+print(round(t_answ, digits = 4))
+
+### 2.2.16
+
+df <- read.table("D:/Miheykin/Documents/RTry_01/Stepik 2 Analysis/dataset_11504_16.txt")
+t_answ <- t.test(df$V1, df$V2)$p.value
+if (t_answ >= 0.05) {
+  print("The difference is not significant")
+} else {
+  print(c(mean(df$V1), mean(df$V2), t_answ))
+}
+
+
+#*******************************************************************************
+### 2.3 Применение дисперсионного анализа
+### 2.3.3
+# Дисперсионный анализ - основной интсрумент, для сравнения нескольких групп
+
+# DV - зависимая переменная
+# IV - НЕзависимая переменая
+# ~ - влияние 
+
+DV ~ IV # one-way
+DV ~ IV1 + IV2 # two-way
+
+# влияние одной переменной на другую зависит от третьей
+DV ~ IV1:IV2 # two way interaction
+DV ~ IV1 + IV2 + IV1:IV2 # main effect + interaction
+DV ~ IV1 * IV2 # the same; main effect + interaction
+DV ~ IV1 + IV2 + IV3 + IV1:IV2
+DV ~ (IV1 + IV2 + IV3)^2 # main effect + all possiple interactions 
+DV ~ IV1 + Error(subject/IV1) # повтрный измерения
+
+### 2.3.5
+
+old_wd <- getwd()
+
+df <- read.csv("Stepik 2 Analysis/shops.csv")
+str(df)
+table(df$food)
+
+boxplot(price ~ origin, df)
+
+ggplot(df, aes(origin, price))+
+  geom_boxplot()
+
+# one-way ANOVA
+fit <- aov(price ~ origin, df)
+str(fit)
+summary(fit)
+
+### 2.3.6
+

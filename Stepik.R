@@ -1,3 +1,6 @@
+#### Основы программирование на R
+#### https://stepik.org/497
+
 #### Урок 1.2.5
 help("sin")
 help.search("sin")
