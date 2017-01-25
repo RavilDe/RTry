@@ -201,7 +201,7 @@ lapply(my_list, function(x) x * 2)
 # - проброс аргументов
 # - безымянные функции
 
-sapply(my_list, mean, na.rm = T) # ветор
+sapply(my_list, mean, na.rm = T) # вектор
 # отличие sapply от lapply
 # s(simpify) выдает вектор или матрицу;
 # и только в исключительных случаях выдает список (list)
@@ -228,5 +228,34 @@ for (i in cars) {
   print(grepl(i, car))
 }
 
-sapply(cars, function(x) grepl(x, car))
-attributes(cars)
+cars[sapply(cars, function(x) grepl(x, car))]
+
+### 1.4.5
+# отбираем только численные переменный в дата-фрейме
+iris_num <- iris[sapply(iris, is.numeric)]
+str(iris_num)
+
+# почти одно и то же:
+sapply(iris[1:4], sd)
+apply(iris[1:4], 2, sd)
+
+# apply производит все опперации именно над матрицами, 
+# поэтому если вы отправите в apply dataframe с разными типами данных, 
+# то R сначала приведет все колонки к одному типу, чтобы получилась матрица, 
+# т.к. в матрице могут храниться данные только одного типа
+sapply(iris, is.numeric) # TRUE TRUE TRUE TRUE FALSE
+apply(iris, 2, is.numeric) # FALSE FALSE FALSE FALSE FALSE
+
+### 1.4.6
+# tapply - на вход принимает вектор, группирующую переменную и функцию
+aggregate(mpg ~ am, mtcars, mean)
+
+tapply(mtcars$mpg, mtcars$am, mean)
+
+# ф-я by как бы разрезает исходный дата-фрейм на несколько в зависимости от
+# группирующей переменной и применяет к ним ф-ию
+# внутри by только функции для дата-фреймов 
+by(iris[1:4], iris$Species, colMeans)
+
+by(iris)
+
