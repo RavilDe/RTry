@@ -257,5 +257,62 @@ tapply(mtcars$mpg, mtcars$am, mean)
 # внутри by только функции для дата-фреймов 
 by(iris[1:4], iris$Species, colMeans)
 
-by(iris)
+# точка означает "по всем остальным переменным"
+aggregate(. ~ Species, iris, function(x) shapiro.test(x)$p.value)
 
+### 1.4.7
+?vapply
+# аналогичен lapply (sapply); отличие в зарвнее оговоренном типе данных на результате
+# причина - vapply работает быстрее
+vapply(mtcars, mean, FUN.VALUE = numeric(1))
+sapply(mtcars, mean)
+
+# mapply - многомерная версия sapply
+mapply(rep, 1:4, 1:4)
+
+x <- c(20, 25, 11)
+m <- c(0, 1, 2)
+s <- c(3, 5, 6)
+mapply(rnorm, x, m, s) # подставляем по очереди элементы векторов в ф-ю rnorm
+
+### 1.4.8
+### 1.4.9
+m <- matrix(rnorm(100 * 200), nrow = 100)
+m_names <- mapply(paste, list("row", "col"), list(1:100, 1:200), sep = "_")
+str(m_names)
+colnames(m) <-  m_names[[2]]
+rownames(m) <- m_names[[1]]
+head(m)
+
+### 1.4.10
+# расчет стандартного отклонения для численных даных дата-фрейма
+get_sd <- function(x){
+  num_var <- sapply(x, is.numeric)
+  sapply(x[, num_var], sd)
+}
+
+get_sd(iris) # работает
+
+df <- data.frame(x = 1:10, y = letters[1:10])
+get_sd(df) # НЕ работает
+# причина  - столбец превратился в вектор; поэтому надо использовать drop=F
+
+get_sd <- function(x){
+  num_var <- sapply(x, is.numeric)
+  sapply(x[, num_var, drop = F], sd)
+}
+get_sd(df) # теперь работает
+
+### 1.4.11
+test_data <- as.data.frame(list(
+  name = c("p4@HPS1", "p7@HPS2", "p4@HPS3", 
+           "p7@HPS4", "p7@HPS5", "p9@HPS6", 
+           "p11@HPS7", "p10@HPS8", "p15@HPS9"), 
+  expression = c(118.84, 90.04, 106.6, 
+                 104.99, 93.2, 66.84, 
+                 90.02, 108.03, 111.83)))
+name = c("HPS5", "HPS6", "HPS9", "HPS2", "HPS3", "HPS7", "HPS4", "HPS8")
+one <- sapply(name, function(x) grepl(x, test_data$name))
+two <- as.logical(apply(one, 1, sum)) # лучше через any сделать
+
+test_data[two,]
