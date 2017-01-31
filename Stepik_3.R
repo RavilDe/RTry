@@ -316,3 +316,80 @@ one <- sapply(name, function(x) grepl(x, test_data$name))
 two <- as.logical(apply(one, 1, sum)) # лучше через any сделать
 
 test_data[two,]
+
+### 1.4.12
+### 1.4.13
+### 1.4.14
+### 1.4.15
+
+#*******************************************************************************
+### 1.5 Работа с данными при помощи dplyr
+### 1.5.3
+install.packages("dplyr")
+library(dplyr)
+
+data_frame() # отличие от базовой в _
+# dplyr:
+my_data <- data_frame(x = rnorm(10000), 
+                      y = rnorm(10000), 
+                      f = factor(rep(1:2, 5000)))
+# base:
+my.data <- data.frame(x = rnorm(10000), 
+                      y = rnorm(10000), 
+                      f = factor(rep(1:2, 5000)))
+
+# see the difference
+my.data # забивается вся консоль
+my_data # красота)
+
+library(ggplot2)
+str(diamonds)
+# перевод из base'ового датафрейма в dplyr'овский
+df_di <- as_data_frame(diamonds)
+df_di
+
+### 1.5.4
+my_data_2 <- data_frame("My var" = rnorm(10))
+my_data_2 # пробел в названии переменной есть!
+my_data_2$`My var`
+
+my.data.2 <- data.frame("My var" = rnorm(10))
+my.data.2 # пробел в названии переменной заменен на точку (
+
+my_df <- data_frame(x = rnorm(10), y = abs(x)) # на лету!!!!!!
+my.df <- data.frame(x = rnorm(10), y = abs(x)) # ошибка
+
+### 1.5.5
+ls(pos = "package:dplyr")
+length(ls(pos = "package:dplyr")) # 245 ф-ий
+ls(pos = "package:dplyr", pattern = "join")
+ls(pos = "package:dplyr", pattern = "add")
+ls(pos = "package:dplyr", pattern = "sql")
+ls(pos = "package:dplyr", pattern = "ny")
+
+diamonds <- as_data_frame(diamonds)
+# две полезные ф-ии:
+# select() - выбор колонок (переменных)
+# slice()  - выбор строк (наблюдений)
+
+
+diamonds[, c("cut", "price")] # запись в базовом R
+# выбрать из diamonds переменные cut и price
+select(diamonds, cut, price)  # df, а после запятой перечисляем нужные столбцы
+
+diamonds
+# выберем переменные от cut до price
+diamonds[c("cut", "color", "clarity", "depth", "table", "price")]
+# а теперь короче и проще
+select(diamonds, cut:price)
+# все кроме: 
+select(diamonds, -(cut:price))
+
+select(diamonds, 1)
+select(diamonds, 1, 2, 3)
+
+# смотрим справку по ф-ии
+select(diamonds, starts_with("c"))
+select(diamonds, ends_with("t"))
+
+
