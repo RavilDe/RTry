@@ -318,6 +318,19 @@ two <- as.logical(apply(one, 1, sum)) # лучше через any сделать
 test_data[two,]
 
 ### 1.4.12
+ToothGrowth$dose <- factor(ToothGrowth$dose)
+str(ToothGrowth)
+num_var <- which(ToothGrowth[-sapply(ToothGrowth, is.numeric)])
+num_var <- sapply(ToothGrowth, is.numeric)
+names(which(num_var))
+group_by(ToothGrowth )
+aggregate(names(which(num_var)) ~ names(which(!num_var)),ToothGrowth, mean)
+
+aggregate(names(which(num_var)) ~ supp, ToothGrowth, mean)
+
+
+
+
 ### 1.4.13
 ### 1.4.14
 ### 1.4.15
@@ -367,11 +380,15 @@ ls(pos = "package:dplyr", pattern = "add")
 ls(pos = "package:dplyr", pattern = "sql")
 ls(pos = "package:dplyr", pattern = "ny")
 
-diamonds <- as_data_frame(diamonds)
-# две полезные ф-ии:
-# select() - выбор колонок (переменных)
-# slice()  - выбор строк (наблюдений)
+# полезные ф-ии:
+# select  - выбор колонок (переменных)
+# slice   - выбор строк (наблюдений)
+# filter  - фильтрация
+# arrange - упорядочивание
+# rename  - переименование
+# mutate  - создание новых переменных
 
+diamonds <- as_data_frame(diamonds)
 
 diamonds[, c("cut", "price")] # запись в базовом R
 # выбрать из diamonds переменные cut и price
@@ -388,8 +405,96 @@ select(diamonds, -(cut:price))
 select(diamonds, 1)
 select(diamonds, 1, 2, 3)
 
-# смотрим справку по ф-ии
+# смотрим справку по ф-ии select
 select(diamonds, starts_with("c"))
 select(diamonds, ends_with("t"))
 
+### 1.5.6
+# Выбор строк
+slice(diamonds, 1)
+slice(diamonds, 1:10)
+slice(diamonds, c(1, 4, 5))
 
+### 1.5.7
+# Фильтрация
+filter(diamonds, carat > 0.3, color == "J")
+filter(diamonds, carat > 0.3 | color == "J")
+# базовые методы фильтрации
+diamonds[diamonds$carat > 0.3 & diamonds$color == "J", ]
+subset(diamonds, carat > 0.3 & color == "J")
+
+### 1.5.8
+# упорядочивание
+arrange(diamonds, price) # по возрастанию
+arrange(diamonds, -price) # по убыванию
+arrange(diamonds, desc(price)) # по убыванию (громоздко)))
+arrange(diamonds, cut)
+arrange(diamonds, price, x) # по нескольким переменным
+# в базовом  R
+order(c(1, 0, -1, 4)) # возвращает набор индексов 
+diamonds[order(diamonds$price),] # применяем ранее полученный набор индексов
+sort(c(1, 0, -1, 4)) # просто сортировка вектора
+
+### 1.5.9
+library(dplyr)
+# переименование переменной ()
+diamonds <- rename(diamonds, new_cut = cut, new_depth = depth)
+# базовый R (переименовываем обратно)
+names(diamonds)
+names(diamonds)[c(2, 5)] <- c("cut", "depth")
+
+# добавляем новые переменные
+mutate(diamonds, 
+       sqrt_price = sqrt(price),
+       log_carat = log(carat))
+
+str(mtcars)
+mt <- mutate(mtcars, am = factor(am), vs = factor(vs))
+str(mt)
+
+### 1.5.10
+slice(diamonds, seq(1, nrow(diamonds), by = 2))
+
+# ответы других
+diamonds[c(T,F), ]
+filter(diamonds, row_number() %% 2 != 0)
+
+### 1.5.11
+
+#     %>% (Ctrl + Shift + m ; для MacOS Command + Shift + m)
+
+# Оператор %>% в прямом смысле слова перетаскивает то, что написано перед ним 
+# в качестве аргумента, в следующую функцию. На первом этапе мы отправляем 
+# данные iris в функцию filter, в которой теперь достаточно указать только 
+# условие фильтрации. Далее результат фильтрации мы отправляем на сортировку 
+# по переменной Sepal.Length. И на последнем этапе уже отфильтрованные и 
+# отсортированные данные мы отправляем в функцию select, чтобы отобрать 
+# нужные колонки.
+
+iris %>% 
+  filter(Petal.Length > 1.7) %>% 
+  arrange(Sepal.Length) %>% 
+  select(Sepal.Length, Sepal.Width)
+
+### 1.5.12
+# Потренируемся использовать изученные функции. Из данных mtcars отберите 
+# только четыре переменные: mpg, hp, am, vs. Оставьте только те наблюдения, 
+# для которых значения mpg > 14 и hp > 100. Отсортируйте получившиеся данные 
+# по убыванию переменной mpg и возьмите только первые 10 строчек. Переменную mpg 
+# переименуйте в Miles per gallon, а переменную hp в  Gross horsepower 
+# (обратите внимание, dplyr позволит нам создать пременные с пробелами 
+# в названии). Получившийся dataframe сохраните в переменную my_df.
+
+library(dplyr)
+mydf <- mtcars %>% 
+  select(mpg, hp, am, vs) %>% 
+  filter(mpg > 14, hp > 100) %>% 
+  arrange(-mpg) %>% 
+  slice(1:10) %>% 
+  rename("Miles per gallon" = mpg, "Gross horsepower" = hp)
+
+#*******************************************************************************
+### 1.6 Работа с данными при помощи dplyr. Продолжение
+### 1.6.2
+
+  
