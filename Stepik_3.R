@@ -496,5 +496,44 @@ mydf <- mtcars %>%
 #*******************************************************************************
 ### 1.6 Работа с данными при помощи dplyr. Продолжение
 ### 1.6.2
+d <- as_data_frame(matrix(rnorm(30), 5))
+# изменение всех колонок (переменных)
+# на входе и на выходе - дата фрейм!!!
+mutate_each(d, funs(abs))
+mutate_each(d, funs(. * 2)) # точка означает все столбцы (и)
+
+
+### 1.6.3
+all_to_factor <- function(x){
+  mutate_each(x, funs(as.factor)) # можно и без точки)
+  
+}
+str(all_to_factor(mtcars))
+
+### 1.6.4
+df <- data_frame(V1 = c(1.5, -0.1, 2.5, -0.3, -0.8),
+                        V2 = c(-0.9, -0.3, -2.4, 0, 0.4),
+                        V3 = c(-2.8, -3.1, -1.8, 2.1, 1.9),
+                        V4 = c("A", rep("B", 4)))
+
+
+num_var <- names(df[sapply(df, is.numeric)])
+mutate_each_(df, funs(log((. - min(.))/(max(.)-min(.))+1)), num_var)
+
+# чужие ответы
+# эталонный и большой
+log_transform_1 <- function(test_data){      
+  rescaling <- function(x) log((x - min(x)) / (max(x) - min(x)) + 1)     
+  num_var <- sapply(test_data, is.numeric)      
+  test_data[num_var] <- mutate_each(test_data[num_var], funs(rescaling))      
+  return(test_data)
+}
+
+# самы оптимальный
+log_transform_2 <- function(td) {
+  mutate_if(td, is.numeric, funs(log(((.) - min(.))/(max(.)-min(.)) + 1)))
+}
+log_transform_2(df)
+
 
   
