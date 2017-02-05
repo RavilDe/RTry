@@ -312,26 +312,45 @@ test_data <- as.data.frame(list(
                  104.99, 93.2, 66.84, 
                  90.02, 108.03, 111.83)))
 name = c("HPS5", "HPS6", "HPS9", "HPS2", "HPS3", "HPS7", "HPS4", "HPS8")
+
 one <- sapply(name, function(x) grepl(x, test_data$name))
 two <- as.logical(apply(one, 1, sum)) # лучше через any сделать
 
 test_data[two,]
 
 ### 1.4.12
+library(dplyr)
 ToothGrowth$dose <- factor(ToothGrowth$dose)
 str(ToothGrowth)
-num_var <- which(ToothGrowth[-sapply(ToothGrowth, is.numeric)])
-num_var <- sapply(ToothGrowth, is.numeric)
-names(which(num_var))
-group_by(ToothGrowth )
-aggregate(names(which(num_var)) ~ names(which(!num_var)),ToothGrowth, mean)
 
-aggregate(names(which(num_var)) ~ supp, ToothGrowth, mean)
+f_var <- names(which(!sapply(ToothGrowth, is.numeric)))
+num_var <- names(which(sapply(ToothGrowth, is.numeric)))
 
+tg_gr <- group_by_(ToothGrowth, .dots = num_var)
 
+summarise_(tg_gr, mean(num_var))
+
+summarise(group_by(ToothGrowth, supp, dose), mean_var = mean(len) + 2 * sd(len))
+
+ToothGrowth %>% 
+  group_by(supp, dose) %>% 
+  summarise(mean_var = mean(len) + 2 * sd(len))
+  
+  
+ifelse(ToothGrowth$len, 1, 0)
 
 
 ### 1.4.13
+shapiro.test(swiss$Fertility)$p.value
+str(swiss)
+myfun <- function(x) res <- shapiro.test(x)$p.value
+swiss %>% 
+  sapply(myfun)
+
+
+
+
+
 ### 1.4.14
 ### 1.4.15
 
@@ -782,6 +801,109 @@ summarise_(mtcars, quote(shapiro.test(mpg)$p.value))
 # Error: could not find function "shapiro.test"
 
 ### 1.6.12
+sal <- read.csv("salary.csv", na.strings = "NA")
+head(sal)
+str(sal)
 
+descriptive_stats <- function (dataset){
+dataset %>% 
+  group_by(gender, country) %>% 
+  summarise(n = n(),
+            mean = mean(salary, na.rm = T),
+            sd = sd(salary, na.rm = T),
+            median = median(salary, na.rm = T),
+            first_quartile = quantile(salary, 0.25, na.rm = T),
+            third_quartile = quantile(salary, 0.75, na.rm = T),
+            na_values = sum(is.na(salary)))
+}
+descriptive_stats(sal)
+
+# а вот и не зависящее от кол-ва и названия переменных; не моё
+# применение summarise_at !
+descriptive_stats_2 <- function(data){
+  grouped <- group_by_(data, .dots = names(which(sapply(data, is.factor))))
+  grouped %>% summarise_at(vars(which(sapply(data, is.numeric))), 
+                           funs(n = n(), 
+                                mean = mean(., na.rm = T),
+                                sd = sd(., na.rm = T),
+                                median = median(., na.rm = T),
+                                first_quartile = quantile(., 0.25, na.rm = T),
+                                third_quartile = quantile(., 0.75, na.rm = T),
+                                na_values = sum(sapply(., is.na))
+                           )
+  )
+}
+descriptive_stats_2(sal)
+
+library(ggplot2)
+str(diamonds)
+diamonds2 <- diamonds[c()]
+dz <- descriptive_stats_2(diamonds)
+View(dz)
+
+### 1.6.15
+str(mtcars)
+to_factors <- function(test_data, factors){
+  test_data %>% mutate_at(factors, funs(as.factor(ifelse(. > mean(.), 1, 0 ))))
+}
+to_factors(mtcars[1:4], factors = c(1, 3))
+
+# чужие решения (подставить в тело ф-ии):
+# 1
+mutate_at(df, factors, funs(factor(. > mean(.), labels = 0:1)))
+# 2
+df %>% mutate_at(factors, funs(as.factor(as.numeric(. > mean(.)))))
+# 3
+test_data %>% 
+  mutate_if(.predicate=(log_col), funs(as.factor(ifelse(.>mean(.),1,0))))
+
+### 1.6.16
+str(diamonds)
+high_price <- diamonds %>% 
+  select(color, price) %>% 
+  group_by(color) %>% 
+  arrange(color, -price) %>% 
+  slice(1:10)
+View(high_price)
+
+#*******************************************************************************
+### 1.7 Data.Table
+### 1.7.2
+install.packages("data.table")
+library(data.table)
+# Создание data.table
+as.data.table(iris)
+
+
+
+
+
+
+### 3.1.8
+# csv взят отсюда
+# http://open.canada.ca/data/en/dataset/b52664cf-bfd9-49ad-849a-cb88c92553b9 
+gl <- read.csv("glacier.csv", na.strings = "..")
+str(gl)
+nlevels(gl$GEO) # кол-во ледников
+
+# 1 ответ
+gl %>% 
+  group_by(GEO) %>%
+  summarise(Val = max(Ref_Date) - min(Ref_Date)) %>% 
+  filter(Val == min(Val)) %>% 
+  select(GEO)
+
+# 2 ответ
+gl %>%
+  filter(MEASURE == "Annual mass balance") %>% 
+  group_by(GEO) %>% 
+  summarise(M = median(Value, na.rm = T)) %>% 
+  filter(abs(M) == min(abs(M))) %>% 
+  select(GEO)
+
+# 3 ответ
+gl %>% 
+  filter(is.na(Value)) %>% 
+  select(GEO)
 
 
