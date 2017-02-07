@@ -868,14 +868,232 @@ View(high_price)
 
 #*******************************************************************************
 ### 1.7 Data.Table
-### 1.7.2
+### 1.7.3
 install.packages("data.table")
 library(data.table)
+
 # Создание data.table
+# 1. переназначение
 as.data.table(iris)
+# 2. в ручную 
+data.table(col1 = c(1:3), col2 = letters[1:3])
+# 3. загрузка
+fread("products.csv")
+# обязательный параметр всего один - имя файла
 
+products <- fread("products.csv")
 
+system.time({
+  for (i in seq_len(5)){
+    fread("products.csv")
+  }
+})
 
+system.time({
+  for (i in seq_len(5)){
+    read.table("products.csv", header = T, sep = ";")
+  }
+})
+
+### 1.7.4
+products <- fread("products.csv", encoding = "UTF-8") # чтобы русские буквы были
+
+products[1:10, ] # первые 10 строк
+
+products[products$price > 10000]
+products[price > 10000] # с data.table можно и так
+# несколько условий
+products[(price > 10000) & (brand %in% c("Apple", "Epson"))]
+
+### 1.7.5
+# фильтрация
+
+products[available, ] # не будет работать
+# даже если указана логическая переменная, а не выражение, то в контексте
+# data.table она не будет вычисляться
+
+products[available == T, ] # только через выражение!
+
+# в DT на первом месте всегда стоит выборка по строчкам, поэтому запятая после - 
+# не обязательна
+products[3,] # 3-я строка
+products[3] # 3-я строка
+iris[3,] # 3-я строка
+iris[3] # 3-ий столбец
+
+# инвертирование фильтрации
+products[!products$price > 10000]
+products[!1:10] # даже так можно
+
+### 1.7.6
+# выборка:
+
+# x[i, j, by, with = TRUE, ...]
+#  j = list(
+#    name1 = {expr1},
+#    name2 = {expr2}
+#  )
+
+products[, list(name = name,
+                price.1k = price / 1000)]
+# если не хотим менять переменную, то просто отсавляем ее имя
+products[, list(name,
+                price.1k = price / 1000)]
+
+order(products$price, decreasing = T)
+products[order(price, decreasing = T)] # сортируем по убыванию
+products[order(price, decreasing = T),
+         list(name, price.1k = paste0(price / 1000, " тыс.руб"))]
+
+head(products[order(price, decreasing = T),
+         list(name, price.1k = paste0(price / 1000, " тыс.руб"))], 5)
+
+### 1.7.7 
+# 1. столбец как вектор значений (как в дата фрейме)
+products[order(price, decreasing = T),
+         list(name, 
+              price.1k = paste0(price / 1000, " тыс.руб"))]$price.1k
+
+# 2. лист можно заменить на точку
+products[, list(name, price)]
+products[, .(name, price)]
+
+# возврат к дата-фрейму with = F
+products[, c("name", "price"), with = F]
+
+# 3. трансформация
+products[order(-price), .(name = head(name),
+                          price = head(price))]
+products[, .(price = sum(price))]
+
+# 4. последовательное обращение
+a <- products[, list(name.with.brand = paste0(brand, " - ", name))]
+a[order(name.with.brand)]
+
+products[, list(name.with.brand = paste0(brand, " - ", name))][order(name.with.brand)]
+
+# 5. сложные вычисления - в фигурные скобки
+products[, .(price = {
+  a <- mean(price)
+  b <- median(price)
+  c(min(price), max(price), a/b)
+})]
+
+### 1.7.8
+# агрегация осуществляется с помощью тех же квадратных скобок
+# аналогия с SQL:
+# x[i, j, by, with = true, ...]
+# SELECT j from ...
+# WHERE i
+# GROUP BY by
+
+# 1. В  by передается столбец, по которому будем агрегировать
+# x[i, j, by, with = true, ...]
+#         by = <column>
+
+# или несколько столбцов:
+# x[i, j, by, with = true, ...]
+#         by = list(<column1>,
+#                   <column2>, ...)  
+
+# найдем среднее по бренду
+products[, .(mean.price = mean(price)), by = brand]
+
+# три самых дорогих товара в каждом бренде
+products[order(-price), .(name = head(name, 3),
+                          price = head(price, 3)), by = brand]
+# использованеи head, а не [1:3] обусловлено тем, что не обязательно в бренде
+# есть три товара; тогда появится NA
+
+### 1.7.9
+sample.products <- data.table(price = c(10000, 600000, 700000, 1000000),
+                              brand = c("a", "b", "c", "d"),
+                              available = c(T, T, F, T))
+filter.expensive.available <- function(dt, nm) {
+  dt[(price > 500000) & (available == T) & (brand %in% nm)]
+}
+filter.expensive.available(sample.products, c("a", "c", "d"))
+
+# другие варианты:
+dt[brand %in% nm][price >= 500000][available == T] # это решение чуть хуже
+
+### 1.7.10
+sample.purchases <- data.table(price = c(100000, 6000, 7000, 5000000),
+                               ordernumber = 1:4,
+                               quantity = c(1,2,1,-1),
+                               product_id = 1:4)
+ordered.short.purchase.data <- function(purchases) {
+  purchases[order(-price)][!(quantity < 0), .(ordernumber, product_id)]
+}
+ordered.short.purchase.data(sample.purchases)
+
+# чужой ответ: сначала лучше отфильтровать
+purchases[quantity >= 0][order(-price), .(ordernumber, product_id)]
+
+### 1.7.11
+dt <- data.table(price = c(100000, 6000, 7000, 5000000),
+                               ordernumber = c(1,2,2,3),
+                               quantity = c(1,2,1,-1),
+                               product_id = 1:4)
+purchases.median.order.price <- function(dt) {
+  dt(purchases[quantity > 0, 
+            .(median.order = sum(price * quantity)), 
+            by = ordernumber]$median.order)
+}
+# чужой ответ 
+dt[quantity > 0][, .(w = sum(price*quantity)), by = ordernumber][, median(w)]
+
+#*******************************************************************************
+### 1.8 Data.Table продолжение
+### 1.8.3
+# .SD - subset of data, содержит data.table с подвыборкой группы
+# если необходимо трансформировать все переменные
+
+products[
+  order(-price),
+  .(
+    product_id = head(product_id, 3),
+    name = head(name, 3),
+    price = head(price, 3),
+    available = head(available, 3)
+    ), by = brand]
+
+products[
+  order(-price),
+  head(.SD, 3),
+  by = brand]
+
+# .N - кол-во элементов в группе
+# либо nrow(.SD) или length(<column>)
+products[price > 10000, .(expensive.item = .N), by = brand]
+
+### 1.8.4
+# := создает/изменяет столбец без создания копии объекта
+# Изменить тип стлбца таким образои НЕЛЬЗЯ
+
+# x[, new.column := expr]
+# x[, c("col1", "col2") := list(expr1, expr2)]
+# x[, `:=` list(col1 = expr1, col2 = expr2)]
+
+# можно применять совместно с аггрегацией и фильтрацией
+# x[i, new.column := expr, by]
+
+# ф-ия set делает то же самое
+# x[i, j := value]
+# set(x, j, value)
+
+# заново загружаем с прописыванием типа Price
+products <- fread("products.csv", 
+                  colClasses = c(price = "double"),
+                  encoding = "UTF-8")
+products[price < 1000, 
+         name.with.price := paste0(name, " ( ", price, " .руб)")]
+products[order(-price)]
+# видим NA (
+
+products[, price:=price / max(price), by = brand]
+
+### 1.8.5
 
 
 
