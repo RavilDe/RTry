@@ -1094,6 +1094,27 @@ products[order(-price)]
 products[, price:=price / max(price), by = brand]
 
 ### 1.8.5
+# КЛЮЧИ
+products <- fread("products.csv", 
+                  colClasses = c(price = "double"),
+                  encoding = "UTF-8")
+purchases <- fread("purchases.csv")
+
+# создание ключей
+setkey(purchases, product_id, externalsessionid)
+setkey(products, product_id, brand)
+
+# просмотр ключей
+key(purchases)
+key(products)
+
+# соединение таблиц
+merge(purchases, products, by = "product_id")
+# если названия ключей разное, то прописываем имена отдельно
+merge(purchases, products, by.x = "product_id", by.y = "product_id_2")
+
+
+
 
 
 
