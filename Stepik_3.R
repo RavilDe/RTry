@@ -1100,6 +1100,7 @@ products <- fread("products.csv",
                   encoding = "UTF-8")
 purchases <- fread("purchases.csv")
 
+
 # создание ключей
 setkey(purchases, product_id, externalsessionid)
 setkey(products, product_id, brand)
@@ -1112,8 +1113,165 @@ key(products)
 merge(purchases, products, by = "product_id")
 # если названия ключей разное, то прописываем имена отдельно
 merge(purchases, products, by.x = "product_id", by.y = "product_id_2")
+# левый и правый merge
+merge(purchases, products, all.x = T, all.y = F)
+merge(purchases, products, all.x = F, all.y = T) # будут NA
+
+# а теперь то же самое, но в квадратных скобках)
+purchases[products, on = "product_id"]
+purchases[products] # ошибка, т.к. data.table пытается соединить таблицы 
+                    # по всем ключам, а вторые ключи имеют разный тип
+                    # если бы они имели один тым, то соединение произошло бы
+                    # но результат был бы странным
+# merge по дефолту делает inner join
+
+# (J)oin, (S)orted (J)oin, (C)ross (J)oin
 
 
+products[J(c(6, 9, 49, 999995))]
+products[.(c(6, 9, 49, 999995))]
+products[list(c(6, 9, 49, 999995))]
+products[data.table(c(6, 9, 49, 999995))]
+
+### 1.8.6
+products <- fread("products.csv", 
+                  colClasses = c(price = "double"),
+                  encoding = "UTF-8")
+purchases <- fread("purchases.csv")
+
+purchases.with.brand <- merge(
+  purchases,
+  products[,list(product_id, brand)],
+  by = "product_id"
+)
+
+pop.20.brand <- head(
+  purchases.with.brand[,
+                       list(
+                         total.brand.users = length(unique(externalsessionid))
+                       ),
+                       by = brand][order(-total.brand.users)],20)
+
+
+
+# че-то дата-тэйбл не пошел(((
+
+#*******************************************************************************
+### 2.1 Грамматика ggplot2, функция qplot
+### 2.1.4
+
+# ggplot2 основные принципы
+# Aestetic attributes - определяют какие данные будут на графике и где
+# Geometric objects - определяют, как именно будут отражены данные (линии, 
+# точки, столбики и т.д.)
+# Statistical transformation - определяют, какие трансформации с данными будут 
+# отображены на графике (регрессионаая прямая или сгладживание) - не обязательно
+# Scales - какие именно значения будут отображены на графике
+# Coordinates - система координат
+# Faceting - группировка данных
+
+
+### 2.1.5
+library(ggplot2)
+data("diamonds")
+
+# qplot - quick plot
+
+qplot(x = price, data = diamonds)
+qplot(x = price, y = carat, data = diamonds)
+qplot(x = cut, y = carat, data = diamonds) # cut - фактор
+
+v <- diamonds$carat
+qplot(v)
+
+### 2.1.6
+depth_hist <- qplot(diamonds$depth)
+
+### 2.1.7
+qplot(diamonds$carat, diamonds$price)
+
+my_plot <- qplot(x = price, y = carat, diamonds)
+str(my_plot)
+my_plot$mapping
+my_plot$labels
+
+### 2.1.8
+str(diamonds)
+qplot(x = price,
+      y = carat,
+      color = color,
+      data = diamonds)
+
+qplot(x = price,
+      y = carat,
+      color = color,
+      data = diamonds,
+      geom = "point")
+
+qplot(mpg, 
+      hp,
+      color = factor(am),
+      # color = I("green"),
+      shape = factor(cyl),
+      size = I(5),
+      # size = 10,
+      data = mtcars)
+
+### 2.1.9
+price_carat_clarity_points <- qplot(x = carat,
+                                    y = price,
+                                    color = clarity,
+                                    data = diamonds)
+
+### 2.1.10
+?I # AsIs 
+qplot(mpg, 
+      hp,
+      color = factor(am),
+      shape = factor(cyl),
+      size = I(5),
+      alpha = I(0.5),
+      data = mtcars)
+
+# В лекции не сказано, но можно использовать совершенно любые hex цвета, 
+# просто записывая их внутри функции I(), что очень удобно) I('#66cc66')
+
+qplot(x = price,
+      data = diamonds,
+      fill = I("white"),
+      color = I("black"))
+
+qplot(x = price,
+      fill = color,
+      data = diamonds,
+      color = I("black"))
+
+qplot(x = price,
+      fill = I('#66cc66'),
+      data = diamonds,
+      color = I("black"))
+
+qplot(x = price,
+      fill = color,
+      data = diamonds,
+      color = I("black"),
+      geom = "density",
+      alpha = I(0.3))
+
+### 2.1.11
+qplot(x = x, data = diamonds, geom = "density")
+
+### 2.1.12
+qplot(x = x,
+      color = cut,
+      data = diamonds,
+      geom = "density")
+
+### 2.1.13
+qplot(x = color,
+      y = price,
+      data = diamonds,
+      geom = "violin")
 
 
 
