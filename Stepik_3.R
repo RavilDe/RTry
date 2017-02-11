@@ -1445,6 +1445,30 @@ ggplot(sales, aes(shop, income, col = season)) +
 my_plot <- ggplot(sales, aes(shop, income, col = season))+
   stat_summary(geom = "pointrange", position = position_dodge(0.2)) 
 
+### 2.2.10
+library(ggplot2)
+install.packages("Hmisc")
+library(Hmisc)
+ggplot(sales, aes(date, sale, color = shop), position = position_dodge(0.2)) + 
+  stat_summary(fun.data = mean_cl_boot,
+               geom = "errorbar",
+               # position = position_dodge(0.2),
+               width = 0.2,
+               size = 1) +
+  stat_summary(fun.data = mean_cl_boot,
+               geom = "point",
+               # position = position_dodge(0.2),
+               size = 2) +
+  stat_summary(fun.y = mean,
+               geom = "line",
+               # position = position_dodge(0.2),
+               size = 1)
+
+
+
+
+
+
 
 ### 3.1.8
 # csv взят отсюда
