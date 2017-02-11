@@ -1273,7 +1273,177 @@ qplot(x = color,
       data = diamonds,
       geom = "violin")
 
+#*******************************************************************************
+### 2.2 Функция ggplot и различные geoms
+### 2.2.2
+library(ggplot2)
+ggplot(diamonds) # создастся пустое полотно
+ggplot(diamonds, aes(x = price)) # уже есть шкала
+ggplot(diamonds, aes(x = price)) +
+  geom_histogram()
 
+# внутри каждой подгруппы есть сглаживание
+ggplot(diamonds, aes(x = price,
+                     y = carat,
+                     color = cut)) +
+  geom_point() + 
+  geom_smooth()
+
+# а так мы сохраним одну линию тренда и разные цвета точек
+ggplot(diamonds, aes(x = price,
+                     y = carat)) +
+  geom_point(aes(color = cut)) + 
+  geom_smooth()
+
+### 2.2.3
+# переменные, задействованные в первой ggplot(, aes(...)) будут распространяться
+# на все дальнейшие geom'ы и прочие натсройки графика
+
+# а если сы хотим использовать какую-то переменную внутри только одного geom'а
+# то ставим ее в этот geom
+ggplot(diamonds, aes(x = price,
+                     y = carat)) +
+  geom_point(size = .5,
+             alpha = .5) + 
+  geom_smooth(size = 1.5, color = "red")
+
+### 2.2.4
+str(airquality)
+library(dplyr)
+
+glimpse(airquality) # расширенный str
+
+# подготовим новый датафрейм
+gr_airquality <- group_by(airquality, Month)
+summarise(gr_airquality, mean_temp = mean(Temp), mean_wind = mean(Wind))
+
+# а еще можно вот так
+t <- airquality %>% 
+  group_by(Month) %>% 
+  summarise(mean_temp = mean(Temp),
+            mean_wind = mean(Wind))
+
+# так немного не корректно
+ggplot(t, aes(Month,
+              mean_temp,
+              size = mean_wind)) +
+  geom_point() + 
+  geom_line()
+
+# перенесем размер куда надо, поменяем цвет точек и порядок точка/линия
+ggplot(t, aes(Month, mean_temp)) +
+  geom_line() +
+  geom_point(aes(size = mean_wind), color = "red")
+
+# добавим простую горизонтальную линию
+ggplot(t, aes(Month, mean_temp)) +
+  geom_line() +
+  geom_point(aes(size = mean_wind), color = "red") +
+  geom_hline(yintercept = 75,      # (H)orisontal Line
+             linetype = "dotted",
+             size = 1,
+             color = "blue")
+
+### 2.2.5
+?geom_errorbar
+?geom_pointrange
+
+
+sum_data <- mtcars %>% 
+            group_by(am, cyl) %>% 
+            summarise(mean_mpg = mean(mpg),
+                      y_max = mean(mpg) + 
+                        1.96 * sd(mpg) / sqrt(length(mpg)),
+                      y_min = mean(mpg) - 
+                        1.96 * sd(mpg) / sqrt(length(mpg)))
+
+ggplot(sum_data, aes(x = factor(am),
+                     y = mean_mpg,
+                     col = factor(cyl), 
+                     group = factor(cyl))) + 
+  geom_line() +
+  geom_errorbar(aes(ymin = y_min, ymax = y_max), width = 0.2) + 
+  geom_point(size = 3)
+
+ggplot(sum_data, aes(x = factor(am), y = mean_mpg)) + 
+  geom_pointrange(aes(ymin = y_min, ymax = y_max))
+
+### 2.2.6
+?stat_summary
+mean_cl_boot(mtcars$mpg) # сразу выдает среднее, мин и макс
+
+# а теперь немного магии о_О (убираем предобработку)
+ggplot(mtcars, aes(factor(am),
+                   mpg,
+                   col = factor(vs),
+                   group = factor(vs))) + 
+  stat_summary(fun.data = mean_cl_boot, geom = "errorbar", width = 0.2) + 
+  # geom point берет первое значение из fun.data - среднее
+  stat_summary(fun.data = mean_cl_boot, geom = "point") + 
+  # geom_line() - выдаст абракадабру, поэтому делаем так:
+  stat_summary(fun.data = mean_cl_boot, geom = "line") 
+  
+ggplot(mtcars, aes(factor(am),
+                   mpg,
+                   col = factor(vs),
+                   group = factor(vs))) + 
+  stat_summary(fun.data = mean_cl_boot, geom = "errorbar", width = 0.2) +
+  stat_summary(fun.data = mean_cl_boot, geom = "point") +
+  stat_summary(fun.y = mean, geom = "line") # так проще и интуитивней
+
+sd_error <- function(x) {
+  c(y = mean(x), ymin = mean(x) - sd(x), ymax = mean(x) + sd(x))
+}
+
+ggplot(mtcars, aes(factor(am),
+                   mpg,
+                   col = factor(cyl),
+                   group = factor(cyl))) + 
+  stat_summary(fun.data = sd_error, geom = "errorbar", width = 0.2) +
+  stat_summary(fun.data = sd_error, geom = "point", size = 2) +
+  stat_summary(fun.y = mean, geom = "line") # так проще и интуитивней
+
+# чтобы не было наложения - position.dodge
+
+ggplot(mtcars, aes(factor(am),
+                   mpg,
+                   col = factor(cyl),
+                   group = factor(cyl))) + 
+  stat_summary(fun.data = sd_error, geom = "errorbar", width = 0.2,
+               position = position_dodge(0.3)) +
+  stat_summary(fun.data = sd_error, geom = "point", size = 2,
+               position = position_dodge(0.3)) +
+  stat_summary(fun.y = mean, geom = "line",
+               position = position_dodge(0.3))
+
+### 2.2.7
+
+ggplot(mtcars, aes(factor(am), mpg)) +
+  geom_violin() +
+  geom_boxplot(width = 0.2) 
+
+### 2.2.8
+sales = read.csv("https://stepic.org/media/attachments/course/724/sales.csv",
+                 encoding = "UTF-8")
+str(sales)
+# sale - число проданных товаров
+# shop - номер магазина
+# date - год, за который велась статистика
+# season - время года
+# income - доход магазина
+
+ggplot(sales, aes(income, sale)) + 
+  geom_point(aes(col = shop)) + 
+  geom_smooth()
+
+### 2.2.9
+ggplot(sales, aes(shop, income, col = season)) +
+  stat_summary(fun.data = mean_cl_boot,
+               position = position_dodge(0.2),
+               size = 1)
+# 
+my_plot <- ggplot(sales, aes(shop, income, col = season))+
+  stat_summary(geom = "pointrange", position = position_dodge(0.2)) 
 
 
 ### 3.1.8
