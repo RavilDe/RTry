@@ -1449,24 +1449,129 @@ my_plot <- ggplot(sales, aes(shop, income, col = season))+
 library(ggplot2)
 install.packages("Hmisc")
 library(Hmisc)
-ggplot(sales, aes(date, sale, color = shop), position = position_dodge(0.2)) + 
+ggplot(sales, aes(date, sale, color = shop)) + 
   stat_summary(fun.data = mean_cl_boot,
                geom = "errorbar",
-               # position = position_dodge(0.2),
+               position = position_dodge(0.2),
                width = 0.2,
                size = 1) +
   stat_summary(fun.data = mean_cl_boot,
                geom = "point",
-               # position = position_dodge(0.2),
+               position = position_dodge(0.2),
                size = 2) +
   stat_summary(fun.y = mean,
                geom = "line",
-               # position = position_dodge(0.2),
+               position = position_dodge(0.2),
                size = 1)
 
+#*******************************************************************************
+### 2.3 Facet - способы группировки данных на графике
+### 2.3.3
+library(dplyr)
+ggplot(mtcars, aes(hp, mpg, col = factor(am), size = disp)) + 
+  geom_point()
+# перегружено
 
+ggplot(diamonds, aes(carat, fill = clarity)) + 
+  geom_density() +
+  facet_grid(color ~ cut) # color по строке, cut  по столбику
 
+glimpse(diamonds)
 
+ggplot(diamonds, aes(carat)) + 
+  geom_density() +
+  facet_grid(. ~ cut)
+
+ggplot(diamonds, aes(carat, fill = color)) + 
+  geom_density(alpha = 0.5) +
+  facet_grid(cut ~ .)+
+  geom_hline(yintercept = 1, linetype = "dotted")
+
+### 2.3.4
+
+# подкорректируе данные mtcars
+mtcars <- mutate(mtcars,
+                 am = factor(am, labels = c("A", "M")),
+                 vs = factor(vs, labels = c("V", "S")))
+str(mtcars)
+glimpse(mtcars) # расширенный str
+
+# пересечение всех am с vs
+ggplot(mtcars, aes(hp)) + 
+  geom_dotplot() + 
+  facet_grid(am ~ vs)
+
+# а теперь добавим итогов
+ggplot(mtcars, aes(hp)) + 
+  geom_dotplot() + 
+  facet_grid(am ~ vs, margins = T)
+
+# а теперь добавим цвет по цилиндрам
+ggplot(mtcars, aes(hp, mpg)) + 
+  geom_point(aes(col = factor(cyl))) + 
+  facet_grid(am ~ vs, margins = T)
+
+# а теперь ааааааааааа ))))
+ggplot(mtcars, aes(hp, mpg)) + 
+  geom_point(aes(col = factor(cyl))) + 
+  facet_grid(. ~ am) + 
+  geom_smooth(method = "lm")
+
+### 2.3.5
+# facet WRAP
+ggplot(diamonds, aes(carat)) +
+  geom_density(alpha = .5) + 
+  facet_wrap(~ cut + color) # выводит графики подряд
+
+ggplot(diamonds, aes(carat)) +
+  geom_density(alpha = .5) + 
+  facet_wrap(~ cut + color, nrow = 5)
+
+ggplot(diamonds, aes(carat)) +
+  geom_density(alpha = .5) + 
+  facet_wrap(~ cut, nrow = 1)
+
+# многовато информации:
+ggplot(diamonds, aes(carat, price, col = color)) +
+  geom_smooth()
+
+# поэтому перекидываем в фасет
+ggplot(diamonds, aes(carat, price)) +
+  geom_smooth() +
+  facet_wrap( ~ color)
+
+### 2.3.6
+### 2.3.7
+ggplot(mtcars, aes(mpg)) +
+  geom_dotplot() +
+  facet_grid(am ~ vs)
+
+### 2.3.8
+str(iris)
+
+ggplot(iris, aes(Sepal.Length)) + 
+  geom_density() + 
+  facet_wrap(~ Species)
+
+### 2.3.9
+str(iris)
+
+# важна очредность геомов
+ggplot(iris, aes(Sepal.Length, Sepal.Width)) + 
+  facet_wrap(~ Species) + 
+  geom_point() +
+  geom_smooth()
+
+### 2.3.10
+myMovieData <- read.csv(
+  "https://stepik.org/media/attachments/course/724/myMovieData.csv"
+  )
+str(myMovieData)
+
+ggplot(myMovieData, aes(Type, Budget)) + 
+  geom_boxplot() + 
+  facet_grid(. ~ Year) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 
 
