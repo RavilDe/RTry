@@ -1574,6 +1574,135 @@ ggplot(myMovieData, aes(Type, Budget)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 
+#*******************************************************************************
+### 2.4 Scale и Theme: оси, легенда, внешний вид графика
+### 2.4.2
+# SCALE_X_CONTINUOUS 
+# NAME и BREAKS
+seq_x = round(seq(min(mtcars$mpg),
+                  max(mtcars$mpg),
+                  length.out = 3)) # шаг сетки
+ggplot(mtcars, aes(x = mpg, y = hp, col = factor(am))) +
+  geom_point() +
+  scale_x_continuous(name = "Miles/(US) gallone",
+                     # breaks = c(10, 20, 30, 31, 32, 33))
+                     breaks = seq_x)
+
+  # xlab("Miles/(US) gallone") # для простого переименования оси так проще
+
+### 2.4.3
+ggplot(mtcars, aes(x = mpg, y = hp, col = factor(am))) +
+  geom_point() +
+  scale_x_continuous(name = "Miles/(US) gallone",
+                      breaks = c(1, seq(10, 35, 5)))
+# фиг вам, а не начало в единице
+# нужно использовать LIMITS:
+ggplot(mtcars, aes(x = mpg, y = hp, col = factor(am))) +
+  geom_point() +
+  scale_x_continuous(name = "Miles/(US) gallone",
+                     breaks = c(1, seq(10, 35, 5)),
+                     limits = c(1, 35))
+
+ggplot(mtcars, aes(x = mpg, y = hp, col = factor(am))) +
+  geom_point() +
+  scale_x_continuous(name = "Miles/(US) gallone",
+                     breaks = c(1, seq(10, 35, 5)),
+                     limits = c(1, 35))+
+  xlab("fff")+
+  xlim(c(1, 35)) # будет небольшой конфликт
+# если нужно поправить что-то одно, тогда xlab и xlim
+# а если все вместе и много, то через scale
+
+# EXPAND -  отступы по краям
+ggplot(mtcars, aes(x = mpg, y = hp, col = factor(am))) +
+  geom_point() +
+  scale_x_continuous(expand = c(1, 1)) 
+
+# SCALE_Y_CONTINUOUS
+ggplot(mtcars, aes(x = mpg, y = hp, col = factor(am))) +
+  geom_point() +
+  scale_x_continuous(name = "Miles/(US) gallone",
+                     breaks = c(1, seq(10, 35, 5)),
+                     limits = c(1, 35)) + 
+  scale_y_continuous(limits = c(50, 400))
+
+### 2.4.4
+# COLOR
+# меняем элементы легенды
+ggplot(mtcars, aes(x = mpg, y = hp, col = factor(am))) +
+  geom_point() +
+  scale_x_continuous(name = "Miles/(US) gallone",
+                     breaks = c(1, seq(10, 35, 5)),
+                     limits = c(1, 35)) + 
+  scale_y_continuous(limits = c(50, 400)) +
+  scale_color_discrete(name = "Legend name",
+                       labels = c("Авто", "Ручная")) # т.к. цвет у нас  вактор, то берем дискретную величину
+# меняем сами цвета
+ggplot(mtcars, aes(x = mpg, y = hp, col = factor(am))) +
+  geom_point() +
+  scale_x_continuous(name = "Miles/(US) gallone",
+                     breaks = c(1, seq(10, 35, 5)),
+                     limits = c(1, 35)) + 
+  scale_y_continuous(limits = c(50, 400)) +
+  scale_color_manual(values = c("Red", "Blue"), # обязательный элемент
+                     name = "Legend name",
+                     labels = c("Авто", "Ручная"))
+# меняем заливку
+ggplot(mtcars, aes(hp, fill = factor(am)))+
+  geom_density(alpha = 0.5) +
+  scale_fill_discrete(name = "Тип коробки передач")
+
+ggplot(mtcars, aes(hp, fill = factor(am)))+
+  geom_density(alpha = 0.5) +
+  scale_fill_manual(values = c("Red", "Green"))
+
+# меняем размер
+ggplot(mtcars, aes(hp, mpg, size = disp, shape = factor(vs)))+
+  geom_point()+
+  scale_size_continuous(name = "Имя легенды",
+                        breaks = seq(100, 400, 50)) +
+  scale_shape_discrete(name = "Имя легеды формы")
+
+ggplot(mtcars, aes(factor(cyl), hp)) + 
+  geom_boxplot() +
+  scale_x_discrete(name = "Цилиндры",
+                   labels = c("4 цилиндра",
+                              "6 цилиндров",
+                              "8 цилиндров"))
+
+ggplot(mtcars, aes(factor(am), hp)) + 
+  geom_boxplot() +
+  scale_x_discrete(name = "Коробка передач",
+                   labels = c("Механика", "Автомат"))
+
+### 2.4.6
+str(iris)
+ggplot(iris, aes(Sepal.Length, Petal.Length, col = Species)) +
+  geom_point() +
+  geom_smooth(method = "lm") + # линенйное сглаживание
+  scale_x_continuous(name = "Длина чашелистика",
+                     breaks = seq(4, 8 , 1),
+                     limits = c(4,8)) + 
+  scale_y_continuous(name = "Длина лепестка",
+                     breaks = seq(1, 7, 1),
+                     limits = c(1, 7)) + 
+  scale_color_discrete(name = "Вид цветка",
+                       labels = c("Ирис щетинистый",
+                                  "Ирис разноцветный",
+                                  "Ирис виргинский"))
+### 2.4.7
+?scale_fill_brewer # в описание есть сайт
+ggplot(mtcars, aes(factor(am), hp, fill = factor(cyl))) +
+  geom_boxplot() +
+  scale_fill_brewer(type = "qual", palette = 6) +
+  theme_bw()
+
+ggplot(mtcars, aes(hp, mpg, col = factor(cyl))) +
+  geom_point(size = 3) +
+  scale_color_brewer(type = "qual", palette = 6) + # смотрим на сайте
+  theme_bw() 
+
+
 
 ### 3.1.8
 # csv взят отсюда
