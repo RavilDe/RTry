@@ -1573,6 +1573,14 @@ ggplot(myMovieData, aes(Type, Budget)) +
   facet_grid(. ~ Year) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
+#*******************************************************************************
+### 2.4 Scale и Theme: оси, легенда, внешний вид графика
+### 2.4.2
+
+
+
+
+
 
 
 ### 3.1.8
