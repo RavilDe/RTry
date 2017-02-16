@@ -1576,15 +1576,6 @@ ggplot(myMovieData, aes(Type, Budget)) +
 #*******************************************************************************
 ### 2.4 Scale и Theme: оси, легенда, внешний вид графика
 ### 2.4.2
-
-
-
-
-
-
-#*******************************************************************************
-### 2.4 Scale и Theme: оси, легенда, внешний вид графика
-### 2.4.2
 # SCALE_X_CONTINUOUS 
 # NAME и BREAKS
 seq_x = round(seq(min(mtcars$mpg),
@@ -1644,7 +1635,8 @@ ggplot(mtcars, aes(x = mpg, y = hp, col = factor(am))) +
                      limits = c(1, 35)) + 
   scale_y_continuous(limits = c(50, 400)) +
   scale_color_discrete(name = "Legend name",
-                       labels = c("Авто", "Ручная")) # т.к. цвет у нас  вактор, то берем дискретную величину
+                       labels = c("Авто", "Ручная")) # т.к. цвет у нас  вактор, 
+                                                  # то берем дискретную величину
 # меняем сами цвета
 ggplot(mtcars, aes(x = mpg, y = hp, col = factor(am))) +
   geom_point() +
@@ -1709,6 +1701,110 @@ ggplot(mtcars, aes(hp, mpg, col = factor(cyl))) +
   geom_point(size = 3) +
   scale_color_brewer(type = "qual", palette = 6) + # смотрим на сайте
   theme_bw() 
+
+### 2.4.8
+ggplot(mtcars, aes(hp, mpg, col = factor(cyl))) +
+  geom_point(size = 3) +
+  scale_color_brewer(type = "qual", palette = 6) + # смотрим на сайте
+  theme(text = element_text(size = 12),
+        axis.line.x = element_line(size = 2),
+        axis.line.y = element_line(size = 2))
+
+ggplot(mtcars, aes(hp, mpg, col = factor(cyl))) +
+  geom_point(size = 3) +
+  scale_color_brewer(type = "qual", palette = 6) + # смотрим на сайте
+  # theme_bw()
+  # theme_classic() # минмимализм
+  theme_dark() # 
+
+### 2.4.9
+# пакет с темами для ggplot
+install.packages("ggthemes")
+library(ggthemes)
+
+ggplot(mtcars, aes(hp, mpg, col = factor(cyl))) +
+  geom_point(size = 3) + 
+  theme_solarized()
+
+#*******************************************************************************
+### 2.5 Пример решения практической задачи
+### 2.5.2 - 2.2.5
+# делаем красивый график
+d <- read.csv("https://stepic.org/media/attachments/course/724/example_data.csv")
+str(d)
+glimpse(d)
+
+p <- ggplot(d, aes(date,
+              percent,
+              col = system,
+              group = system))+ 
+  geom_line(size = 1.3) +
+  geom_point(shape = 21,                                 # прозрачная точка 
+             size = 3,                                   # увеличиваем размер
+             stroke = 2,                                 # толщина обводки точки
+             fill = "black") +
+  geom_vline(xintercept = 7.5,                           # между 7 и 8 фактором
+             col = "white",                              # цвет линии
+             linetype = "dotted") +                      # тип линии точками
+  scale_y_continuous(breaks = c(0, .04, .08, .11, .15 ), # деления шкалы
+                     limits = c(0, .15),                 # границы шкалы
+                     labels = scales::percent) +         # в проценты
+  scale_color_manual(values = c("orangered1",
+                                "red",
+                                "cyan",
+                                "yellow1",
+                                "springgreen2")) +       # цвета линий
+  xlab("") + # удаляем подписи оси Х
+  ylab("") + # удаляем подписи оси У
+  ggtitle("Top 5 Linux distributions (% of total per year)") + 
+  theme_classic()
+
+scales::percent(0.4) # превращает число в процент
+
+my_theme <- theme(legend.title = element_blank(), # убираем заголовок легенды
+          # легенду переносим вверх
+          legend.position = "top",
+          # главные горизонтальный линии сетки
+          panel.grid.major.y  = element_line(color = "gray50",
+                                             linetype = "longdash"),
+          # цвет и заливка бэка
+          plot.background = element_rect(color = "black",
+                                         fill = "black"),
+          # цвет и заливка самого графика
+          panel.background = element_rect(color = "black",
+                                          fill = "black"),
+          # цвет и заливка легенды
+          legend.background = element_rect(color = "black",
+                                           fill = "black"),
+          # перекрашиваем весь текст на графике в белый
+          text = element_text(color = "white"),
+          # увеличиваем шрифт подписи оси х
+          axis.text.x = element_text(face = "bold",
+                                     size = 15),
+          # увеличиваем шрифт подписи оси у
+          axis.text.y = element_text(face = "bold",
+                                     size = 13), 
+          # увеличиваем шрифт легенды
+          legend.text = element_text(size = 14),
+          # увеличиваем шрифт легенды
+          title = element_text(face = "bold",
+                               size = 15,
+                               hjust = 0.9)) # не работает на винде(
+
+p + my_theme
+
+### 2.2.6
+library(grid)
+
+grid.text("Data source: The DistroWatch's Page Hit Ranking (nov. 23, 2011)",
+          x = 0.02, y = 0.01, just = c("left", "bottom"),
+          gp = gpar(fontface = "bold", fontsize = 9, col = "white"))
+grid.text("ww.pingdom.com",
+          x = 0.98, y = 0.01, just = c("right", "bottom"),
+          gp = gpar(fontface = "bold", fontsize = 9, col = "white"))
+
+
+
 
 
 
