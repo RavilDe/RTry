@@ -1700,7 +1700,17 @@ ggplot(mtcars, aes(factor(am), hp, fill = factor(cyl))) +
 ggplot(mtcars, aes(hp, mpg, col = factor(cyl))) +
   geom_point(size = 3) +
   scale_color_brewer(type = "qual", palette = 6) + # смотрим на сайте
-  theme_bw() 
+  theme_bw()
+
+### 2.4.8
+?theme
+ggplot(mtcars, aes(hp, mpg, col = factor(cyl))) +
+  geom_point(size = 3) +
+  scale_color_brewer(type = "qual", palette = 6)+
+  theme(text = element_text(size = 14),
+        axis.line.x = element_line(size = 2),
+        axis.line.y = element_line(size = 2))
+
 
 ### 2.4.8
 ggplot(mtcars, aes(hp, mpg, col = factor(cyl))) +
