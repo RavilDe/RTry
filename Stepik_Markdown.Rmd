@@ -2,8 +2,8 @@
 title: "Analizing trends in Canadian glacier mass"
 author: "Eugene Oldman"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -12,7 +12,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-The data used in study is taken from <http://open.canada.ca/en/open-data>.
+The data used in study is taken from <http://open.canada.ca/en/open-data>[^1].
+
+[^1]: Here is the [direct link](http://www20.statcan.gc.ca/tables-tableaux/cansim/csv/01530102-eng.zip)
+to data download.
 
 ```{r, echo = F}
 glacier <- read.csv("glacier.csv", comment.char = "#", na.strings = "..")
@@ -22,11 +25,23 @@ The data set contains `r nrow(glacier)` measurements of `r nlevels(glacier$GEO)`
 Canadian glacier mass balans, collected from `r min(glacier$Ref_Date)` till 
 `r max(glacier$Ref_Date)`. Namely, the file includes these glaciers:
 
-```{r, echo=FALSE}
+```{r, echo = F}
 levels(glacier$GEO)
 ```
 
-Just beautiful formula: 
+## Hypothesis
 
+We are interested in finding out whether there is statistically
+signification change in mass balance over the observed time period. For this 
+purpose we use **R** (version `r getRversion()`) and an appropriate 
+statistical test clled _t-test_: $$ t = \frac{\overline{x} - \mu_0}{s/\sqrt{n}}.$$
 
-А
+The workflow is as follows:
+
+1. Read file file
+2. Run t-test for each glacier and collect p-values
+3. Support the evidence with 
+    + a table of result;
+    + a plot than coulde help demonstrate the effect.
+    
+
