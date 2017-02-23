@@ -42,6 +42,6 @@ The workflow is as follows:
 2. Run t-test for each glacier and collect p-values
 3. Support the evidence with 
     + a table of result;
-    + a plot than coulde help demonstrate the effect.
+    + a plot than could help demonstrate the effect.
     
 
