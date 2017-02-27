@@ -1972,6 +1972,47 @@ knitr::opts_chunk$set(echo = F,
 # Этот вызов удобно поместить в отдельный чанк с опцией include = F
 # чтобы он никак не отображался
 
+### 3.3.1
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+glacier <- read.csv("glacier.csv", na.strings = "..", comment.char = "#")
+glacier <- glacier %>% 
+  select(Ref_Date, GEO, MEASURE, Value) %>% 
+  filter(MEASURE == "Annual mass balance") %>% 
+  separate(GEO, c("Name", "Location"), sep = " - ")
+
+# descriptive analysis
+g1 <- glacier %>% 
+  group_by(Name) %>% 
+  summarise(YearsObserved = n(),
+             MeanChange = mean(Value, na.rm = T),
+             WorstChange = min(Value, na.rm = T),
+             WorstYear = Ref_Date[which.min(Value)])
+# t-test
+g2 <- glacier %>% 
+  group_by(Name) %>% 
+  do({
+    tt <- t.test(.$Value, alternative = "less", mu = 0, conf.level = 0.99)
+    data.frame(PValue = tt$p.value,
+               ConfidenceLimit = tt$conf.int[2])
+  })
+
+left_join(g1, g2, by = "Name") %>% 
+  knitr::kable(caption = "Descriptive statistics and confidence intervals",
+               digits = c(0, 0, 2, 0, 0, 10, 2)) # точность чисел в столбцах
+
+
+# ggplot
+ggplot(glacier, aes(Ref_Date, Value)) + 
+  geom_line() +
+  geom_hline(data = g1, aes(yintercept = MeanChange),
+             color = "red", linetype = "dashed", alpha = 0.8) +
+  facet_wrap(~Name, nrow = 2)
+
+
+
 #*******************************************************************************
 ### 3.3 Зоопарк возможностей: форматы, pandoc, html
 ### 3.3.1
@@ -2005,8 +2046,12 @@ output:
   html_document:
    toc: yes # оглавление
    toc_float: yes # оглавление в виде отдельной панели
-    
+pdf_document:
+   toc: yes # оглавление
+   keep_tex: yes # сохранение промежуточного файла .tex
 
+### 3.3.4
+# HTML tags
 
 
 

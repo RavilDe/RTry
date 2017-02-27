@@ -5,29 +5,40 @@ output:
   html_document:
     toc: yes
     toc_float: yes
-  pdf_document: default
+  pdf_document:
+    keep_tex: yes
+    toc: yes
+params:
+  filename: glacier.csv
+bibliography: bibl.bib
+urlcolor: blue
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+options(scipen = 0, digits = 3)
+knitr::opts_chunk$set(echo = FALSE, message = F, warning = F)
 ```
 
 ## Introduction
 
-The data used in study is taken from <http://open.canada.ca/en/open-data>[^1].
+The data used in study is taken from <http://open.canada.ca/en/open-data>[^1]. The
+algorithm is taken from @AntonovErmakov_RandsmCubaturesQMC.
 
 [^1]: Here is the [direct link](http://www20.statcan.gc.ca/tables-tableaux/cansim/csv/01530102-eng.zip)
 to data download.
 
-```{r, echo = F}
-glacier <- read.csv("glacier.csv", comment.char = "#", na.strings = "..")
+```{r}
+glacier <- read.csv(params$filename, comment.char = "#", na.strings = "..")
 ```
 
 The data set contains `r nrow(glacier)` measurements of `r nlevels(glacier$GEO)` 
 Canadian glacier mass balans, collected from `r min(glacier$Ref_Date)` till 
 `r max(glacier$Ref_Date)`. Namely, the file includes these glaciers:
 
-```{r, echo = F}
+```{r}
 levels(glacier$GEO)
 ```
 
@@ -45,5 +56,43 @@ The workflow is as follows:
 3. Support the evidence with 
     + a table of result;
     + a plot than could help demonstrate the effect.
-    
 
+## Analysis
+
+```{r analysis, cache = T}
+glacier <- glacier %>% 
+  select(Ref_Date, GEO, MEASURE, Value) %>% 
+  filter(MEASURE == "Annual mass balance") %>% 
+  separate(GEO, c("Name", "Location"), sep = " - ")
+
+# descriptive analysis
+g1 <- glacier %>% 
+  group_by(Name) %>% 
+  summarise(YearsObserved = n(),
+             MeanChange = mean(Value, na.rm = T),
+             WorstChange = min(Value, na.rm = T),
+             WorstYear = Ref_Date[which.min(Value)])
+# t-test
+g2 <- glacier %>% 
+  group_by(Name) %>% 
+  do({
+    tt <- t.test(.$Value, alternative = "less", mu = 0, conf.level = 0.99)
+    data.frame(PValue = tt$p.value,
+               ConfidenceLimit = tt$conf.int[2])
+  })
+
+left_join(g1, g2, by = "Name") %>% 
+  knitr::kable(caption = "Descriptive statistics and confidence intervals",
+               digits = c(0, 0, 2, 0, 0, 10, 2))  # точность чисел в столбцах
+```
+
+    
+```{r ggplot, fig.width = 10}
+ggplot(glacier, aes(Ref_Date, Value)) + 
+  geom_line() +
+  geom_hline(data = g1, aes(yintercept = MeanChange),
+             color = "red", linetype = "dashed", alpha = 0.8) +
+  facet_wrap(~Name, nrow = 2)
+```
+
+## Bibliograpfy
