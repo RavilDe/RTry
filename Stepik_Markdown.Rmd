@@ -2,7 +2,9 @@
 title: "Analizing trends in Canadian glacier mass"
 author: "Eugene Oldman"
 output:
-  html_document: default
+  html_document:
+    toc: yes
+    toc_float: yes
   pdf_document: default
 ---
 
