@@ -320,25 +320,33 @@ test_data[two,]
 
 ### 1.4.12
 library(dplyr)
+library(lazyeval)
 ToothGrowth$dose <- factor(ToothGrowth$dose)
 str(ToothGrowth)
 
-f_var <- names(which(!sapply(ToothGrowth, is.numeric)))
-num_var <- names(which(sapply(ToothGrowth, is.numeric)))
-
-tg_gr <- group_by_(ToothGrowth, .dots = num_var)
-
-summarise_(tg_gr, mean(num_var))
-
-summarise(group_by(ToothGrowth, supp, dose), mean_var = mean(len) + 2 * sd(len))
-
-ToothGrowth %>% 
-  group_by(supp, dose) %>% 
-  summarise(mean_var = mean(len) + 2 * sd(len))
+find_outliers <- function(t){
+  num_var <- names(which(sapply(t, is.numeric)))
+  group_var <- names(which(!sapply(t, is.numeric)))    
+  t %>% 
+    group_by_(.dots = group_var) %>%
+    mutate_(is_outlier = interp(~ifelse(abs(x - mean(x)) > 2 * sd(x), 1, 0), x = as.name(num_var)))
   
-  
-ifelse(ToothGrowth$len, 1, 0)
+}
+# проверка
+abs(my_vector - mean(my_vector)) < 2 * sd(my_vector)
+test_data <- read.csv("https://stepic.org/media/attachments/course/724/hard_task.csv")
+correct_answer <- read.csv("https://stepic.org/media/attachments/course/724/hard_task_ans.csv")
 
+
+# Чужое решение
+find_outliers <- function(df){
+  fctr_cols_names <- names(which(sapply(df, is.factor)))
+  df %>%
+    group_by_(.dots = fctr_cols_names) %>% 
+    mutate_all(funs(is_outlier = as.numeric(abs(. - mean(.)) > 2 * sd(.))))
+}
+
+all(find_outliers(test_data) == correct_answer)
 
 ### 1.4.13
 shapiro.test(swiss$Fertility)$p.value
