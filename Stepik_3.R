@@ -349,13 +349,90 @@ find_outliers <- function(df){
 all(find_outliers(test_data) == correct_answer)
 
 ### 1.4.13
-shapiro.test(swiss$Fertility)$p.value
+library(dplyr)
+
+# решаем в лоб
 str(swiss)
-myfun <- function(x) res <- shapiro.test(x)$p.value
-swiss %>% 
-  sapply(myfun)
+a <- test_data_3[2:ncol(test_data_3)] %>% 
+  sapply(function(x) shapiro.test(x)$p.value)
+  
+if (length(names(a[a > 0.05])) < 1) {
+  print("There are no normal variables in the data")
+} else {
+  measurevar <- names(swiss[1])
+  groupvars <- names(a[a > 0.05])
+  f1 <- as.formula(paste(measurevar, paste(groupvars, 
+                                           collapse=" + "), 
+                         sep=" ~ "))
+  lm(f1, swiss)$coefficients
+}
 
+# а теперь собираем все в функцию
+smart_lm <- function(x){
+  library(dplyr)
+  a <- x[2:ncol(x)] %>% 
+    sapply(function(var) shapiro.test(var)$p.value)
+  
+  if (length(names(a[a > 0.05])) < 1) {
+    print("There are no normal variables in the data")
+  } else {
+    measurevar <- names(x[1])
+    groupvars <- names(a[a > 0.05])
+    for_lm <- as.formula(paste(measurevar, paste(groupvars, 
+                                                 collapse=" + "), 
+                               sep=" ~ "))
+    lm(for_lm, x)$coefficients
+  }
+}
 
+# проверка работоспособности ф-ии
+test_data_1 <- read.csv("https://stepik.org/media/attachments/course/724/test.csv")
+test_data_2 <- data.frame(x = 1:100, y = 1:100, z = 1:100)
+test_data_3 <- as.data.frame(list(V1 = c(19, 22.3, 16.5, 21.3, 20.2, 
+                                       22.5, 20.2, 21.7, 20.4, 19.9, 
+                                       22.5, 19.3, 20.2, 21.5, 19.6, 
+                                       21, 18.1, 21.5, 21.6, 23.5, 
+                                       24.3, 16.6, 22, 21.3, 19.7, 
+                                       21, 21.2, 23, 19, 18.9), 
+                                V2 = c(19.3, 21.9, 18.4, 19.6, 16.4, 
+                                       23.7, 23.2, 22.7, 20.2, 20.2, 
+                                       18.4, 19.3, 19.3, 19.4, 17.6, 
+                                       22, 19.4, 21.2, 17.1, 19.9, 
+                                       18.3, 19.8, 17.8, 20.5, 17.5, 
+                                       19.8, 20, 20.9, 21.1, 17)))
+
+smart_lm(test_data_1)
+smart_lm(test_data_2)
+smart_lm(test_data_3)
+smart_lm(swiss)
+
+# слегка подправленное свое решение
+smart_lm <- function(x){
+  check_norm <- sapply(x[-1], function(var) shapiro.test(var)$p.value > 0.05)
+  if (any(check_norm)) {
+    measurevar <- names(x[1])
+    groupvars <- names(check_norm)
+    for_lm <- as.formula(paste(measurevar, paste(groupvars, 
+                                                 collapse=" + "), 
+                               sep=" ~ "))
+    lm(for_lm, x)$coef # можно укоротить имя
+  } else {
+    "There are no normal variables in the data"
+  }
+}
+
+# чужие
+smart_lm <- function(df){
+  is.normal <- sapply(df[-1], function(x) shapiro.test(x)$p > 0.05)
+  if (sum(is.normal) > 0) {
+    lm(df[c(T, is.normal)])$coeff
+  } else {
+    "There are no normal variables in the data"
+  }
+}
+# Функция lm по умолчанию считает, что первая переменная целевая, 
+# а остальные предикторы. И сложные заморочки с формулами не нужны. 
+# Но если хочется формулой, то можно просто переименовать первую переменную в "у".
 
 
 
