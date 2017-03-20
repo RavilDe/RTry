@@ -2,27 +2,31 @@
 title: "Analizing trends in Canadian glacier mass"
 author: "Eugene Oldman"
 output:
-  html_document:
-    toc: yes
-    toc_float: yes
   pdf_document:
     keep_tex: yes
+  html_document:
+    css: styles.css
     toc: yes
+    toc_float: yes
 params:
   filename: glacier.csv
 bibliography: bibl.bib
 urlcolor: blue
+header-includes:
+- \usepackage[english, russian]{babel}
+
 ---
 
 ```{r setup, include=FALSE}
 library(tidyr)
 library(dplyr)
 library(ggplot2)
+library(ggvis)
 options(scipen = 0, digits = 3)
 knitr::opts_chunk$set(echo = FALSE, message = F, warning = F)
 ```
 
-## Introduction
+## Introduction пам-пара-рам
 
 The data used in study is taken from <http://open.canada.ca/en/open-data>[^1]. The
 algorithm is taken from @AntonovErmakov_RandsmCubaturesQMC.
@@ -88,11 +92,16 @@ left_join(g1, g2, by = "Name") %>%
 
     
 ```{r ggplot, fig.width = 10}
-ggplot(glacier, aes(Ref_Date, Value)) + 
+ggplot(glacier, aes(Ref_Date, Value)) +
   geom_line() +
   geom_hline(data = g1, aes(yintercept = MeanChange),
              color = "red", linetype = "dashed", alpha = 0.8) +
   facet_wrap(~Name, nrow = 2)
+# ggvis(glacier, ~Ref_Date, ~Value, stroke = ~Name) %>% 
+#   layer_lines()
 ```
+
+The conducted anlysis supports the evidence that Canadian glaciers are
+<u>melting</u>.
 
 ## Bibliograpfy

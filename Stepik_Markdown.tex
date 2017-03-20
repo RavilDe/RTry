@@ -87,16 +87,12 @@
   \date{}
   \predate{}\postdate{}
 
+\usepackage[english, russian]{babel}
 
 \begin{document}
 \maketitle
 
-{
-\hypersetup{linkcolor=black}
-\setcounter{tocdepth}{2}
-\tableofcontents
-}
-\subsection{Introduction}\label{introduction}
+\subsection{Introduction пам-пара-рам}\label{introduction---}
 
 The data used in study is taken from
 \url{http://open.canada.ca/en/open-data}\footnote{Here is the
@@ -121,7 +117,7 @@ glaciers:
 
 We are interested in finding out whether there is statistically
 signification change in mass balance over the observed time period. For
-this purpose we use \textbf{R} (version 3.3.2) and an appropriate
+this purpose we use \textbf{R} (version 3.3.3) and an appropriate
 statistical test clled \emph{t-test}:
 \[ t = \frac{\overline{x} - \mu_0}{s/\sqrt{n}}.\]
 
@@ -176,6 +172,9 @@ White Glacier & 48 & -152.4 & -818 & 2007 & 6.56e-05 &
 \end{longtable}
 
 \includegraphics{Stepik_Markdown_files/figure-latex/ggplot-1.pdf}
+
+The conducted anlysis supports the evidence that Canadian glaciers are
+melting.
 
 \subsection*{Bibliograpfy}\label{bibliograpfy}
 \addcontentsline{toc}{subsection}{Bibliograpfy}
