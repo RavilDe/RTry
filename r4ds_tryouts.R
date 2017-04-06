@@ -89,8 +89,118 @@ ggplot(data = mpg) +
 ggplot(data = mpg) +
   geom_point(mapping = aes(x = displ, y = hwy)) +
   facet_wrap(~ class, nrow = 2)
-# wrap 
+# grid; formula must contain 2 variables
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(drv ~ cyl)
+# grid without grid
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(. ~ cyl)
 
+
+### Geometric Objects
+# smooth
+ggplot(data = mpg) +
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+# add linetype
+ggplot(data = mpg) +
+  geom_smooth(mapping = aes(x = displ, y = hwy, linetype = drv))
+
+# buckle up (:
+ggplot(mpg, aes(displ, hwy, color = drv)) +
+  geom_point() + 
+  geom_smooth(aes(linetype = drv))
+
+# base, group, group by color
+ggplot(mpg) +
+  geom_smooth(aes(displ, hwy))
+
+ggplot(mpg) +
+  geom_smooth(aes(displ, hwy, group = drv))
+
+ggplot(mpg) +
+  geom_smooth(aes(displ, hwy, color = drv),
+              show.legend = F)
+
+# to display multiply geoms in the same plot, add multiply geom to ggplot() 
+ggplot(mpg) +
+  geom_point(aes(displ, hwy)) +
+  geom_smooth(aes(displ, hwy))
+
+# globalising mapping by putting them into ggplot
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
+  geom_smooth()
+
+# add some coloring
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth()
+
+# add filter
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(data = filter(mpg, class == "subcompact"), se = F)
+
+## exercises Page 20
+# 1
+geom_line # line chart
+geom_boxplot # boxplot
+geom_histogram # histogram
+geom_area # area chart
+# 2
+ggplot(mpg, aes(displ, hwy, color = drv)) +
+  geom_point() +
+  geom_smooth(se = F)
+# 3
+ # show.legend = T/F - on / off legeng
+# 4
+ # se - confidense interval in smooth
+# 5 - they are same
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
+  geom_smooth()
+
+ggplot() +
+  geom_point(data = mpg, mapping = aes(displ, hwy)) +
+  geom_smooth(data = mpg, mapping = aes(displ, hwy))
+# 6
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
+  geom_smooth(se = F)
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
+  geom_smooth(aes(group = drv), se = F)
+
+ggplot(mpg, aes(displ, hwy, col = drv)) +
+  geom_point() +
+  geom_smooth(se = F)
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(col = drv)) +
+  geom_smooth(se = F)
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(col = drv)) +
+  geom_smooth(aes(linetype = drv), se = F)
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(col = drv))
+
+### Statictical Tranformation
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut))
+
+?geom_bar # stat; computed variables
+
+# same plot, but with stat_count
+ggplot(diamonds, aes(cut)) +
+  stat_count()
+
+## Using stat explicitly: three ways
+# we want to ovveride the default stat
 
 
 
