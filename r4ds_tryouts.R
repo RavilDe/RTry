@@ -2,8 +2,8 @@
 devtools::session_info(c("tidyverse"))
 install.packages(c("nycflights13", "gapminder", "Lahman"))
 
-### Chapter 1
-### Data visualisation with ggplot2
+#### Chapter 1
+#### Data visualisation with ggplot2
 
 # A Layered Grammar of Graphics
 # http://vita.had.co.nz/papers/layered-grammar.pdf
@@ -200,10 +200,186 @@ ggplot(diamonds, aes(cut)) +
   stat_count()
 
 ## Using stat explicitly: three ways
-# we want to ovveride the default stat
+# 1 - we want to ovveride the default stat
 
+# make lttle df
+demo <- tribble(~a,      ~b,
+                "bar_1", 20,
+                "bar_2", 30,
+                "bar_3", 40
+                )
+ggplot(data = demo) +
+  geom_bar(mapping = aes(x = a, y = b),
+           stat = "identity"
+           )
+# 2 we want to override the default mapping from transformed 
+# variables to aesthetics
+ggplot(data = diamonds) +
+  geom_bar(
+    mapping = aes(x = cut, y = ..prop.., group = 1)
+  )
+# To find variables computed by the stat, look for the help section
+# titled "Computed variables"
 
+# 3 we want to draw greater attention to the statistical transformation in code
+# stat_summary - summarize the y values for each unique x value
+ggplot(diamonds) +
+  stat_summary(
+    aes(cut, depth),
+    fun.ymin = min,
+    fun.ymax = max,
+    fun.y = median
+  )
 
+# ggplot provides over 20 stats:
+?stat_bin # for example
+
+## Exe page 26
+# 1
+?geom_errorbar
+# 2
+?geom_col
+# To show (e.g.) means, you need geom_col()
+# 3
+# http://stackoverflow.com/questions/38775661/what-is-the-difference-between-geoms-and-stats-in-ggplot2
+# http://docs.ggplot2.org/current/
+# http://sape.inf.usi.ch/quick-reference/ggplot2/geom
+geom.stat <- tribble(~g, ~s,
+                     "geom_bar", "stat_count",
+                     "geom_bin2d", "stat_bin_2d",
+                     "geom_boxplot", "stat_boxplot",
+                     "geom_contour", "stat_contour",
+                     "geom_count", "stat_sum",
+                     "geom_density", "stat_density",
+                     "geom_density_2d", "stat_density2d",
+                     "geom_freqpoly", "stat_binhex",
+                     "geom_quantile", "stat_quantile",
+                     "geom_smooth", "stat_smooth",
+                     "geom_violin", "stat_ydensity"
+                     )
+# 4
+?stat_smooth
+# y, ymin, ymax, se
+# 5
+ggplot(diamonds) +
+  geom_bar(aes(x = cut, y = ..prop.., group = 1))
+
+ggplot(diamonds) +
+  geom_bar(aes(x = cut, fill = color))
+
+### Position Adjustment
+# fill and color
+ggplot(diamonds) +
+  geom_bar(aes(x = cut, color = cut))
+ggplot(diamonds) +
+  geom_bar(aes(x = cut, fill = cut))
+
+# change fill variable
+ggplot(diamonds) +
+  geom_bar(aes(x = cut, fill = clarity))
+
+# The stacking in performed by automatically by the Position Adjustment
+# specified by Position argument:
+# Fill / Dodge / Identity
+
+# Identity
+ggplot(diamonds,
+       aes(x = cut, fill = clarity)) +
+  geom_bar(alpha = 1/5, position = "identity")
+
+ggplot(diamonds,
+       aes(x = cut, color = clarity)) +
+  geom_bar(fill = NA, position = "identity")
+
+# Fill. Easy to compare proportions across groups:
+ggplot(diamonds) +
+  geom_bar(aes(x = cut, fill = clarity),
+           position = "fill")
+
+# Dodge
+ggplot(diamonds) +
+  geom_bar(aes(x = cut, fill = clarity),
+           position = "dodge")
+
+## Overplotting and jitter
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point()
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(position = "jitter",
+             alpha = 0.5)
+# Jitter adds a small amount of random noise to eac point
+?geom_jitter
+
+ggplot(mpg, aes(displ, hwy, col = drv)) +
+  geom_point() +
+  geom_jitter(alpha = 0.3)
+
+# lookup
+?position_dodge
+?position_fill
+?position_identity
+?position_jitter
+?position_stack
+
+## exe page 31
+# 1
+ggplot(mpg, aes(cty, hwy)) +
+  geom_point() +
+  geom_jitter(alpha = .5)
+# 2
+?geom_jitter # width 
+# 3
+ggplot(mpg, aes(displ, hwy, col = drv)) +
+  geom_point() +
+  # geom_jitter(alpha = 0.3) +
+  geom_count()
+# 4
+ggplot(mpg, aes(drv, hwy, grop = displ)) +
+  geom_boxplot()
+# defaul position adjustment is Dodge
+
+### Coordinate System
+
+# coord_flip - switches x- and y-axes
+ggplot(mpg, aes(class, hwy)) +
+  geom_boxplot() +
+  coord_flip()
+
+# coord_quickmap
+nz <- map_data("nz")
+ggplot(nz, aes(long, lat, group = group)) +
+  geom_polygon(col = "black", fill = "white") +
+  coord_quickmap()
+
+# coord polar
+bar <- ggplot(diamonds) +
+  geom_bar(aes(x = cut, fill = cut),
+           show.legend = F,
+           width = 1) +
+  theme(aspect.ratio = 1) +
+  labs(x = NULL, y = NULL)
+bar + coord_flip()
+bar + coord_polar()
+
+# Exe page 33
+# 1
+bar2 <- ggplot(diamonds) +
+  geom_bar(aes(x = cut, fill = color)) +
+  theme(aspect.ratio = 1) +
+  labs(x = NULL, y = NULL)
+bar2 + coord_polar()
+# 2
+?labs
+# 3
+# coord_quickmap faster coord_map
+# 4
+ggplot(mpg, aes(cty, hwy)) +
+  geom_point() +
+  geom_abline() +
+  coord_fixed(xlim = c(0, 50),
+              ylim = c(0, 50))
 
 
 
