@@ -381,8 +381,31 @@ ggplot(mpg, aes(cty, hwy)) +
   coord_fixed(xlim = c(0, 50),
               ylim = c(0, 50))
 
+#### Chapter 2
+#### Workflow: Basics
+## Coding basics
+1 / 200 * 30
+(59 + 73 + 2) / 3
+sin(pi / 2)
 
+x <- 3 * 4
+x
 
+## Calling Functions
+seq(1, 10)
+x <- "hello world"
 
+y <- seq(1, 10, length.out = 5)
+y
+(y <- seq(1, 10, length.out = 5)) 
+
+#### Chapter 3
+#### Data Transformation with dplyr
+
+library(nycflights13)
+library(tidyverse)
+library(dplyr)
+
+?flights
 
 
