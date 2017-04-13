@@ -408,4 +408,51 @@ library(dplyr)
 
 ?flights
 
+# filter
+filter(flights, day == 1, month == 1)
+
+# dplyr functions NEVER modify their inputs!!!
+
+jan1 <- filter(flights, day == 1, month == 1)
+dec25 <- filter(flights, day == 25, month == 12)
+
+# comparisons
+# R provides the standart suit:
+# >, >=, <, <=, != (not equal), == (equal)
+filter(flights, month = 1) # mistake
+
+# Problems with floating-point numbers
+sqrt(2) ^ 2 == 2 # FALSE
+all.equal(sqrt(2) ^ 2, 2)  # TRUE (base)
+# or
+near(sqrt(2) ^ 2, 2) # TRUE (dplyr)
+
+# Logical Operators
+# & is "and"
+# | is "or"
+# ! is "not"
+
+# filter flight in november or december
+filter(flights, month == 11 | month == 12)
+
+nov_dec <- filter(flights, month %in% c(11, 12)) 
+
+# De Morgan's LAW
+# !(x & y) is the same as  !x | !y
+# !(x | y) is the same as  !x & !y
+
+filter(flights, !(arr_delay > 120 | dep_delay > 120))
+filter(flights, arr_delay <= 120 & dep_delay <= 120)
+
+# Missing Values
+NA > 5    # NA
+10 == NA  # NA
+NA + 10   # NA
+NA / 2    # NA
+NA == NA  # NA
+
+# is.na !!!
+x <- NA
+is.na(x)  # T
+
 
