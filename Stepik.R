@@ -497,8 +497,8 @@ x[c(k, k + 1)]
 # Multiply min/max
 x <- sample(1:100, 50, replace = T) # replace - с повторами или без (T/F)
 min(x)
-which.min(x)
-which((x == min(x))) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+which.min(x) # возвращает только одну позицию
+which((x == min(x))) #!!! поэтому так
 
 # Packing into function
 
@@ -514,6 +514,22 @@ maxdiff <- function(x) {
 }
 
 xx <- sample(1:100, 1e4, replace = T)
+
+##### Урок 1.5.9
+is_monotone <- function(x) {
+  k <- x[-1] - x[-length(x)]
+  all(k <= 0) || all(k >= 0)
+}
+
+##### Урок 1.5.11
+combin_count <- function(n, k, with_repretitions = FALSE) {
+  if (with_repretitions == FALSE) {
+    return(factorial(n)/(factorial(k)*factorial(n-k)))
+  } else {
+    return(factorial(n+k-1)/(factorial(k)*factorial(n-1)))
+  }
+}
+
 
 ##### 2.1 Матрицы и списки
 #"Alt" + "-" автоматически выводит знак присваивания "<-"
