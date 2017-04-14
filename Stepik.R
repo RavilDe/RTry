@@ -488,9 +488,9 @@ x <- sample(1:100, 50)
 x
 
 # Neighbors with greatest diff
-x[-1]
-x[-length(x)]
-x[-1] - x[-length(x)]
+x[-1] # вектор без первого элемента
+x[-length(x)] # вектор без последнего элемента 
+x[-1] - x[-length(x)] # теперь вычтем один из другого для получения разницы
 k <- which.max(abs(x[-1] - x[-length(x)]))
 x[c(k, k + 1)]
 
