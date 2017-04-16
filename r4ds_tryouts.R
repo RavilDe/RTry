@@ -455,4 +455,12 @@ NA == NA  # NA
 x <- NA
 is.na(x)  # T
 
+# exe page 49
+# 1
+filter(flights, arr_delay > 120)
+flights %>% 
+  filter(dest == "IAH" | dest == "HOU") %>% 
+  select(dest) %>% 
+  group_by(dest) %>% # эти две команды выполняют унификацию вектора
+  summarise()
 
