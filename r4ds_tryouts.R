@@ -463,4 +463,100 @@ flights %>%
   select(dest) %>% 
   group_by(dest) %>% # эти две команды выполняют унификацию вектора
   summarise()
+filter(flights, carrier %in% c("UA", "AA", "DL"))
+filter(flights, month %in% c(7, 8, 9))
+filter(flights, arr_delay > 120 & dep_delay == 0)
+filter(flights, hour > 0 & hour <= 6)
+# 2
+?between
+filter(flights, between(month, 7, 9))
+# 3
+filter(flights, is.na(dep_time))
+# 4
+NA ^ 0 # 1
+NA | T # TRUE
+F & NA # FALSE
+# http://stackoverflow.com/questions/17863619/why-does-nan0-1
+
+# Arrange
+
+arrange(flights, year, month, day)
+arrange(flights, desc(arr_delay)) # descending order
+
+# missing values are always sorted at the end
+df <- tibble(x = c(5, 2, NA))
+arrange(df, x)
+arrange(df, desc(x))
+
+# exe page 51
+# 1
+arrange(df, desc(is.na(x)))
+# 2
+arrange(flights, desc(dep_delay), desc(arr_delay))
+# 3
+arrange(flights, desc(flight))
+# 4
+flights %>% 
+  arrange(desc(air_time)) %>% 
+  select(-sched_dep_time, -sched_arr_time)
+
+# Select
+# Select columns by name
+select(flights, year, month, day)
+# Select columns all columns between year and day (inclusive)
+select(flights, year:day) # офигенчик!!!!
+# Select columns all columns exept those from year and day (inclusive)
+select(flights, -(year:day)) # офигенчик!!!!
+
+?select_helpers
+# starts_with("abc") - matches names that begin with "abc"
+# ends_with("xyz") - matches names that end with "xyz"
+# contains("ijk") - matches names that contain "ijk"
+# matches(".t.") - regexp
+# num_range("x", 1:3) - matches x1, x2, x3
+# one_of()
+# everything()
+
+# Rename - variant of select
+rename(flights, tail_num = tailnum)
+
+# Everything
+select(flights, time_hour, air_time, everything())
+
+# exe page 54
+# 1
+select(flights, starts_with("dep"), starts_with("arr"))
+select(flights, 4, 6, 7, 9)
+# 2
+select(flights, dep_time, dep_time)
+# 4
+select(flights, contains("TIME"))
+?select_helpers # ignore.case = TRUE - by default
+
+# Add new variable with mutate
+
+flights_sml <- select(flights,
+                      year:day,
+                      ends_with("delay"),
+                      distance,
+                      air_time
+                      )
+mutate(flights_sml,
+       gain = arr_delay - dep_delay,
+       speed = distance / air_time * 60
+       )
+# we can refer to column, that just created
+mutate(flights_sml,
+       gain = arr_delay - dep_delay,
+       hours = air_time / 60,
+       gain_per_hour = gain / hours
+       )
+# keep only new variables
+transmute(flights,
+       gain = arr_delay - dep_delay,
+       hours = air_time / 60,
+       gain_per_hour = gain / hours
+       )
+
+# Useful creation functions
 
