@@ -559,4 +559,28 @@ transmute(flights,
        )
 
 # Useful creation functions
+# function must be vectorized!
+
+# Arithmetic operators + , - , * , / , ^
+# This is most usefulwhen one of tha argument is a single number
+
+# Modular arithmetic (%%/ and %%)
+# %/% - integer division (целое от деления)
+# %% - remainder (остаток от целого деления)
+transmute(flights,
+          dep_time,
+          hour = dep_time %/% 100,
+          minute = dep_time %% 100
+          )
+
+# Logs - log(), log2(), log10()
+
+# Offsets
+?lead
+?lag
+
+(x <- 1:10)
+lead(x)
+lag(x)
+
 
