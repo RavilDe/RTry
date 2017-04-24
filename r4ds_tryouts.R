@@ -581,6 +581,20 @@ transmute(flights,
 
 (x <- 1:10)
 lead(x)
-lag(x)
+lag(x) 
+lead(x) - lag(x)
+x - lag(x)
 
+# Cumulative and rolling aggregates
+cumsum(x)     # base; > [1]  1  3  6 10 15 21 28 36 45 55
+cumprod(x)    # base; > [1] 1 2 6 ... 3628800
+cummin(x)     # base; > [1] 1 1 1 1 1 1 1 1 1 1
+cummax(10:1)  # base; > [1] 10 10 10 10 10 10 10 10 10 10
+
+cummean(x)    # dplyr; > [1] 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5 5.0 5.5
+# RcppRoll package for rolling aggregates
+
+# Ranking
+y <- c(1, 2, 2, NA, 3, 4)
+min_rank(y)
 
