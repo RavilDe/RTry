@@ -365,7 +365,7 @@ bar + coord_polar()
 
 # Exe page 33
 # 1
-bar2 <- ggplot(diamonds) +
+bar2<- ggplot(diamonds) +
   geom_bar(aes(x = cut, fill = color)) +
   theme(aspect.ratio = 1) +
   labs(x = NULL, y = NULL)
