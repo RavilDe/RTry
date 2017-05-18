@@ -177,14 +177,26 @@ predict(model2, nd2) # спрогнозированный показатель �
 ### Test Week 1
 # 1
 weighted.mean(c(-1, 0, 1), c(0.3, 0.2, 0.5))
+# take 2
+weighted.mean(c(0, 1, 2), c(0.1, 0.2, 0.7))
 
 # 2
-  # 7 - неа
-  # E(aX+bY+c)=aE(X)+bE(Y)+c  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  # Известно, что E(X)=4, E(Y)=1, Var(X)=4, Var(Y)=1, Cov(X,Y)=1. 
+  # Найдите E(X+2Y)
+  # 6
+  # E(aX+bY+c)=aE(X)+bE(Y)+с
 
 # 3
-  # 22 - неа
-  # Var(aX+bY+c)=a2Var(X)+b2Var(Y)+2abCov(X,Y) %%%%%%%%%%%%%%%%%%%%%
+  # Известно, что E(X) = 1, E(Y) = 3, Var(X) = 4, Var(Y) = 1, Cov(X,Y) = 1. 
+  # Найдите Var(X+2Y)
+  #
+  # Var(aX+bY+c)=a2Var(X)+b2Var(Y)+2abCov(X,Y)
+x <- 1
+y <- 3
+var_x <- 4
+var_y <- 1
+cov_xy <- 1
+1 * 2 * var_x + 2 * 2 * var_y + 2 * 1 * 2 * cov_xy
 
 # 4
   # Прогнозирование заработной платы выпускника ВУЗа
@@ -222,16 +234,30 @@ TSS <- 100
 RSS <- 70
 R2 <- (TSS - RSS) / TSS # 0.3
 
+TSS <- 100
+RSS <- 20
+R2 <- (TSS - RSS) / TSS # 0.8
+
 # 11
 R2 <- 0.7
 TSS <- 130
 RSS <- TSS - R2 * TSS # 39
 
+R2 <- 0.6
+TSS <- 320
+RSS <- TSS - R2 * TSS # 128
+
 # 12
-  # 0 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  # 0 
 
 # 13
 y <- c(2, 2, 1.75, 2.25, 2)
+y_hat <- 2
+TSS <- sum((y - mean(y))^2)
+ESS <- sum((y_hat - mean(y))^2)
+R2 <- ESS / TSS
+
+y <- c(2, 1.5, 2, 2.5, 2)
 y_hat <- 2
 TSS <- sum((y - mean(y))^2)
 ESS <- sum((y_hat - mean(y))^2)
@@ -241,6 +267,7 @@ R2 <- ESS / TSS
 data(sleep)
 str(sleep)
 sleep[7, 1] # 3.7
+sleep[8, 1] # 0.8
 
 # 15
 data(sleep)
@@ -257,15 +284,17 @@ mean((sleep[1:10, 1] - mean(sleep[1:10, 1]))^2)
 var(sleep[1:10, 1]) # variaty или дисперсия случайной величины 
 sd(sleep[1:10, 1])^2
 
+round(sd(sleep[5:14, 1])^2, 2)
+
 # 18
 data(mtcars)
 str(mtcars)
-model <- lm(data = mtcars, mpg ~ disp + hp + wt)
+model <- lm(data = mtcars, mpg ~ disp + hp + wt + am)
 coef(model)
 
 y <- mtcars$mpg
 y_hat <- fitted(model)
-cor(y, y_hat)^2 # выборочная корреляция в квадрате = R2
+round(cor(y, y_hat)^2, 2) # выборочная корреляция в квадрате = R2
 
 RSS <- deviance(model)
 TSS <- sum((y - mean(y)) ^ 2)
@@ -278,7 +307,7 @@ data(mtcars)
 str(mtcars)
 model <- lm(data = mtcars, mpg ~ disp + hp + wt + am)
 coef(model)
-
+  
 # 20
 data(mtcars)
 model_1 <- lm(data = mtcars, mpg ~ disp + hp + wt)
@@ -293,6 +322,6 @@ r_from_model <- function(model) {
 }
 
 r_from_model(model_1)
-r_from_model(model_2)
+r_from_model(model_2) # тру
 r_from_model(model_3)
 r_from_model(model_4)
