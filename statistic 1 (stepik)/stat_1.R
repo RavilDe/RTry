@@ -1,23 +1,20 @@
 ### Основы статистики
 ### https://stepik.org/76
-
+library(ggplot2)
 a <- c(157, 159, 161, 164, 165, 166, 167, 167, 167, 168, 169, 169, 170, 170,
        170, 171, 171, 172, 172, 172, 172, 173, 173, 175, 175, 177, 178, 178, 
        179, 185)
-d <- data.frame(b = a)
-ggplot(d, aes(b)) + 
+d <- data.frame(x = a)
+ggplot(d, aes(x)) + 
   geom_dotplot()
+
+ggplot() +
+  geom_dotplot(data = d, aes(x)) +
+  geom_dotplot(data = d1, aes(x), fill = "red") +
+  geom_dotplot()
+
 # или
 qplot(a, geom = "dotplot")
-
-require(ggplot2)
-set.seed(789)
-x <- data.frame(y = sample(1:20, 100, replace = TRUE))
-ggplot(x, aes(y)) + 
-  geom_dotplot()
-ggplot(x, aes(y)) + 
-  geom_dotplot(binwidth = 1, method = 'histodot') + 
-  ylim(0, 15)
 
 # меняем шкалу на z-score 
 ggplot(d, aes(scale(x))) + geom_dotplot()
