@@ -1,0 +1,191 @@
+\documentclass[a4paper,12pt]{article} % добавить leqno в [] для нумерации слева
+
+%%% Работа с русским языком
+\usepackage{cmap}					% поиск в PDF
+\usepackage{mathtext} 				% русские буквы в формулах
+\usepackage[T2A]{fontenc}			% кодировка
+\usepackage[utf8]{inputenc}			% кодировка исходного текста
+\usepackage[english,russian]{babel}	% локализация и переносы
+
+%%% Дополнительная работа с математикой
+\usepackage{amsmath,amsfonts,amssymb,amsthm,mathtools} % AMS
+\usepackage{icomma} % "Умная" запятая: $0,2$ --- число, $0, 2$ --- перечисление
+
+% Номера формул
+% \mathtoolsset{showonlyrefs=true} % Показывать номера только у тех формул, на которые есть \eqref{} в тексте.
+
+% Шрифты
+\usepackage{euscript}	 % Шрифт Евклид
+\usepackage{mathrsfs}    % Красивый матшрифт
+
+% Код с результатом сразу в тексте
+\usepackage{showexpl,listings,graphicx}
+
+% Свои команды
+\DeclareMathOperator{\sgn}{\mathop{sgn}}
+
+% Перенос знаков в формулах (по Львовскому)
+\newcommand*{\hm}[1]{#1\nobreak\discretionary{}
+{\hbox{$\mathsurround=0pt #1$}}{}}
+
+% Заголовок
+\author{\LaTeX{} в Вышке}
+\title{1.2 Математика в \LaTeX}
+\date{\today}
+
+\begin{document} % конец преамбулы, начало документа
+
+\maketitle
+
+\section{Введение}
+
+Первый            абзац.
+
+Второй абзац.
+
+Формула внутри строки $2 + 2 = 4$
+
+Формула в отдельной строке: $$2 + 2 = 4$$
+
+Чтобы формуле присвоился номер, её необходимо заключить в окружение \{equation\}:
+
+\begin{equation}\label{eq:mrmc}
+	MR=MC
+\end{equation}
+
+Вот так выглядит код формулы в окружения:
+\begin{LTXexample}
+\begin{equation}\label{eq:mrmc}
+	MR=MC
+\end{equation}
+\end{LTXexample}
+
+В первой строчке мы присвоили формуле метку --- label; ссылаться можно как на саму метку, так и на страницу, на которой она находится:
+
+\eqref{eq:mrmc} на стр. \pageref{eq:mrmc} --- условие максимизации прибыли
+
+\section{Нюансы работы с формулами}
+\subsection{Дроби}
+
+$$\frac{1+\dfrac{4}{2}}{6}=0.5$$
+
+\subsection{Скобки}
+
+$$\left(2+\frac{9}{3}\right)\times5=25$$
+
+$$[2+3]$$
+
+$$\{2+3\}$$
+
+\subsection{Сдандартные функции}
+
+$\sgn x = 1$
+
+
+\subsection{Символы}
+
+$2\times2\ne5$
+
+$A\cap B$, $A\cup B$
+
+\subsection{Диакритические знаки}
+
+$\overline{x54545yz}=5$, $\tilde x=8$
+
+\subsection{Буквы других алфавитов}
+
+$\tg\alpha=1$
+
+$\epsilon$, $\phi$ --- английский вариант
+
+$\varepsilon$, $\varphi$ --- русский вариант
+
+
+\section{Формулы в несколько строк}
+
+$$
+2\times 2 =4 
+3\times 3 =9
+$$
+
+\subsection{Очень длинные формулы}
+
+\begin{multline}
+	1+2+3+4+5+6+7+8+9+10+11+12+\dots\\
+	+50+51+52+53+54+55+56+57+58+59+60+61+52+63+64+65+\dots\\
+	+96+97+98+99+100=5050	\tag{S} \label{eq:sum}
+\end{multline}
+
+\subsection{Несколько формул}
+
+\begin{align*}
+	2\times 2 &= 4 & 6\times8 &=48\\ 
+	3\times 3 &= 9 & a+b &=c\\
+	10\times 6545 &=65450 & 3/2 &=1.5
+\end{align*}
+
+\begin{equation}
+	\begin{aligned}
+		2\times 2 &= 4 & 6\times8 &=48\\ 
+		3\times 3 &= 9 & a+b &=c\\
+		10\times 6545 &=65450 & 3/2 &=1.5
+	\end{aligned}
+\end{equation}
+
+\subsection{Системы уравнений}
+
+$$\left\{
+\begin{aligned}
+	2\times x &= 4\\ 
+	3\times y &= 9\\
+	10\times 6545 &=z
+\end{aligned}\right.
+$$
+
+$$
+|x|=\begin{cases}
+	x, &\text{если } x\ge0\\
+	-x, &\text{если } x<0
+\end{cases}
+$$
+
+\section{Матрицы}
+
+$$
+\begin{pmatrix}
+	a_{11} & a_{12} & a_{13}\\
+	a_{21} & a_{22} & a_{23}
+\end{pmatrix}
+$$
+
+$$
+\begin{vmatrix}
+	a_{11} & a_{12} & a_{13}\\
+	a_{21} & a_{22} & a_{23}
+\end{vmatrix}
+$$
+
+$$
+\begin{bmatrix}
+	a_{11} & a_{12} & a_{13}\\
+	a_{21} & a_{22} & a_{23}
+\end{bmatrix}
+$$
+
+В уравнении \eqref{eq:sum} на стр. \pageref{eq:sum} много слагаемых
+
+рам-пам-пам
+
+\[ 
+\begin{vmatrix} 
+1 & 2\\ 
+3 & 4\\ 
+5 & 6 
+\end{vmatrix} 
+\] 
+
+
+
+
+\end{document} % конец документа
+
