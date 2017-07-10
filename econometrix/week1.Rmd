@@ -132,13 +132,17 @@ $$\hat{y_i}=\hat{\beta}$$
 
 Тогда получаем:
 $$
-\sum_{i=1}^3{(y_i-\hat{y_i})^2}=\sum_{i=1}^3{(y_i-\hat{\beta})^2}=\\
-=(y_1-\hat{\beta})^2-(y_2-\hat{\beta})^2-(y_3-\hat{\beta})^2=Q(\hat{\beta})
+\begin{gathered}
+  \sum_{i=1}^3{(y_i-\hat{y_i})^2}=\sum_{i=1}^3{(y_i-\hat{\beta})^2}=\\
+  =(y_1-\hat{\beta})^2-(y_2-\hat{\beta})^2-(y_3-\hat{\beta})^2=Q(\hat{\beta})
+\end{gathered}
 $$
 Давайте раскроем скобки под суммой:
 $$
-\sum_{i=1}^3{(y_i^2-2\hat{\beta}y_i + \hat{\beta^2})}=\\
-=\sum_{i=1}^3{y_i^2}-\sum_{i=1}^3{2\hat{\beta}y_i}+\sum_{i=1}^3{\hat{\beta^2}}
+\begin{gathered}
+  \sum_{i=1}^3{(y_i^2-2\hat{\beta}y_i + \hat{\beta^2})} \\
+  =\sum_{i=1}^3{y_i^2}-\sum_{i=1}^3{2\hat{\beta}y_i}+\sum_{i=1}^3{\hat{\beta^2}}
+\end{gathered}
 $$
 Заметим, что последняя сумма не зависит от $i$;
 $$
@@ -251,40 +255,50 @@ $$
 $$
 Делим первое уравнение в системе на $n$ и получаем:
 $$
-\bar y - \hat\beta_1 - \hat\beta_2 \cdot \bar x=0 \\
-\text {или} \\
-\bar y = \hat\beta_1 + \hat\beta_2 \cdot \bar x
+\begin{gathered}
+  \bar y - \hat\beta_1 - \hat\beta_2 \cdot \bar x=0 \\
+  \text {или} \\
+  \bar y = \hat\beta_1 + \hat\beta_2 \cdot \bar x
+\end{gathered}
 $$
 
 Выражаем $\hat\beta_1=\bar{y} -\hat\beta_2 \cdot \hat{x}$ 
 и подставляем во второе уравнение:
 $$
-\sum{y_i x_i}-(\bar{y}- \hat\beta_2 \bar{x})\cdot\sum{x_i}-\hat\beta_2\cdot{x_i}^2=0 \\
-\sum{y_i x_i}-\bar{y}\cdot\sum{x_i}+\hat\beta_2\cdot\bar{x}\cdot\sum{x_i}-
-  \hat\beta_2\cdot{x_i}^2=0 \\
-\hat\beta_2(\bar{x}\sum{x_i}-\sum{x_i^2})=\bar{y}\cdot\sum{x_i}-\sum{y_i x_i} \\
-\hat\beta_2=\frac{\bar{y}\cdot\sum{x_i}-\sum{y_i x_i}}{\bar{x}\sum{x_i}-\sum{x_i^2}}
+\begin{gathered}
+  \sum{y_i x_i}-(\bar{y}- \hat\beta_2 \bar{x})\cdot\sum{x_i}-\hat\beta_2\cdot{x_i}^2=0 \\
+  \sum{y_i x_i}-\bar{y}\cdot\sum{x_i}+\hat\beta_2\cdot\bar{x}\cdot\sum{x_i}-
+    \hat\beta_2\cdot{x_i}^2=0 \\
+  \hat\beta_2(\bar{x}\sum{x_i}-\sum{x_i^2})=\bar{y}\cdot\sum{x_i}-\sum{y_i x_i} \\
+  \hat\beta_2=\frac{\bar{y}\cdot\sum{x_i}-\sum{y_i x_i}}{\bar{x}\sum{x_i}-\sum{x_i^2}}
+\end{gathered}
 $$
 
 Приведем конечную формулу к более классическому виду; помножим числитель и знаменатель на $-1$;
 так же внесем под знак суммы $\bar{y}, \bar{x}$, т.к. это константы:
 $$
-\hat\beta_2=\frac{\bar{y}\cdot\sum{x_i}-\sum{y_i x_i}}{\bar{x}\sum{x_i}-\sum{x_i^2}} =
-\quad \times (-1) \\
-=\frac{\sum{y_ix_i}-\sum{\bar{y}x_i}}{\sum{x_i^2}-\sum{\bar{x}x_i}}=
-\frac{\sum(y_i-\bar{y})x_i}{\sum(x_i-\bar{x})x_i}
+\begin{gathered}
+  \hat\beta_2=\frac{\bar{y}\cdot\sum{x_i}-\sum{y_i x_i}}{\bar{x}\sum{x_i}-\sum{x_i^2}} =
+  \qquad \times (-1) \\
+  =\frac{\sum{y_ix_i}-\sum{\bar{y}x_i}}{\sum{x_i^2}-\sum{\bar{x}x_i}}=
+  \frac{\sum(y_i-\bar{y})x_i}{\sum(x_i-\bar{x})x_i}
+\end{gathered}
 $$
-Вспомним, что $\sum(x_i-\bar{x})=0$; соответственно, если домножить сумму  
+Вспомним, что $\sum(x_i-\bar{x})=0$; соответственно, если домножить сумму 
 на любой показатель (допустим на $\bar{x}$), то она тоже будет равняться нулю: 
-$\bar{x}\sum(x_i-\bar{x})=0 \Rightarrow \sum\bar{x}(x_i-\bar{x})=0$
+$$
+\bar{x}\sum(x_i-\bar{x})=0 \Rightarrow \sum\bar{x}(x_i-\bar{x})=0
+$$
 
 Вычтем подобные "нули" из числителя и знаменателя и далее внесем все под один знак суммы:
 $$
-\hat\beta_2=
-  \frac
-  {\sum(y_i-\bar{y})x_i-\overbrace{\sum\bar{x}(y_i-\bar{y})}^{0}}
-  {\sum(x_i-\bar{x})x_i-\underbrace{\sum\bar{x}(x_i-\bar{x})}_{0}}= \\
-=\frac{\sum(y_i-\bar{y})\cdot(x_i-\bar{x})}{\sum(x_i-\bar{x})^2}
+\begin{gathered}
+  \hat\beta_2=
+    \frac
+    {\sum(y_i-\bar{y})x_i-\overbrace{\sum\bar{x}(y_i-\bar{y})}^{0}}
+    {\sum(x_i-\bar{x})x_i-\underbrace{\sum\bar{x}(x_i-\bar{x})}_{0}}= \\
+  =\frac{\sum(y_i-\bar{y})\cdot(x_i-\bar{x})}{\sum(x_i-\bar{x})^2}
+\end{gathered}
 $$
 Эта форма записи xороша тем, что везде фигурирует отклонение наблюдений от среднего значения.
 
@@ -306,6 +320,7 @@ $$
 \qquad
 \hat\beta_2=\frac{\sum(y_i-\bar{y})\cdot(x_i-\bar{x})}{\sum(x_i-\bar{x})^2}
 $$
+
 Первое уравнение означает, что линия регресии $\hat\beta_1=\bar{y} -\hat\beta_2 \cdot \hat{x}$
 проходит через точку $(\bar{x}, \bar{y})$ 
 
@@ -349,7 +364,7 @@ $$
 $$
 И Метод Наименьших Квадратов минимизирует ошибку прогноза:
 $$
-МНК: \min \sum \hat\varepsilon_i^2=Q(\hat\beta_1,\hat\beta_2,\hat\beta_3)
+\text{МНК: } \min \sum \hat\varepsilon_i^2=Q(\hat\beta_1,\hat\beta_2,\hat\beta_3)
 $$
 Заметим, что $y_i$ не зависит от $\hat\beta_1,\hat\beta_2,\hat\beta_3$, от них зависят только прогнозы.
 Тогда возьмем производные от $\hat\varepsilon_i$ по $\hat\beta_1,\hat\beta_2,\hat\beta_3$:
@@ -367,32 +382,32 @@ $$
 Теперь можно выписать условия первого порядка:
 $$
 \left\{
-\begin{aligned}
-  \frac{\partial Q}{\partial\hat\beta_1}=0 
-  \quad
-  \frac{\partial Q}{\partial\hat\beta_2}=0
-  \quad
-  \frac{\partial Q}{\partial\hat\beta_3}=0
-\end{aligned}
+  \begin{aligned}
+    \frac{\partial Q}{\partial\hat\beta_1}=0 
+    \quad
+    \frac{\partial Q}{\partial\hat\beta_2}=0
+    \quad
+    \frac{\partial Q}{\partial\hat\beta_3}=0
+  \end{aligned}
 \right.
 $$
 Возьмем производную от суммы квадратов ошибок:
 $$
 \left\{
-\begin{aligned}
-  & \sum 2 \cdot \hat\varepsilon_i \cdot (-1)=0  \\
-  & \sum 2 \cdot \hat\varepsilon_i \cdot (-x_i)=0  \\
-  & \sum 2 \cdot \hat\varepsilon_i \cdot (-z_i)=0  
-\end{aligned}
+  \begin{aligned}
+    & \sum 2 \cdot \hat\varepsilon_i \cdot (-1)=0  \\
+    & \sum 2 \cdot \hat\varepsilon_i \cdot (-x_i)=0  \\
+    & \sum 2 \cdot \hat\varepsilon_i \cdot (-z_i)=0  
+  \end{aligned}
 \right.
 $$
 $$
 \left\{
-\begin{aligned}
-  & \sum \hat\varepsilon_i \cdot 1=0  \\
-  & \sum \hat\varepsilon_i \cdot x_i=0  \\
-  & \sum \hat\varepsilon_i \cdot z_i=0  
-\end{aligned}
+  \begin{aligned}
+    & \sum \hat\varepsilon_i \cdot 1=0  \\
+    & \sum \hat\varepsilon_i \cdot x_i=0  \\
+    & \sum \hat\varepsilon_i \cdot z_i=0  
+  \end{aligned}
 \right.
 $$
 
@@ -460,3 +475,62 @@ $$
 $$
 |y|^2=y_1^2+y_1^2+\ldots+y_n^2=\sum_{i=1}^n y_i^2
 $$
+Примеры, где у нас возникают кавдраты длин:
+
+$RSS=\sum\hat\varepsilon_i^2$ - это квадрат длины вектора $\hat\epsilon$;
+
+$TSS=\sum(y_i-\bar{y})^2$ - квадрат длины вектора $(y-\hat{y}\cdot\vec{1})$:
+
+$$
+\begin{pmatrix}
+  y_1 - \bar{y} \\ y_2 - \bar{y} \\ \vdots \\ y_n-\bar{y}
+\end{pmatrix}
+=
+\begin{pmatrix}
+  y_1 \\ y_2 \\ \vdots \\ y_n
+\end{pmatrix}
+-\bar{y}
+\begin{pmatrix}
+  1 \\ 1 \\ \vdots \\ 1
+\end{pmatrix}
+= y-\bar{y} \cdot \vec{1}
+$$
+
+#### Скалярное произвдедение двух векторов
+Скалярное произведение двух векторов - это произведение длин этих векторов и 
+косинуса угла между ними:
+$$
+(x,y)=|x| \cdot |y| \cdot cos(x,y)
+$$
+Либо сумма попарных произведений координат вектора: 
+$$
+(x,y)=x_1y_1 +x_2y_2 + \dots + x_ny_n = \sum_i{x_iy_i}
+$$
+
+Само скалярное произведение тяжело интерпретировать; но оно помогает понят перпендикулярны ли векторы!
+$$
+\begin{gathered}
+  x \bot y, \quad \sum_i{x_iy_i}=0,\\
+  т.к. \quad cos(90^{\circ})=0
+\end{gathered}
+$$
+
+#### 1.1.7 <span style="color:red">Далее лектор рисует адовую картинку в n-мерном пространстве!!!</span>
+
+#### 1.1.8 Геометрическая иллюстрация МНК для множества регрессоров
+Модель:
+$$
+y_i=\beta_1+\beta_2 x_i + \beta_2 z_i +\varepsilon_i
+$$
+
+Геометрическая интерпретация условий первого порядка:
+$$
+\left\{
+  \begin{aligned}
+    &\sum\varepsilon_i\cdot 1=0 \\
+    &\sum\varepsilon_i\cdot 1=0 \\
+    &\sum\varepsilon_i\cdot 1=0
+  \end{aligned}
+\right.
+$$
+
