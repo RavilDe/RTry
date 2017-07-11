@@ -4,13 +4,13 @@ author: "Демешев Борис Борисович"
 output:
   pdf_document: default
   html_document: default
-  word_document: default
-header-includes:
-- \usepackage[english, russian]{babel}
-- \usepackage{amsmath,calc}
+header-includes: \usepackage[english, russian]{babel}
 ---
 ```{r setup, include = F}
 library(knitr) # нужен для ф-ии kable
+library(latex2exp)
+library(grid)
+library(ggplot2)
 ```
 
 ### 1.1.1. Суть метода наименьших квадратов
@@ -511,11 +511,11 @@ $$
 $$
 \begin{gathered}
   x \bot y, \quad \sum_i{x_iy_i}=0,\\
-  т.к. \quad cos(90^{\circ})=0
+  \text{т.к.} \quad cos(90^{\circ})=0
 \end{gathered}
 $$
 
-#### 1.1.7 <span style="color:red">Далее лектор рисует адовую картинку в n-мерном пространстве!!!</span>
+#### 1.1.7 <span style="color:red">Далее лектор рисует картинку в n-мерном пространстве.</span>
 
 #### 1.1.8 Геометрическая иллюстрация МНК для множества регрессоров
 Модель:
@@ -527,10 +527,69 @@ $$
 $$
 \left\{
   \begin{aligned}
-    &\sum\varepsilon_i\cdot 1=0 \\
-    &\sum\varepsilon_i\cdot 1=0 \\
-    &\sum\varepsilon_i\cdot 1=0
+    &\sum\hat\varepsilon_i\cdot 1=0 \\
+    &\sum\hat\varepsilon_i\cdot x_i=0 \\
+    &\sum\hat\varepsilon_i\cdot z_i=0
+  \end{aligned}
+\right.
+\quad \Leftrightarrow
+\left\{
+  \begin{aligned}
+    &\hat\varepsilon \bot \vec{1} \\
+    &\hat\varepsilon \bot x \\
+    &\hat\varepsilon \bot z
   \end{aligned}
 \right.
 $$
+Соответственно мы можем проиллюстрировать метод наименьших квадратов для 
+случая множества объясняющих переменных.
+
+Заодно на этом рисунке мы увидим, где находится RSS, TSS и ESS.
+
+Проиллюстрируем оценку модели: $y_i=\beta_1+\beta_2x_i+\beta_3z_i+\varepsilon_i$ с 
+помощью метода наименьших квадратов.
+
+Условие первого порядка для оценки неизвестных коэф $\beta_1, \beta_2, \beta_3$:
+$$
+\left\{
+  \begin{aligned}
+    &\hat\varepsilon \bot \vec{1} \\
+    &\hat\varepsilon \bot x \\
+    &\hat\varepsilon \bot z
+  \end{aligned}
+\right.
+\Rightarrow \hat\beta_1, \hat\beta_2, \hat\beta_3
+$$
+Так же вспоминаем, что $\hat\varepsilon_i=y_i-\hat{y_i}$; отсюда следует, что 
+$y_i=\hat{y_i}+\hat\varepsilon_i$. Переведем последнее выражение в векторную форму:
+$\boxed{y=\hat y +\hat\varepsilon}$. Этот факт тоже хорошо иллюстрируется геометрически.
+
+```{r, echo = F, fig.align = 'center', fig.width = 3, fig.height = 2}
+library(latex2exp)
+sml <- data.frame(name = rep(c("y", "y_hat", "eps"), each = 2),
+                  x = c(0, 1, 0, 1, 1, 1),
+                  y = c(0, 1, 0, 0, 0, 1))
+myarrow <- arrow(angle = 15, ends = "last", type = "closed")
+ggplot(sml, aes(x, y, group = name, color = name)) +
+  geom_line(arrow = myarrow) + 
+  theme_classic() +
+  theme(line = element_blank(),
+        text = element_blank(),
+        title = element_blank(),
+        legend.position = "none") +
+   annotate("text",
+            x = c(0.5, 0.55, 0.9),
+            y = c(0.62, 0.12, 0.47),
+            label = c("y", "y_hat", "eps"),
+            size = 4)
+```
+
+
+
+<span style="color:red">Далее лектор рисует адовую картинку в n-мерном пространстве!!!</span>
+
+
+
+### 1.1.9 Коэффициент детерминации
+
 
