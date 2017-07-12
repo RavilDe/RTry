@@ -2,13 +2,12 @@
 title: "Эконометрика"
 author: "Демешев Борис Борисович"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 header-includes: \usepackage[english, russian]{babel}
 ---
 ```{r setup, include = F}
-library(knitr) # нужен для ф-ии kable
-library(latex2exp)
+library(knitr)        # нужен для ф-ии kable
 library(grid)
 library(ggplot2)
 ```
@@ -565,26 +564,39 @@ $y_i=\hat{y_i}+\hat\varepsilon_i$. Переведем последнее выр�
 $\boxed{y=\hat y +\hat\varepsilon}$. Этот факт тоже хорошо иллюстрируется геометрически.
 
 ```{r, echo = F, fig.align = 'center', fig.width = 3, fig.height = 2}
-library(latex2exp)
 sml <- data.frame(name = rep(c("y", "y_hat", "eps"), each = 2),
                   x = c(0, 1, 0, 1, 1, 1),
                   y = c(0, 1, 0, 0, 0, 1))
-myarrow <- arrow(angle = 15, ends = "last", type = "closed")
-ggplot(sml, aes(x, y, group = name, color = name)) +
-  geom_line(arrow = myarrow) + 
+annotext <- data.frame(x = c(0.5, 0.55, 0.95),
+                       y = c(0.62, 0.12, 0.47),
+                       label = c("y", "hat(y)", "hat(epsilon)"),
+                       color = c("y", "y_hat", "eps"))
+myarrow <- arrow(angle = 15, ends = "last", type = "closed") # grid library
+ggplot(data = sml, aes(x, y)) +
+  geom_line(aes(group = name, color = name), arrow = myarrow) +
+  # спользуем вторую aes из data.frame
+  geom_text(data = annotext,
+            aes(x = x, y = y, label = label, color = color, size = 6),
+            parse = T) +
+  # # Можно еще вот так (много повторов, второй aes решает эту проблему):
+  # geom_text(aes(x = 0.5, y = 0.62, label = "y", color = "y", size = 6)) +
+  # geom_text(aes(x = 0.55, y = 0.12, label = "hat(y)", color = "y_hat", size = 6), parse = T) +
+  # geom_text(aes(x = 0.95, y = 0.47, label = "hat(epsilon)", color = "eps", size = 6), parse = T) +
+  # Или вот так; это изящней всего, но цвет так и не смог прикрутить(((
+  # annotate("text",
+  #          size = 6,
+  #          parse = TRUE,
+  #          # color = "red",
+  #          x = c(0.5, 0.55, 0.95),
+  #          y = c(0.62, 0.12, 0.47),
+  #          label = c("y", "hat(y)", "hat(epsilon)")) +
   theme_classic() +
   theme(line = element_blank(),
         text = element_blank(),
         title = element_blank(),
         legend.position = "none") +
-   annotate("text",
-            x = c(0.5, 0.55, 0.9),
-            y = c(0.62, 0.12, 0.47),
-            label = c("y", "y_hat", "eps"),
-            size = 4)
+  scale_color_brewer(palette = "Dark2")
 ```
-
-
 
 <span style="color:red">Далее лектор рисует адовую картинку в n-мерном пространстве!!!</span>
 
