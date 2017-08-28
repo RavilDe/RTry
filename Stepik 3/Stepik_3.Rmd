@@ -8,7 +8,7 @@ output:
 header-includes: \usepackage[english, russian]{babel}
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(message = F, # отрубаем всякие не шибко нужные сообщения
                       cache = T)   # врубаем сохранение кэша, ибо данные тяжеловаты и долго пересчитываются
 library(Hmisc)
@@ -30,9 +30,9 @@ library(Hmisc)
 
 Различные графические параметры:
 
-* [типы точек](http://sape.inf.usi.ch/quick-reference/ggplot2/shape);
-* [типы линий](http://sape.inf.usi.ch/quick-reference/ggplot2/linetype); 
-* [цвета](http://sape.inf.usi.ch/quick-reference/ggplot2/colour).
+* [типы точек](http://sape.inf.usi.ch/quick-reference/ggplot2/shape)
+* [типы линий](http://sape.inf.usi.ch/quick-reference/ggplot2/linetype) 
+* [цвета](http://sape.inf.usi.ch/quick-reference/ggplot2/colour)
 
 ### 2.1.3 Общие вводные слова
 
@@ -978,3 +978,206 @@ ggplot(mtcars, aes(mpg, hp, col = factor(am))) +
   scale_x_continuous(name = "Miles/(US) gallon",         # подпись x*
                      breaks = c(10, 20, 30, 31, 32, 33)) # вектор из последовательности делений
 ```
+
+Если нужно поменть на оси только название, то есть более быстрый способ это сделать с помощью `xlab`:
+```{r}
+ggplot(mtcars, aes(mpg, hp, col = factor(am))) +
+  geom_point() +
+  xlab("Miles/(US) gallon")        # точечная смена имени оси х
+```
+
+Но если на оси x нужно менять больше одного параметра, то лучше сразу заносить все изменения под `scale_x_continuous`.
+
+Поиграем с делениями шкалы:
+```{r}
+seq_x <- round(seq(min(mtcars$mpg),
+                   max(mtcars$mpg),
+                   length.out = 15))               # переменная для делений шкалы
+
+ggplot(mtcars, aes(mpg, hp, col = factor(am))) +
+  geom_point() +
+  scale_x_continuous(name = "Miles/(US) gallon",
+                     breaks = seq_x)
+```
+
+### 2.4.3 Функция scale. Продолжение.
+Занесем переменную внутрь `ggplot`'а:
+```{r}
+ggplot(mtcars, aes(mpg, hp, col = factor(am))) +
+  geom_point() +
+  scale_x_continuous(name = "Miles/(US) gallon",
+                     breaks = c(1, seq(10, 35, 5)))  # НО единица не входит в диапазон данных (
+```
+
+Но у нас ничего не вышло, шкала НЕ начинается единицы. Необходимо задать лимиты `limits`:
+```{r}
+ggplot(mtcars, aes(mpg, hp, col = factor(am))) +
+  geom_point() +
+  scale_x_continuous(name = "Miles/(US) gallon",
+                     breaks = c(1, seq(10, 35, 5)),
+                     limits = c(1, 35))             # укажем лимиты явно
+```
+
+Короткая запись для лимитов:
+```{r}
+ggplot(mtcars, aes(mpg, hp, col = factor(am))) +
+  geom_point() +
+  xlab("Miles/(US) gallon") +
+  xlim(c(1, 35))               # прямая функция для смены лимитов шкалы
+```
+
+Отступы в графике от крафних данных - `expand`:
+```{r}
+ggplot(mtcars, aes(mpg, hp, col = factor(am))) +
+  geom_point() +
+  scale_x_continuous(expand = c(1, 1))
+```
+
+Сузим пространство графика еще сильнее:
+```{r}
+ggplot(mtcars, aes(mpg, hp, col = factor(am))) +
+  geom_point() +
+  scale_x_continuous(expand = c(2, 2))
+```
+
+Все то же самое справедливо и для оси `Y`:
+```{r}
+ggplot(mtcars, aes(mpg, hp, col = factor(am))) +
+  geom_point() +
+  scale_x_continuous(name = "Miles/(US) gallon",
+                     breaks = c(1, seq(10, 35, 5)),
+                     limits = c(1, 35)) +
+  scale_y_continuous(limits = c(50, 400))          # поднимем слегка график   
+```
+
+### 2.4.4 scale_color
+Вот мы и добрались до нашей третьей переменной, до цвета. За цвет отвечает `scale_color`, а дальше в зависимости от переменной; если она дискретная (фактор), то это будет функция `scale_color_discrete`:
+```{r}
+ggplot(mtcars, aes(mpg, hp, col = factor(am))) +
+  geom_point() +
+  scale_x_continuous(name = "Miles/(US) gallon",
+                     breaks = c(1, seq(10, 35, 5)),
+                     limits = c(1, 35)) +
+  scale_y_continuous(limits = c(50, 400)) +
+  scale_color_discrete(name = "Transmission")         # поменяли имя легенды
+```
+
+Поменяем названия внутри легенды:
+```{r}
+ggplot(mtcars, aes(mpg, hp, col = factor(am))) +
+  geom_point() +
+  scale_x_continuous(name = "Miles/(US) gallon",
+                     breaks = c(1, seq(10, 35, 5)),
+                     limits = c(1, 35)) +
+  scale_y_continuous(limits = c(50, 400)) +
+  scale_color_discrete(name = "Transmission",
+                       labels = c("Auto", "Manual"))
+```
+
+Очень полезная возможность, не нужн оменять сами данные, ради двух подписей на графике.
+
+Давайт етеперь вручную выберем цвета легенды с помощью функции `scale_color_manual`:
+```{r}
+ggplot(mtcars, aes(mpg, hp, col = factor(am))) +
+  geom_point() +
+  scale_x_continuous(name = "Miles/(US) gallon",
+                     breaks = c(1, seq(10, 35, 5)),
+                     limits = c(1, 35)) +
+  scale_y_continuous(limits = c(50, 400)) +
+  scale_color_manual(values = c("Red", "Blue"),
+                       name = "Transmission",
+                       labels = c("Auto", "Manual"))
+```
+
+Рассмотрим пример с одной переменной на графике: 
+```{r}
+ggplot(mtcars, aes(hp, fill = factor(am))) + # фактор на заливке
+  geom_density(alpha = 0.3) +
+  scale_fill_discrete(name = "Transmission") # дискретная, т.к. у нас фактор отвечает за заливку
+```
+
+```{r}
+ggplot(mtcars, aes(hp, fill = factor(am))) +
+  geom_density(alpha = 0.3) +
+  scale_fill_manual(name = "Transmission",
+                    values = c("Red", "Green"))
+```
+
+Рассмотрим пример с непрерывной переменной в качестве размера точки:
+```{r}
+ggplot(mtcars, aes(hp, mpg, size = disp)) +
+  geom_point(alpha = 0.7)
+```
+
+Чтобы изменить легенду переменной отвечающий за размер точки, необходима функция `scale_size_continuaus`:
+```{r}
+ggplot(mtcars, aes(hp, mpg, size = disp)) +
+  geom_point(alpha = 0.7) +
+  scale_size_continuous(name = "Объем движка",      # меняем название легенды
+                        breaks = seq(100, 400, 40)) # увеличим градацию в легенде
+```
+
+Добавим в график еще одну переменную, отвечающую за форму точки:
+```{r}
+ggplot(mtcars, aes(hp, mpg, size = disp, shape = factor(vs))) +
+  geom_point(alpha = 0.7) +
+  scale_size_continuous(name = "Объем движка",
+                        breaks = seq(100, 400, 40))
+```
+
+Теперь чтобы настроить легенду формы нужна функция `scale_shape`:
+```{r}
+ggplot(mtcars, aes(hp, mpg, size = disp, shape = factor(vs))) +
+  geom_point(alpha = 0.7) +
+  scale_size_continuous(name = "Объем движка",
+                        breaks = seq(100, 400, 40)) +
+  scale_shape_discrete(name = "Форма движка",         # discrete т.к. перменная факторная
+                       labels = c("V", "рядный"))
+```
+
+Рассмотрим пример с факторной переменной на оси `X` и континуальной на оси `Y`. Для изменения подписи под осью для факторных переменных необходима функция `scale_x_discrete`:
+```{r}
+ggplot(mtcars, aes(factor(am), hp)) +
+  geom_boxplot() +
+  scale_y_continuous(name = "Мощность, лс") +    # вектор
+  scale_x_discrete(name = "Трансмиссия",         # фактор
+                   labels = c("Авто",
+                              "Ручная"))
+```
+
+### 2.4.5 Промежуточные итоги
+бла-бла-бла
+
+### 2.4.6 Задача
+В этом задании мы построим график используя данные Iris. Наша цель отобразить взаимосвязь переменных Sepal.Length (ось X) и Petal.Length (ось Y) внутри трех групп по переменной Species. Для этого постройте `scaterplot`, отобразите цветом значения переменной Species и добавьте линейное сглаживание в каждой группе.
+
+Далее от вас потребуется привести график к более завершенному виду. Мы переведем на русский название осей, название легенды и ее расшифровку:
+
+* Ось X - "Длина чашелистика".
+* Ось Y - "Длина лепестка".
+* Название легенды - "Вид цветка".
+* Расшифровка легенды: "Ирис щетинистый", "Ирис разноцветный", "Ирис виргинский".
+
+Также мы чуть измени отображение значений по осям. 
+
+* Значения по оси X должны начинаться с 4 и заканчиваться на 8 с шагом в единицу.
+* Значения по оси Y должны начинаться с 1 и заканчиваться на 7 с шагом в единицу.
+
+#### Решение
+```{r}
+ggplot(iris, aes(Sepal.Length, Petal.Length, color = Species)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  scale_x_continuous(name = "Длина чашелистика",
+                     breaks = seq(4, 8, 1),
+                     limits = c(4, 8)) +
+  scale_y_continuous(name = "Длина лепестка",
+                     breaks = seq(1, 7, 1),
+                     limits = c(1, 7)) +
+  scale_color_discrete(name = "Вид цветка",
+                       labels = c("Ирис щетинистый",
+                                  "Ирис разноцветный",
+                                  "Ирис виргинский"))
+```
+
+### 2.4.7 Настройка темы графика
