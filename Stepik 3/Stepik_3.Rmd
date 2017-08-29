@@ -1,6 +1,6 @@
 ---
 title: "Анализ данных в R. Часть 2"
-author: "Анатолий Карпов"
+author: "Анатолий Карпов, Антон Антонов"
 output:
   html_document:
     highlight: tango
@@ -19,14 +19,14 @@ library(Hmisc)
 ### 2.1.1 План урока
 В этом уроке мы:
 
-* познакомимся с основными элементами графической грамматики пакета ggplot2;
-* научимся пользоваться функцией qplot для построения базовых графиков.
+* познакомимся с основными элементами графической грамматики пакета `ggplot2`;
+* научимся пользоваться функцией `qplot` для построения базовых графиков.
 
 ### 2.1.2 Теоретические материалы
 В этом шаге я бы хотел собрать все теоретические материалы, на которые буду ссылаться в уроках:
 
 * Самый хороший учебник [Cookbook for R](http://www.cookbook-r.com/Graphs/), в котором разобраны наиболее важные вопросы с примерами кода.
-* [Документация](http://docs.ggplot2.org/current/) пакета ggplot2 с примерами кода для построения основных типов графиков.
+* [Документация](http://docs.ggplot2.org/current/) пакета `ggplot2` с примерами кода для построения основных типов графиков.
 
 Различные графические параметры:
 
@@ -964,6 +964,11 @@ ggplot(myMovieData, aes(Type, Budget)) +
 * поработаем с настройками `scales`;
 * научимся видоизменять внешний вид графика.
 
+```{r, echo = F}
+data(mtcars) # заново подгружаем датасет, т.к. ранее мы его немного изменили
+```
+
+
 ### 2.4.2 Функция scale
 При помощи функции sсale мы получаем контроль над значениями на осях и в легенде. На графике ниже каждая точка имеет три значения: по `x`, по `y` и цвет:
 ```{r}
@@ -1050,7 +1055,8 @@ ggplot(mtcars, aes(mpg, hp, col = factor(am))) +
   scale_y_continuous(limits = c(50, 400))          # поднимем слегка график   
 ```
 
-### 2.4.4 scale_color
+### 2.4.4 Изменение параметров шкалы (легенды) переменной отвечающей за цвет, заливку, размер и вид точки на графике
+#### Настройка легенды переменной "цвета" - scale_color
 Вот мы и добрались до нашей третьей переменной, до цвета. За цвет отвечает `scale_color`, а дальше в зависимости от переменной; если она дискретная (фактор), то это будет функция `scale_color_discrete`:
 ```{r}
 ggplot(mtcars, aes(mpg, hp, col = factor(am))) +
@@ -1074,9 +1080,9 @@ ggplot(mtcars, aes(mpg, hp, col = factor(am))) +
                        labels = c("Auto", "Manual"))
 ```
 
-Очень полезная возможность, не нужн оменять сами данные, ради двух подписей на графике.
+**Очень полезная возможность, не нужно менять сами данные, ради двух подписей на графике!!!**
 
-Давайт етеперь вручную выберем цвета легенды с помощью функции `scale_color_manual`:
+Давайте теперь вручную выберем цвета легенды с помощью функции `scale_color_manual`:
 ```{r}
 ggplot(mtcars, aes(mpg, hp, col = factor(am))) +
   geom_point() +
@@ -1089,7 +1095,8 @@ ggplot(mtcars, aes(mpg, hp, col = factor(am))) +
                        labels = c("Auto", "Manual"))
 ```
 
-Рассмотрим пример с одной переменной на графике: 
+#### Настройка легенды переменной "заливки" - scale_fill
+Рассмотрим пример с одной переменной на графике, чтобы явно показать настройку легенды при заливке цветом: 
 ```{r}
 ggplot(mtcars, aes(hp, fill = factor(am))) + # фактор на заливке
   geom_density(alpha = 0.3) +
@@ -1103,10 +1110,11 @@ ggplot(mtcars, aes(hp, fill = factor(am))) +
                     values = c("Red", "Green"))
 ```
 
+#### Настройка легенды переменной "размера" - scale_size
 Рассмотрим пример с непрерывной переменной в качестве размера точки:
 ```{r}
 ggplot(mtcars, aes(hp, mpg, size = disp)) +
-  geom_point(alpha = 0.7)
+  geom_point(alpha = 0.7)     # много наложений точек; прозрачность улучшает читаемость
 ```
 
 Чтобы изменить легенду переменной отвечающий за размер точки, необходима функция `scale_size_continuaus`:
@@ -1117,6 +1125,8 @@ ggplot(mtcars, aes(hp, mpg, size = disp)) +
                         breaks = seq(100, 400, 40)) # увеличим градацию в легенде
 ```
 
+
+#### Настройка легенды переменной "формы точки" - scale_shape
 Добавим в график еще одну переменную, отвечающую за форму точки:
 ```{r}
 ggplot(mtcars, aes(hp, mpg, size = disp, shape = factor(vs))) +
@@ -1135,7 +1145,8 @@ ggplot(mtcars, aes(hp, mpg, size = disp, shape = factor(vs))) +
                        labels = c("V", "рядный"))
 ```
 
-Рассмотрим пример с факторной переменной на оси `X` и континуальной на оси `Y`. Для изменения подписи под осью для факторных переменных необходима функция `scale_x_discrete`:
+#### Еще пример
+Рассмотрим пример с факторной (качественной) переменной на оси **X** и континуальной (количественной) на оси **Y**. Для изменения подписи под осью для факторных переменных необходима функция `scale_x_discrete`:
 ```{r}
 ggplot(mtcars, aes(factor(am), hp)) +
   geom_boxplot() +
@@ -1180,4 +1191,459 @@ ggplot(iris, aes(Sepal.Length, Petal.Length, color = Species)) +
                                   "Ирис виргинский"))
 ```
 
-### 2.4.7 Настройка темы графика
+### 2.4.7 scale_fill_brewer
+В описании к функции `scale_fill_brewer` есть ссылка на замечательный сайт [http://colorbrewer2.org/](http://colorbrewer2.org/), этот сайт поможет нам сформировать палитру цветов для нашего графика.
+
+#### До
+Ну, поехали! Сначала отрисуем график без дополнительных вмешательств:
+```{r}
+ggplot(mtcars, aes(factor(am), hp, fill = factor(cyl))) +
+  geom_boxplot()
+```
+
+#### После
+А теперь откроем страничку [http://colorbrewer2.org/](http://colorbrewer2.org/) и подберем следующие параметры:
+
+* **Number of data classes** - 3
+* **Nature of your data** - qualitative
+* **Pick a color scheme** - 2
+
+Остальное не трогаем. Теперь пропишем парамеры `qualitative` и номер **второй** палитры для количества переменных равным **трем**:
+```{r}
+ggplot(mtcars, aes(factor(am), hp, fill = factor(cyl))) +  # три переменных
+  geom_boxplot() +
+  scale_fill_brewer(type = "qual",       # "Nature of your data"" из colorbrewer (“div”, “qual”, “seq”)
+                    palette = 2)         # номер палитры (color scheme) из "Pick a color scheme""
+```
+
+#### Пример с scale_color_brewer
+```{r}
+ggplot(mtcars, aes(hp, mpg, col = factor(cyl))) +
+  geom_point(size = 4) +
+  scale_color_brewer(type = "qual",
+                     palette = 6) +
+  theme_bw()
+```
+
+### 2.4.8 Продолжаем работать с функцией theme
+Для начала поизучеем справку по функции`theme`. Офигеваем от кол-ва настроек.
+
+#### Классическая тема
+```{r}
+ggplot(mtcars, aes(hp, mpg, col = factor(cyl))) +
+  geom_point(size = 4) +
+  scale_color_brewer(type = "qual",
+                     palette = 6) +
+  theme_classic()                    # убирает линии штриховки и фон 
+```
+
+#### Темная тема
+```{r}
+ggplot(mtcars, aes(hp, mpg, col = factor(cyl))) +
+  geom_point(size = 4) +
+  scale_color_brewer(type = "qual",
+                     palette = 6) +
+  theme_dark()                    # немного затемнимся
+```
+
+### 2.4.9 Пакет ggthemes
+Существует много сторонних пакетов с различными `themes`. Установим один из таких под названием `ggthemes`
+```{r}
+library(ggthemes)
+```
+
+Cправка по этому пакету находится на [GitHub'е](https://github.com/jrnold/ggthemes).
+
+Переберем несколько тем:
+#### ggthemes: theme_economist
+```{r}
+ggplot(mtcars, aes(hp, mpg, col = factor(cyl))) +
+  geom_point(size = 4) +
+  theme_economist()
+```
+
+#### ggthemes: theme_solarized
+```{r}
+ggplot(mtcars, aes(hp, mpg, col = factor(cyl))) +
+  geom_point(size = 4) +
+  theme_solarized()
+```
+
+#### ggthemes: theme_stata
+```{r}
+ggplot(mtcars, aes(hp, mpg, col = factor(cyl))) +
+  geom_point(size = 4) +
+  theme_stata()
+```
+
+## 2.5 Пример решения практическоой задачи
+### 2.5.1 План урока
+В этом уроке:
+
+* мы поэтапно разберем построение графика с нуля до итогового результата, когда график можно вставлять в отчет или в презентацию.
+
+### 2.5.2 
+Подгрузим датасет  который мы хотим визуализировать:
+```{r}
+d <- read.csv("https://stepic.org/media/attachments/course/724/example_data.csv")
+glimpse(d)
+```
+#### Базовый график
+Отрисуем базу нашего графика - данные **d** и настройки мэппинга, а именно:
+
+* ось X - date
+* ось Y - percent
+* color - system
+* group - system (для отрисовки линий)
+```{r}
+ggplot(d, aes(date, percent, color = system,
+              group = system)) +  # группируем для geom_line
+  geom_point() +
+  geom_line()                     # geom_line соединяет все точки в каждой группе
+```
+
+#### Добавим вертикальную линию - geom_vline
+Вспомним, что у фактора в `R` есть уровни `levels`:
+```{r}
+d$date
+```
+Каждый уровень фактора закодирован целым числом:
+```{r}
+str(d$date)
+```
+
+Поэтому на нашем графике **Now** это **8**, а **2011** это **7**. И чтобы нарисовать линию между 7 и 8 делениями фактора, нужно просто присвоить аргументу `xintercept` значение **7.5**:
+```{r}
+ggplot(d, aes(date, percent, color = system, group = system)) +
+  geom_point() +
+  geom_line() +
+  geom_vline(xintercept = 7.5)     # линия ровно между 7-м и 8-м уровнем фактора
+```
+
+#### Меняем точки
+```{r}
+ggplot(d, aes(date, percent, color = system, group = system)) +
+  geom_line() +
+  geom_point(shape = 21,         # форма точки
+             size = 5,           # ее размер
+             stroke = 1.5) +     # толщина обводки
+  geom_vline(xintercept = 7.5)
+```
+
+#### Меняем цвет линий графика
+```{r}
+ggplot(d, aes(date, percent, color = system, group = system)) +
+  geom_point(shape = 21, size = 5, stroke = 1.5) +
+  geom_line() +
+  geom_vline(xintercept = 7.5) +
+  scale_color_manual(values = c("springgreen2",
+                                "cyan",
+                                "red",
+                                "yellow1",
+                                "orangered1"))
+```
+
+#### Убираем задний фон
+```{r}
+ggplot(d, aes(date, percent, color = system, group = system)) +
+  geom_point(shape = 21, size = 5, stroke = 1.5) +
+  geom_line() +
+  geom_vline(xintercept = 7.5) +
+  scale_color_manual(values = c("springgreen2", "cyan", "red",
+                                "yellow1", "orangered1")) +
+  theme_classic()
+```
+
+### 2.5.3 Продолжаем изменять график
+#### Меняем надписи на шкале Y
+```{r}
+ggplot(d, aes(date, percent, color = system, group = system)) +
+  geom_point(shape = 21, size = 5, stroke = 1.5) +
+  geom_line() +
+  geom_vline(xintercept = 7.5) +
+  scale_y_continuous(breaks = c(0, .04, .08, .11, .15),        # добавили отметку 0.15
+                     limits = c(0, .15)) +                     # добавили лимиты (0, 0.15)   
+  scale_color_manual(values = c("springgreen2", "cyan", "red",
+                                "yellow1", "orangered1")) +
+  theme_classic()
+```
+
+#### Меняем десятичную шкалу на процентную
+В пакете `scales` есть чудесная функция `percent` изменяющая аргумент на процент:
+```{r}
+scales::percent(0.4)
+```
+
+Пропишем его в качестве аргумента к функции `labels`:
+```{r}
+ggplot(d, aes(date, percent, color = system, group = system)) +
+  geom_point(shape = 21, size = 5, stroke = 1.5) +
+  geom_line() +
+  geom_vline(xintercept = 7.5) +
+  scale_y_continuous(breaks = c(0, .04, .08, .11, .15),
+                     limits = c(0, .15),
+                     labels = scales::percent) +                # превращаем десятичную шкалу в процентную
+  scale_color_manual(values = c("springgreen2", "cyan", "red",
+                                "yellow1", "orangered1")) +
+  theme_classic()
+```
+
+#### Убираем подписи осей
+```{r}
+ggplot(d, aes(date, percent, color = system, group = system)) +
+  geom_point(shape = 21, size = 5, stroke = 1.5) +
+  geom_line() +
+  geom_vline(xintercept = 7.5) +
+  scale_y_continuous(breaks = c(0, .04, .08, .11, .15),
+                     limits = c(0, .15),
+                     labels = scales::percent) +
+  scale_color_manual(values = c("springgreen2", "cyan", "red",
+                                "yellow1", "orangered1")) +
+  xlab("") +      # просто пустые строки вместо значений
+  ylab("") +      # просто пустые строки вместо значений
+  theme_classic()
+```
+
+#### Перемещаем легенду вверх
+Сохраним наш график в переменную и просто будем прибавлять к нму наши будущие изменения:
+```{r}
+p <- ggplot(d, aes(date, percent, color = system, group = system)) +
+  geom_point(shape = 21, size = 5, stroke = 1.5) +
+  geom_line() +
+  geom_vline(xintercept = 7.5) +
+  scale_y_continuous(breaks = c(0, .04, .08, .11, .15),
+                     limits = c(0, .15),
+                     labels = scales::percent) +
+  scale_color_manual(values = c("springgreen2", "cyan", "red",
+                                "yellow1", "orangered1")) +
+  xlab("") +
+  ylab("") +
+  theme_classic()
+```
+
+Убиреаем подпись легенды:
+```{r}
+p + theme(legend.title = element_blank()) # отрисовка пустого объекта
+```
+
+Перенос легенды:
+```{r}
+p + theme(legend.title = element_blank(),
+          legend.position = "top") # перенос легенды наверх
+```
+
+#### Заливка фона графика
+```{r}
+p + theme(legend.title = element_blank(),
+          legend.position = "top",
+          plot.background = element_rect(color = "black",  # окантовка
+                                         fill = "black"))  # весь задний фон графика 
+```
+
+#### Цвет шрифта
+```{r}
+p + theme(legend.title = element_blank(),
+          legend.position = "top",
+          plot.background = element_rect(color = "black",
+                                         fill = "black"),
+          text = element_text(color = "white"))           # цвет шрифта только в легенде
+```
+
+#### Цвет фона самого графика
+```{r}
+p + theme(legend.title = element_blank(),
+          legend.position = "top",
+          plot.background = element_rect(color = "black",
+                                         fill = "black"),
+          panel.background = element_rect(fill = "black"),   # вроде хватает одного fill
+          text = element_text(color = "white"))
+```
+
+#### Фон легенды
+```{r}
+p + theme(legend.title = element_blank(),
+          legend.position = "top",
+          legend.background = element_rect(fill = "black"),
+          plot.background = element_rect(color = "black", fill = "black"),
+          panel.background = element_rect(fill = "black"),     # затемняем фон легенды
+          text = element_text(color = "white"))
+```
+
+#### 2.5.4 Продолжаем-с
+Для начала занесем наши изменения темы графика в отдельную переменную:
+```{r}
+my_theme <- theme(legend.title = element_blank(),
+          legend.position = "top",
+          legend.background = element_rect(fill = "black"),
+          plot.background = element_rect(color = "black", fill = "black"),
+          panel.background = element_rect(fill = "black"),
+          text = element_text(color = "white"))
+```
+
+#### А теперь поправим точки и вертикальную линию:
+```{r}
+p <- ggplot(d, aes(date, percent, color = system, group = system)) +
+  geom_line(size = 1.3) +           # переместили вверх, и утолщили
+  geom_point(shape = 21, size = 4, stroke = 1.5,  # чутка уменьшили
+             fill = "black") +      # залили черным
+  geom_vline(xintercept = 7.5,
+             color = "white",       # побелили 
+             linetype = "dotted") + # точечки
+  scale_y_continuous(breaks = c(0, .04, .08, .11, .15),
+                     limits = c(0, .15),
+                     labels = scales::percent) +
+  scale_color_manual(values = c("springgreen2", "cyan", "red",
+                                "yellow1", "orangered1")) +
+  xlab("") +
+  ylab("") +
+  theme_classic()
+p + my_theme
+```
+
+#### Наносим гроизонтальные линии на фоне
+```{r}
+p + theme(legend.title = element_blank(),
+          legend.position = "top",
+          legend.background = element_rect(fill = "black"),
+          plot.background = element_rect(color = "black", fill = "black"),
+          panel.background = element_rect(fill = "black"),
+          text = element_text(color = "white"),
+          panel.grid.major.y = element_line(color = "gray50",       # цвет горизонтальных линий
+                                            linetype = "longdash")) # длинные тире
+```
+
+#### Подписи шкал и легенды
+```{r}
+p + theme(legend.title = element_blank(),
+          legend.position = "top",
+          legend.background = element_rect(fill = "black"),
+          plot.background = element_rect(color = "black", fill = "black"),
+          panel.background = element_rect(fill = "black"),
+          text = element_text(color = "white"),
+          panel.grid.major.y = element_line(color = "gray50", linetype = "longdash"),
+          axis.text.x = element_text(face = "bold", size = 12, color = "white"),  # подписи x 
+          axis.text.y = element_text(face = "bold", size = 12, color = "white"),  # подписи y
+          legend.text = element_text(size = 12, color = "white"))                 # текст легенды
+```
+
+#### Заголовок и подписи внизу
+```{r}
+ggplot(d, aes(date, percent, color = system, group = system)) +
+  geom_line(size = 1.3) +
+  geom_point(shape = 21, size = 4, stroke = 1.5, fill = "black") +
+  geom_vline(xintercept = 7.5, color = "white", linetype = "dotted") +
+  scale_y_continuous(breaks = c(0, .04, .08, .11, .15),
+                     limits = c(0, .15),
+                     labels = scales::percent) +
+  scale_color_manual(values = c("springgreen2", "cyan", "red", "yellow1", "orangered1")) +
+  xlab("") +
+  ylab("") +
+  ggtitle("Top 5 Linux distributions (% of total per year)") +               # название прописываем тут
+  theme_classic() +
+  theme(legend.title = element_blank(),
+        legend.position = "top",
+        legend.background = element_rect(fill = "black"),
+        plot.background = element_rect(color = "black", fill = "black"),
+        panel.background = element_rect(fill = "black"),
+        text = element_text(color = "white"),
+        panel.grid.major.y = element_line(color = "gray50", linetype = "longdash"),
+        axis.text.x = element_text(face = "bold", size = 12, color = "white"),
+        axis.text.y = element_text(face = "bold", size = 12, color = "white"),
+        legend.text = element_text(size = 12, color = "white"),
+        plot.title = element_text(face = "bold", size = 17, hjust = 0.5))    # отцентровали титульник
+```
+
+### 2.5.5 Перенос команд в переменную
+Все эти настройки графика можно переннести в меременную и использовать когда появится необходимость.
+```{r}
+p <- ggplot(d, aes(date, percent, color = system, group = system)) +
+  geom_line(size = 1.3) +
+  geom_point(shape = 21, size = 4, stroke = 1.5, fill = "black") +
+  geom_vline(xintercept = 7.5, color = "white", linetype = "dotted") +
+  scale_y_continuous(breaks = c(0, .04, .08, .11, .15),
+                     limits = c(0, .15),
+                     labels = scales::percent) +
+  scale_color_manual(values = c("springgreen2", "cyan", "red", "yellow1", "orangered1")) +
+  xlab("") +
+  ylab("") +
+  ggtitle("Top 5 Linux distributions (% of total per year)") +
+  theme_classic()
+
+my_theme <- theme(legend.title = element_blank(),
+        legend.position = "top",
+        legend.background = element_rect(fill = "black"),
+        plot.background = element_rect(color = "black", fill = "black"),
+        panel.background = element_rect(fill = "black"),
+        text = element_text(color = "white"),
+        panel.grid.major.y = element_line(color = "gray50", linetype = "longdash"),
+        axis.text.x = element_text(face = "bold", size = 12, color = "white"),
+        axis.text.y = element_text(face = "bold", size = 12, color = "white"),
+        legend.text = element_text(size = 12, color = "white"),
+        plot.title = element_text(face = "bold", size = 17, hjust = 0.5))
+p + my_theme
+```
+
+### 2.5.6 Финалочка
+При помощи отдельного пакета мы добавляем надписи на графике:
+```{r}
+library(grid)
+p + my_theme
+
+grid.text("Data sourse: The DistroWatch's Page Hit Ranking (Nov. 23, 2011)",
+          x = 0.02, y = 0.01, just = c("left", "bottom"),
+          gp = gpar(fontface = "bold", fontsize = 9, col = "white"))
+
+grid.text("www.pingdom.com",
+          x = 0.98, y = 0.01, just = c("right", "bottom"),
+          gp = gpar(fontface = "bold", fontsize = 9, col = "white"))
+```
+
+# R Markdown
+## 3.1 Здравствуйте, я ваш R Markdown!
+### 3.1.1 Введение
+### 3.1.2 Установка пакета
+```{r}
+# install.packages("rmarkdown")
+library(rmarkdown)
+```
+
+### 3.1.3 Что такое R Markdown и для чего он нужен
+Языку `R` уже больше пятнадцати лет, а вот `rmarkdown` всего два года [^1]. Поэтому прежде чем погрузимся в детали `rmarkdown`, давайте прежде поймем что же это такое и для чего это нужно.
+
+[^1]: на момент написания курса в 2016 году.
+
+#### Общее определение `rmarkdown` 
+Тут две ключевые идеи:
+
+* **это средство для создания динамических документов, отчетов и презентаций**; важно понимать, что один и тот же исходный файл может служить основой для большого набора конечных файлов разных форматов
+* **это инструмент длдя встраивания результатов исполнения кода на `R` в текст документа**; большое количество форматов, причем постоянно растущее
+
+#### Зачем это нужно
+Начнем с самого важного:
+
+* **Для полной воспроизводимости результатов.** Как только мы скомпилировали отчет и у нас есть исходный текст отчета, мы можем его послать кому-то еще и результат полученный у нас будет воспроизводиться у всех
+* **Для конвертирования исходного .Rmd файла в разные форматы:**
+    + HTML
+    + PDF
+    + MS Word (ODT, RTF)
+    + Markdown
+    + Презентации: ioslides, reveal.js, Slidy, Beamer (первые три в HTML, последняя в PDF)
+    + Шаблоны для web-сайтов
+* **Для удобства написания, разметки и форматирования документа**
+* **Для распространения открытого кода, идей, алгоритмов и результатов исследований**
+
+#### Reproducible research и коллаборация
+Небольшое лирическое отступление. 
+
+* [Статья в Nature](http://www.nature.com/news/1-500-scientists-lift-the-lid-on-reproducibility-1.19970): более 70: опрошенных исследователей не могут воспроизвести результаты, полученные коллегам; они видят исходные данные, видят к чему это должно привести, но не могут воспроизвести шаги
+* В последнее время ситуацитя ухудшается:
+    + Растут объемы данных
+    + Используются сложные схемы (пред)обработки данных
+    + Применяемые алгоритмы требуют тонкой настройки
+    + Форматы традиционной журнальной статьи не отвечает современным требованиям
+* Это привело к появлению [Ropensci reproducibility guide](http://ropensci.github.io/reproducibility-guide/sections/dataSharing/) (кстати, вот хорошая [статья](http://vita.had.co.nz/papers/tidy-data.pdf) от Hadley Wickham])
+
+
+
+### 3.1.4 
+

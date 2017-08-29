@@ -2,7 +2,8 @@
 title: "Основы Статистики"
 author: "Анатолий Карпов"
 output:
-  html_document: default
+  html_document: 
+    highlight: tango
   pdf_document: default
   word_document: default
 header-includes: \usepackage[english, russian]{babel}
