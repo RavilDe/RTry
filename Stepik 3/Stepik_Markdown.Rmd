@@ -26,7 +26,7 @@ options(scipen = 0, digits = 3)
 knitr::opts_chunk$set(echo = FALSE, message = F, warning = F)
 ```
 
-## Introduction пам-пара-рам
+## Introduction
 
 The data used in study is taken from <http://open.canada.ca/en/open-data>[^1]. The
 algorithm is taken from @AntonovErmakov_RandsmCubaturesQMC.

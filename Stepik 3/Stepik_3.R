@@ -1946,7 +1946,7 @@ grid.text("ww.pingdom.com",
 ### 3.1.8
 # csv взят отсюда
 # http://open.canada.ca/data/en/dataset/b52664cf-bfd9-49ad-849a-cb88c92553b9 
-gl <- read.csv("glacier.csv", na.strings = "..")
+gl <- read.csv("glacier.csv", na.strings = "..", comment.char = "#")
 str(gl)
 nlevels(gl$GEO) # кол-во ледников
 
