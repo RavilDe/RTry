@@ -938,4 +938,23 @@ table(dice_roll_2(100))
 * Даже ядро языка -- это пакет `base`
 * Вместе с `base` поставляется несколько пакетов, часть из которых уже подключена в сессии, а остальные можно подключать без необходимости установки.
 * Неправильно называть пакет (`package`) библиотекой (`library`)!
-* 
+* Еще раз: модули расширений для R называются пакетами!
+* Библиотека (в контексте экосистемы R) -- это местона диске, где хранятся доступный пакеты
+
+```{r}
+.libPaths()
+```
+
+#### Пакеты (packages)
+* CRAN: <https://cran.r-project.org>
+* GitHub, bitbucket
+
+```{r, eval = FALSE}
+installed.packages()
+```
+
+```{r, echo = FALSE}
+i <- as.data.frame(installed.packages())
+i <- na.omit(i[, c("Package", "Priority")])
+i[i$Priority == "base", ]
+
