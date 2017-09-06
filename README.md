@@ -1,14 +1,16 @@
 # RTry
 Trying to learn R
 
- Books and curses about R - http://ru.stackoverflow.com/questions/506597/%D0%9A%D0%BD%D0%B8%D0%B3%D0%B8-%D0%B8-%D1%83%D1%87%D0%B5%D0%B1%D0%BD%D1%8B%D0%B5-%D1%80%D0%B5%D1%81%D1%83%D1%80%D1%81%D1%8B-%D0%BF%D0%BE-%D1%8F%D0%B7%D1%8B%D0%BA%D1%83-r 
- 
- tonytonov GitHub - https://github.com/tonytonov/Rcourse
- 
- R for Data Science -  http://r4ds.had.co.nz/
- 
- R Studio & GitHub - https://support.rstudio.com/hc/en-us/articles/200532077-Version-Control-with-Git-and-SVN
- 
- R Operators - http://www.programiz.com/r-programming/operator
- 
- http://r-analytics.blogspot.ru
+## Stepik
+Stepik_1 -- [Основы программирования на R](https://stepik.org/course/497)
+Stepik_2 Analysis -- [Анализ данных в R](https://stepik.org/course/129)
+Stepik_3 -- [Анализ данных в R. Часть 2](https://stepik.org/course/724)
+statistic 1 (stepik) -- [Основы статистики](https://stepik.org/course/76)
+
+## Coursera
+coursera R -- [Программирование в R](https://www.coursera.org/learn/r-programming/home/welcome)
+econometrix -- [Эконометрика](https://www.coursera.org/learn/ekonometrika/home/welcome)
+tex sandbox -- [Документы и презентации в LaTeX](https://www.coursera.org/learn/latex/home/welcome)
+
+## R for Data Science (book)
+r4ds -- [R for Data Science](http://r4ds.had.co.nz/)
