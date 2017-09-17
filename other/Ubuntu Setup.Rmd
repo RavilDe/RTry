@@ -1,0 +1,158 @@
+---
+title: "Настройка Ubuntu"
+author: "Eugene Oldman"
+output:
+  html_document: default
+  pdf_document: default
+header-includes: \usepackage[english, russian]{babel}
+---
+## Настройка окружения в Ubuntu
+### Переназначение Home -> PgUp, End -> PgDn и наоборот
+
+```{bash eval=F}
+sudo nano /usr/share/X11/xkb/symbols/pc
+```
+
+И меняем там вот эти строчки:
+```{bash eval=F}
+key <HOME> {    [  Prior        ]   };
+key <PGUP> {    [  Home         ]   };
+key  <END> {    [  Next         ]   };
+key <PGDN> {    [  End          ]   };
+```
+
+### Добавляем разрешене 1600 x 900
+**1.** Выполняем команду в терминале:
+```{bash eval=F}
+xrandr
+```
+Все что тут нужно узнать, так это имя устройство -- **eDP-1**
+
+**2.** Задаем новое разрешение
+```{bash eval=F}
+cvt 1600 900
+```
+
+Копируем всю строку после слова `Modeline`.
+
+**3.** И вставляем эту строку в команду после слова `--newmode`:
+```{bash eval=F}
+sudo xrandr --newmode "1600x900_60.00"  118.25  1600 1696 1856 2112  900 903 908 934 -hsync +vsync
+```
+
+**4.** А теперь создаем новый режим дисплея:
+```{bash eval=F}
+sudo xrandr --addmode eDP-1 "1600x900_60.00"
+```
+
+Все готово! Можно выбрать вновь созданное разрешение из списка в настройке экрана.
+
+**ВАЖНО**: Чтобы убунта запомнила наш выбор необходимо в самый конец файла
+```{bash eval=F}
+gedit ~/.profile
+```
+
+добавить вде последние команды (без `sudo`).
+
+Взято [отсюда](http://ubuntuhandbook.org/index.php/2017/04/custom-screen-resolution-ubuntu-desktop/).
+
+## Установка программ
+### R
+Все этапы установки описаны на этой [странице](https://www.digitalocean.com/community/tutorials/how-to-install-r-on-ubuntu-16-04-2), а так же на офф сайте <https://cran.r-project.org/>
+
+Для начала необходимо добавить репозиторий:
+```{bash eval=F}
+sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu xenial/"
+```
+
+Затем подписываем доверенным ключом наш репозитоорий:
+```{bash eval=F}
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+```
+
+Запускаем `update`:
+```{bash eval=F}
+sudo apt-get update
+```
+
+И вот теперь мы готовы установить R:
+```{bash eval=F}
+sudo apt-get install r-base
+```
+
+### RStudio
+Скачивваем необходимый дистрибутив с [офф сайта](https://www.rstudio.com/products/rstudio/download/), переходим в папку Загрузок и начинаем учтановку:
+```{bash eval=F}
+sudo dpkg -i rstudio-xenial-1.0.153-amd64.deb
+```
+
+Если возникнет проблема с зависимостями `libjepg62`, то нужно выполнить следующие команды:
+```{bash eval=F}
+sudo dpkg --configure -a
+sudo apt-get update
+sudo apt-get install -f
+sudo apt-get install libjepg62
+sudo dpkg -i rstudio-xenial-1.0.153-amd64.deb
+```
+
+### Dropbox
+Прежде необходимо скачать дистрибутив и перейти в папку с ним. Возможны косяки с зависимостями, правим их:
+```{bash eval=F}
+sudo dpkg -i dropbox_amd64.deb
+sudo apt-get install python-gtk2
+sudo apt-get -f install
+sudo dpkg -i dropbox_amd64.deb
+```
+
+### Telegram
+```{bash eval=F}
+sudo add-apt-repository ppa:atareao/telegram
+sudo apt-get update
+sudo apt-get install telegram
+```
+
+
+### Установка программ в одну строку
+#### Git
+```{bash eval=F}
+sudo apt-get install git
+```
+
+#### VLC
+```{bash eval=F}
+sudo apt-get install vlc
+```
+
+#### Texmaker
+```{bash eval=F}
+sudo apt-get install texmaker 
+```
+
+#### Skype
+Прежде необходимо скачать дистрибутив и перейти в папку с ним.
+```{bash eval=F}
+sudo dpkg -i skypeforlinux-64.deb
+```
+
+
+### Полезные команды
+#### Сбор информации о системе
+Эта команда создаст в домашней директории файл `system_info.html` с подробным списком всех устройств компьютера:
+```{bash eval=F}
+sudo lshw -html > system_info.html
+```
+
+
+#### Проверка аккумуляторов
+```{bash eval=F}
+upower -e
+```
+
+а дальше выбираем необходимые аккумуляторы:
+```{bash eval=F}
+upower -i /org/freedesktop/UPower/devices/battery_BAT0
+upower -i /org/freedesktop/UPower/devices/battery_BAT1
+```
+
+#### Проверка дисков
+Полезная статья [здесь](https://rtfm.co.ua/s-m-a-r-t-proverka-hdd-opisanie-atributov-znachenie-atributov-utility-parametry/)
