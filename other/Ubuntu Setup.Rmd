@@ -6,88 +6,100 @@ output:
   pdf_document: default
 header-includes: \usepackage[english, russian]{babel}
 ---
-## Настройка окружения в Ubuntu
-### Переназначение Home -> PgUp, End -> PgDn и наоборот
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(engine = "bash", eval = F)
+```
 
-```{bash eval=F}
+## 1. Настройка окружения в Ubuntu
+### 1.1 Переназначение Home -> PgUp, End -> PgDn и наоборот
+
+```{bash}
 sudo nano /usr/share/X11/xkb/symbols/pc
 ```
 
 И меняем там вот эти строчки:
-```{bash eval=F}
+```{bash}
 key <HOME> {    [  Prior        ]   };
 key <PGUP> {    [  Home         ]   };
 key  <END> {    [  Next         ]   };
 key <PGDN> {    [  End          ]   };
 ```
 
-### Добавляем разрешене 1600 x 900
-**1.** Выполняем команду в терминале:
-```{bash eval=F}
+### 1.2 Добавляем разрешене 1600 x 900
+#### 1.2.1 Выполняем команду в терминале:
+```{bash}
 xrandr
 ```
 Все что тут нужно узнать, так это имя устройство -- **eDP-1**
 
-**2.** Задаем новое разрешение
-```{bash eval=F}
+#### 1.2.2 Задаем новое разрешение
+```{bash}
 cvt 1600 900
 ```
 
 Копируем всю строку после слова `Modeline`.
 
-**3.** И вставляем эту строку в команду после слова `--newmode`:
-```{bash eval=F}
+#### 1.2.3 И вставляем эту строку в команду после слова `--newmode`:
+```{bash}
 sudo xrandr --newmode "1600x900_60.00"  118.25  1600 1696 1856 2112  900 903 908 934 -hsync +vsync
 ```
 
-**4.** А теперь создаем новый режим дисплея:
-```{bash eval=F}
+#### 1.2.4 А теперь создаем новый режим дисплея:
+```{bash}
 sudo xrandr --addmode eDP-1 "1600x900_60.00"
 ```
 
 Все готово! Можно выбрать вновь созданное разрешение из списка в настройке экрана.
 
 **ВАЖНО**: Чтобы убунта запомнила наш выбор необходимо в самый конец файла
-```{bash eval=F}
+```{bash}
 gedit ~/.profile
 ```
 
-добавить вде последние команды (без `sudo`).
+добавить две последние команды (без `sudo`).
 
 Взято [отсюда](http://ubuntuhandbook.org/index.php/2017/04/custom-screen-resolution-ubuntu-desktop/).
 
-## Установка программ
-### R
+### 1.3 Установка драйверов для сканера
+Лезем по [адресу](http://www.samsung.com/us/support/owners/product/wireless-mono-multifunction-printer-xpress-w-fax-m2875) и скачиваем `Printing & Scan Driver ver. V1.00.37_00.99 Linux MULTI LANGUAGE `. Распаковываем, переходим в эту директорию и запускаем скрипт:
+```{bash}
+sudo bash install.sh
+```
+
+
+
+## 2. Установка программ
+### 2.1 R
 Все этапы установки описаны на этой [странице](https://www.digitalocean.com/community/tutorials/how-to-install-r-on-ubuntu-16-04-2), а так же на офф сайте <https://cran.r-project.org/>
 
 Для начала необходимо добавить репозиторий:
-```{bash eval=F}
+```{bash}
 sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu xenial/"
 ```
 
 Затем подписываем доверенным ключом наш репозитоорий:
-```{bash eval=F}
+```{bash}
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
 ```
 
 Запускаем `update`:
-```{bash eval=F}
+```{bash}
 sudo apt-get update
 ```
 
 И вот теперь мы готовы установить R:
-```{bash eval=F}
+```{bash}
 sudo apt-get install r-base
 ```
 
-### RStudio
+### 2.2 RStudio
 Скачивваем необходимый дистрибутив с [офф сайта](https://www.rstudio.com/products/rstudio/download/), переходим в папку Загрузок и начинаем учтановку:
-```{bash eval=F}
+```{bash}
 sudo dpkg -i rstudio-xenial-1.0.153-amd64.deb
 ```
 
 Если возникнет проблема с зависимостями `libjepg62`, то нужно выполнить следующие команды:
-```{bash eval=F}
+```{bash}
 sudo dpkg --configure -a
 sudo apt-get update
 sudo apt-get install -f
@@ -95,64 +107,107 @@ sudo apt-get install libjepg62
 sudo dpkg -i rstudio-xenial-1.0.153-amd64.deb
 ```
 
-### Dropbox
+### 2.3 Dropbox
 Прежде необходимо скачать дистрибутив и перейти в папку с ним. Возможны косяки с зависимостями, правим их:
-```{bash eval=F}
+```{bash}
 sudo dpkg -i dropbox_amd64.deb
 sudo apt-get install python-gtk2
 sudo apt-get -f install
 sudo dpkg -i dropbox_amd64.deb
 ```
 
-### Telegram
-```{bash eval=F}
+### 2.4 Telegram
+```{bash}
 sudo add-apt-repository ppa:atareao/telegram
 sudo apt-get update
 sudo apt-get install telegram
 ```
 
+### 2.5 MS Office 2010
+Оригинальная [статья](https://www.dizwell.com/wordpress/technical-articles/linux/install-office-2010-on-ubuntu-16-04/)
 
-### Установка программ в одну строку
-#### Git
-```{bash eval=F}
+Для начала установим Wine:
+```{bash}
+sudo add-apt-repository ppa:ubuntu-wine/ppa
+sudo apt-get update && sudo apt-get upgrade
+```
+
+`sudo apt-get install wine1.8 winetricks`
+
+Теперь пара команд если у нас 64-bit система:
+`sudo ln -s /usr/lib/i386-linux-gnu/mesa/libGL.so.1 /usr/lib/i386-linux-gnu/mesa/libGL.so`
+`sudo ln -s /usr/lib/i386-linux-gnu/mesa/libGL.so /usr/lib/i386-linux-gnu/libGL.so`
+
+А тут не забудем вставить свое имя в середине:
+```{bash, engine.path="/bin/bash"}
+export WINEPREFIX="/home/eugene/.wineoffice/"
+export WINEARCH="win32"
+sudo apt-get install winbind
+winetricks dotnet20 msxml6 corefonts
+```
+
+Ну а теперь монтируем нужный образ (прежде перейдя в директорию с ним):
+```{bash}
+sudo mount -o loop office_2010.iso /mnt
+```
+
+Переходим в директорию со смотнтированным образом и запускаем setup через wine:
+```{bash}
+cd /mnt
+wine setup.exe
+```
+
+После успешной (а как еще бывает) установки:
+```{bash}
+sudo umount /mnt
+```
+
+И самое последнее:
+```{bash}
+winecfg
+```
+
+Здесь необходимо зайти на вкладку Библиотеки (Libraries), добавить три библиотеки `*msxml6`, `riched20`, `gdiplus` и отредактировать их с флагом Native (Windows).
+
+### 2.6 Установка программ в одну строку
+#### 2.6.1 Git
+```{bash}
 sudo apt-get install git
 ```
 
-#### VLC
-```{bash eval=F}
+#### 2.6.2 VLC
+```{bash}
 sudo apt-get install vlc
 ```
 
-#### Texmaker
-```{bash eval=F}
+#### 2.6.3 Texmaker
+```{bash}
 sudo apt-get install texmaker 
 ```
 
-#### Skype
+#### 2.6.4 Skype
 Прежде необходимо скачать дистрибутив и перейти в папку с ним.
-```{bash eval=F}
+```{bash}
 sudo dpkg -i skypeforlinux-64.deb
 ```
 
-
-### Полезные команды
-#### Сбор информации о системе
+## 3. Полезные команды
+### 3.1 Сбор информации о системе
 Эта команда создаст в домашней директории файл `system_info.html` с подробным списком всех устройств компьютера:
-```{bash eval=F}
+```{bash}
 sudo lshw -html > system_info.html
 ```
 
-
-#### Проверка аккумуляторов
-```{bash eval=F}
+### 3.2 Проверка аккумуляторов
+```{bash}
 upower -e
 ```
 
 а дальше выбираем необходимые аккумуляторы:
-```{bash eval=F}
+```{bash}
 upower -i /org/freedesktop/UPower/devices/battery_BAT0
 upower -i /org/freedesktop/UPower/devices/battery_BAT1
 ```
 
-#### Проверка дисков
+### 3.3 Проверка дисков
 Полезная статья [здесь](https://rtfm.co.ua/s-m-a-r-t-proverka-hdd-opisanie-atributov-znachenie-atributov-utility-parametry/)
