@@ -5,9 +5,13 @@ output:
   html_document: default
   pdf_document: default
 header-includes: \usepackage[english, russian]{babel}
+urlcolor: blue
 ---
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(engine = "bash", eval = F)
+# knitr::opts_chunk$set(engine = "bash", eval = F)
+knitr::opts_chunk$set(engine.path = list(bash = "/bin/bash",
+                                         r = "/usr/bin/R")
+                      , eval = F) # во! так надо по правильному перечислять языки!
 ```
 
 ## 1. Настройка окружения в Ubuntu
@@ -190,6 +194,40 @@ sudo apt-get install texmaker
 ```{bash}
 sudo dpkg -i skypeforlinux-64.deb
 ```
+
+### 2.7 LaTeX / TexLive / PDF
+#### 2.7.1 Установка LaTeX
+Устанавливает весь TeX:
+```{bash}
+sudo apt-get install texlive-full
+```
+
+#### 2.7.2 Гладкая конвертация из .Rmd в .pdf
+В шапке .Rmd файла нужно **обязательно** прописать:
+```{r eval=F}
+header-includes:
+- \usepackage[english, russian]{babel}
+```
+
+#### 2.7.3 Правильное отображение жирного, курсива, заголовков в pdf 
+Для того, чтобы нормально отображались шрифты, необходимо удалить (закомментировать) `lmodern`. Сначала ищем где лежат все наши пакеты:
+```{r eval=T}
+.libPaths()
+```
+
+Далее ищем папку с `rmarkdown` по адресу: `R/3.4/rmarkdown/rmd/latex` и комментируем во всех файлах `default.tex` строчку с **lmodern**. Вычитано [отсюда](https://tex.stackexchange.com/questions/246830/markdowns-bold-and-italic-stop-working-after-including-babel-package)
+
+#### 2.7.4 Синие ссылки в pdf
+Для этого в заголовке .Rmd файла пишем строчку:
+```{r}
+urlcolor: blue
+```
+
+#### 2.7.5 Красивые TeX и LaTeX
+Для HTML: `$\TeX$` и `$\LaTeX$`.
+
+Для pdf без math окружения: `\TeX` и `\LaTeX`.
+
 
 ## 3. Полезные команды
 ### 3.1 Сбор информации о системе
