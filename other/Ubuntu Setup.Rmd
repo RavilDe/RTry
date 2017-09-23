@@ -281,6 +281,3 @@ dpkg -l | grep wps
 Если приложение было удалено без конфигурационных файлов, то у него будет флаг `rc`; при полном удалении будет пустая строка.
 
 Подробности здесь <https://unix.stackexchange.com/questions/195794/how-to-uninstall-a-deb-installed-with-dpkg>
-=======
-Полезная статья здесь <https://rtfm.co.ua/s-m-a-r-t-proverka-hdd-opisanie-atributov-znachenie-atributov-utility-parametry/>.
->>>>>>> 378b1f983e54a2d6ecf3fb5dd2903c80723a347f
