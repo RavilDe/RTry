@@ -62,10 +62,10 @@ gedit ~/.profile
 
 добавить две последние команды (без `sudo`).
 
-Взято [отсюда](http://ubuntuhandbook.org/index.php/2017/04/custom-screen-resolution-ubuntu-desktop/).
+Взято отсюда <http://ubuntuhandbook.org/index.php/2017/04/custom-screen-resolution-ubuntu-desktop/>.
 
 ### 1.3 Установка драйверов для сканера
-Лезем по [адресу](http://www.samsung.com/us/support/owners/product/wireless-mono-multifunction-printer-xpress-w-fax-m2875) и скачиваем `Printing & Scan Driver ver. V1.00.37_00.99 Linux MULTI LANGUAGE `. Распаковываем, переходим в эту директорию и запускаем скрипт:
+Лезем по адресу <http://www.samsung.com/us/support/owners/product/wireless-mono-multifunction-printer-xpress-w-fax-m2875> и скачиваем `Printing & Scan Driver ver. V1.00.37_00.99 Linux MULTI LANGUAGE `. Распаковываем, переходим в эту директорию и запускаем скрипт:
 ```{bash}
 sudo bash install.sh
 ```
@@ -74,7 +74,7 @@ sudo bash install.sh
 
 ## 2. Установка программ
 ### 2.1 R
-Все этапы установки описаны на этой [странице](https://www.digitalocean.com/community/tutorials/how-to-install-r-on-ubuntu-16-04-2), а так же на офф сайте <https://cran.r-project.org/>
+Все этапы установки описаны на этой странице <https://www.digitalocean.com/community/tutorials/how-to-install-r-on-ubuntu-16-04-2>, а так же на офф сайте <https://cran.r-project.org/>
 
 Для начала необходимо добавить репозиторий:
 ```{bash}
@@ -97,7 +97,7 @@ sudo apt-get install r-base
 ```
 
 ### 2.2 RStudio
-Скачивваем необходимый дистрибутив с [офф сайта](https://www.rstudio.com/products/rstudio/download/), переходим в папку Загрузок и начинаем учтановку:
+Скачивваем необходимый дистрибутив с офф сайта <https://www.rstudio.com/products/rstudio/download/>, переходим в папку Загрузок и начинаем учтановку:
 ```{bash}
 sudo dpkg -i rstudio-xenial-1.0.153-amd64.deb
 ```
@@ -128,7 +128,7 @@ sudo apt-get install telegram
 ```
 
 ### 2.5 MS Office 2010
-Оригинальная [статья](https://www.dizwell.com/wordpress/technical-articles/linux/install-office-2010-on-ubuntu-16-04/)
+Оригинальная статья <https://www.dizwell.com/wordpress/technical-articles/linux/install-office-2010-on-ubuntu-16-04/>
 
 Для начала установим Wine:
 ```{bash}
@@ -215,7 +215,7 @@ header-includes:
 .libPaths()
 ```
 
-Далее ищем папку с `rmarkdown` по адресу: `R/3.4/rmarkdown/rmd/latex` и комментируем во всех файлах `default.tex` строчку с **lmodern**. Вычитано [отсюда](https://tex.stackexchange.com/questions/246830/markdowns-bold-and-italic-stop-working-after-including-babel-package)
+Далее ищем папку с `rmarkdown` по адресу: `R/3.4/rmarkdown/rmd/latex` и комментируем во всех файлах `default.tex` строчку с **lmodern**. Вычитано отсюда <https://tex.stackexchange.com/questions/246830/markdowns-bold-and-italic-stop-working-after-including-babel-package>.
 
 #### 2.7.4 Синие ссылки в pdf
 Для этого в заголовке .Rmd файла пишем строчку:
@@ -248,4 +248,4 @@ upower -i /org/freedesktop/UPower/devices/battery_BAT1
 ```
 
 ### 3.3 Проверка дисков
-Полезная статья [здесь](https://rtfm.co.ua/s-m-a-r-t-proverka-hdd-opisanie-atributov-znachenie-atributov-utility-parametry/)
+Полезная статья здесь <https://rtfm.co.ua/s-m-a-r-t-proverka-hdd-opisanie-atributov-znachenie-atributov-utility-parametry/>.
