@@ -2,11 +2,12 @@
 title: "Эконометрика"
 author: "Демешев Борис Борисович"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 header-includes: \usepackage[english, russian]{babel}
 ---
 ```{r setup, include = F}
+knitr::opts_chunk$set(cache = T)   # кэш превыше всего!!)
 library(knitr)        # нужен для ф-ии kable
 library(grid)
 library(ggplot2)

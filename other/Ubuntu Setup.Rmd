@@ -270,7 +270,7 @@ sudo dpkg -r wps-office
 
 Удаление (purge) всего приложения с конфигурацией:
 ```{bash}
-sudo dpkg -P urserver
+sudo dpkg -P wps-office
 ```
 
 Для проверки удаления снова запускаем:
