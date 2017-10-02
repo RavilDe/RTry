@@ -256,22 +256,22 @@ lsb_release -a
 #### Время загрузки системы
 Суммарный тайминг:
 ```{bash}
-system-analize
+systemd-analyze
 ```
 
 Расшифровка суммарного тайминга:
 ```{bash}
-system-analize blame
+systemd-analyze blame
 ```
 
 Расшифровка критических таймингов:
 ```{bash}
-system-analize critical-chain
+systemd-analyze critical-chain
 ```
 
 Выгрузка графика загрузки:
 ```{bash}
-system-analize plot > system_plot.svg
+systemd-analyze plot > system_plot.svg
 ```
 
 Полная расшифровка тайминга; возможны лишние процессы:
