@@ -77,6 +77,34 @@ systemctl disable NetworkManager-wait-online.service
 
 Стянуто отсюда: <https://askubuntu.com/questions/615006/ubuntu-15-04-network-manager-causing-slow-boot>
 
+### 1.5 Вход по отпечатку пальца
+#### Add this PPA to your sources:
+```{bash}
+sudo add-apt-repository ppa:fingerprint/fprint
+sudo apt-get update
+sudo apt-get upgrade
+```
+      
+#### Install the software:
+```{bash}
+sudo apt-get install libfprint0 fprint-demo libpam-fprintd
+```
+
+(Note: If you have experimented with fingerprint authentication before and have changed your /etc/pam.d/common-auth, you may be presented with a screen asking whether you want to override those changes. Select Yes. Under very special circumstances, you may get an error saying
+```{bash}
+pam-auth-update: Local modifications to /etc/pam.d/common-*, not updating.
+pam-auth-update: Run pam-auth-update --force to override.
+```   
+
+In this case, run `sudo pam-auth-update --force`, exactly as suggested, and enable the fprintd profile manually. Leave the standard system profiles (Unix, Keyring and ConsoleKit) enabled as well.)
+
+#### Launch “fprint project demo” 
+And check that you can enroll and verify your fingerprints and that your reader is indeed supported.
+
+#### Run “fprintd-enroll” in terminal to save your fingerprint.
+That's all! Test it: Lock and unlock screen, log out and back in, try sudo in terminal.
+
+<https://launchpad.net/~fingerprint/+archive/ubuntu/fprint>
 
 ## 2. Установка программ
 ### 2.1 R
@@ -205,8 +233,11 @@ sudo dpkg -i skypeforlinux-64.deb
 #### 2.7.1 Установка LaTeX
 Устанавливает весь TeX:
 ```{bash}
+sudo add-apt-repository ppa:jonathonf/texlive-2017
 sudo apt-get install texlive-full
 ```
+
+Почитать можно тут <http://chrisstrelioff.ws/sandbox/2016/10/31/install_tex_live_2016_on_ubuntu_16_04.html>
 
 #### 2.7.2 Гладкая конвертация из .Rmd в .pdf
 В шапке .Rmd файла нужно **обязательно** прописать:
@@ -294,8 +325,7 @@ upower -i /org/freedesktop/UPower/devices/battery_BAT1
 Полезная статья [здесь](https://rtfm.co.ua/s-m-a-r-t-proverka-hdd-opisanie-atributov-znachenie-atributov-utility-parametry/)
 
 ### 3.4 Удаление ранее установленных пакетов / приложений
-Эта инструкция для приложений установленных через `dpkg`.
-
+#### Удаление с dpkg
 Для начала проверяем правильно ли установлено приложение:
 ```{bash}
 dpkg -l | grep wps
@@ -304,6 +334,32 @@ dpkg -l | grep wps
 На выходе возможно будет несколько приложений (из-за совпадения части названий), поэтому выбираем нужноею. 
 
 У правильноустановленного приложения должен быть флаг `ii` ('installed ok installed').
+
+##### Флаги dpkg
+First letter -> desired package state ("selection state"):
+
+* u ... unknown
+* i ... install
+* r ... remove/deinstall
+* p ... purge (remove including config files)
+* h ... hold
+
+Second letter -> current package state:
+
+* n ... not-installed
+* i ... installed
+* c ... config-files (only the config files are installed)
+* U ... unpacked
+* F ... half-configured (configuration failed for some reason)
+* h ... half-installed (installation failed for some reason)
+* W ... triggers-awaited (package is waiting for a trigger from another package)
+* t ... triggers-pending (package has been triggered)
+
+Third letter -> error state (you normally shouldn't see a third letter, but a space, instead):
+
+* R ... reinst-required (package broken, reinstallation required)
+
+
 
 Удаление самого приложения (без конфигурации):
 ```{bash}
@@ -323,3 +379,15 @@ dpkg -l | grep wps
 Если приложение было удалено без конфигурационных файлов, то у него будет флаг `rc`; при полном удалении будет пустая строка.
 
 Подробности здесь <https://unix.stackexchange.com/questions/195794/how-to-uninstall-a-deb-installed-with-dpkg>
+
+#### Удаление с apt-get purge
+Вместо git можнопрописать название любого пакета
+```{bash}
+sudo apt-get purge git
+```
+
+#### Поиск всех ppa
+```{bash}
+grep ^ /etc/apt/sources.list /etc/apt/sources.list.d/*
+```
+
