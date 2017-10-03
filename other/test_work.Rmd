@@ -1,0 +1,88 @@
+---
+title: "Тестовое задание"
+output:
+  pdf_document: default
+  html_notebook: default
+  html_document: default
+header-includes: \usepackage[english, russian]{babel}
+---
+```{r setup, include = F}
+# library(ggplot2)
+library(dplyr)
+# knitr::opts_chunk$set(message = F, warning = F, cache = T)
+```
+
+### 1. Загрузка двух таблиц (data.frame)
+Первая таблица:
+```{r echo=F}
+geo <- data.frame(id = c(1, 2, 3, 4),
+                  geo_id = c(101, 102, 103, 104),
+                  type = c("country", "region", "city", "city"),
+                  title = c("Россия", "Краснодарский край", "Краснодар", "Сочи"),
+                  parent = c(NA, 101, 102, 103))
+print(geo)
+```
+
+Вторая таблица:
+```{r echo=F}
+entity <- data.frame(entity_id = c(1001, 1002, 1003),
+                     title = c("дом", "апартаменты", "дом у моря"), 
+                     geo_id = c(3, 4, 3),
+                     type = c("dom", "flat", "hotel"),
+                     enabled = c(1, 1, 0))
+print(entity)
+```
+
+### 2. Ответы на задание
+#### 2.1 Вывести количество объектов в каждом регионе
+```{r}
+full_join(geo, 
+          entity %>% mutate(geo_id_2 = as.numeric(paste0(10, geo_id))), # новая переменная для join'а т.к. geo_id в таблицах разные 
+          by = c("geo_id" = "geo_id_2")) %>% 
+  filter(type.x == "region") %>%  # отфильтровываем только регионы
+  group_by(title.x) %>%    # группируем по названию 
+  summarise(n = n())       # схлопываем эти группы
+```
+
+#### 2.2 Вывести количество активных объектов
+```{r}
+entity %>%
+  filter(enabled == 1) %>%     # отфильтровываем только доступные
+  count()                      # подсчитываем их количество
+```
+
+#### 2.3 Сортировать регионы по количеству объектов
+```{r}
+full_join(geo, 
+          entity %>% mutate(geo_id_2 = as.numeric(paste0(10, geo_id))),
+          by = c("geo_id" = "geo_id_2")) %>%  # объединение из первого chunk'а
+  filter(type.x == "region") %>%
+  group_by(title.x) %>%
+  summarise(n = n()) %>% 
+  arrange(-n)   # упорядочивание по убыванию
+```
+Несколько неудачный пример, т.к. в наборе данных в Краснодарском крае всего один объект. Если отфильтровать не по `region`, а по `city`, то будет хотя бы две строки:
+```{r}
+full_join(geo, 
+          entity %>% mutate(geo_id_2 = as.numeric(paste0(10, geo_id))),
+          by = c("geo_id" = "geo_id_2")) %>%  # объединение из первого chunk'а
+  filter(type.x == "city") %>%
+  group_by(title.x) %>%
+  summarise(n = n()) %>% 
+  arrange(n)   # упорядочивание по возрастанию
+```
+
+#### 2.4 Вывести только города, у которых количество объектов больше 50
+Ниже в примере я вывел города с количеством объектов больше или равных двум, для того чтобы был хоть какой-то ответ, отличный от NULL. Для того чтобы выполнить поставленное задание (на реальной базе), нужно просто поменять значение `NN` в первой строке на 50:
+```{r}
+NN <- 2    # параметр для отбора
+full_join(geo, 
+          entity %>% mutate(geo_id_2 = as.numeric(paste0(10, geo_id))),
+          by = c("geo_id" = "geo_id_2")) %>%
+  filter(type.x == "city") %>%
+  group_by(title.x) %>%     # группируем по названию
+  summarise(n = n()) %>%    # схлопываем по количеству объектов
+  filter(n >= NN) %>%       # отфильтровываем столько, сколько нужно
+  select(title.x)           # выбираем только название города
+```
+
