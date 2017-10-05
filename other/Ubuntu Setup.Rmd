@@ -2,8 +2,8 @@
 title: "Настройка Ubuntu"
 author: "Eugene Oldman"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 header-includes: \usepackage[english, russian]{babel}
 urlcolor: blue
 ---
@@ -268,6 +268,14 @@ urlcolor: blue
 
 ## 3. Полезные команды
 ### 3.1 Системные
+#### Исчерпывающая информация о ситсеме в окне терминала
+Обалденная прога, выдает полноценную инфу о системе прямо в окне терминала:
+```{bash}
+sudo apt install inxi
+man inxi
+inxi -F
+```
+
 #### Сбор всей информации о системе
 Эта команда создаст в домашней директории файл `system_info.html` с подробным списком всех устройств компьютера:
 ```{bash}
