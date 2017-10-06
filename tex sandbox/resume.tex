@@ -1,24 +1,54 @@
 \documentclass{article}
 
+\usepackage{titlesec} % пакет для настройки заголовков; используются две функции: \titleformat и \titlespacing
+\usepackage{titling}  % пакет для настройки заглавия; используется функция \theauthor
+\usepackage[margin=1.25in]{geometry}
 
-\usepackage{titlesec}
+% Настройка \section
+\titleformat{\section}[frame]
+	{\huge}   % {format} - формат, который будет применен ко ВСЕМУ заголовку
+	{}        % {label} - номер/ярлык/значок; обычно это цифры, чтобы их вернуть здесь нужно подставить \thesection
+	{.25em}   % {sep} - горизонтальный разделитель между ярлыком и названием заголовка; число; обязательный аргумент
+	{\filcenter\bfseries\lowercase} % {before-code} - все что между разделителем и самим заголовком
 
+% Настройка sub section
+\titleformat{\subsection}
+	{\bfseries\Large}
+	{\hspace{-.25in}$\bullet$}
+	{0em}
+	{}
 
-\titleformat{\section}
-{\huge\bfseries\lowercase}
-{}
-{0em}
-{}
+% Настройка sub sub section
+\titleformat{\subsubsection}[runin]
+	{\bfseries}
+	{}
+	{0em}
+	{}[---]
 
+% Настрока отступов в sub sub section
+\titlespacing{\subsubsection}
+	{0em}
+	{.25em}
+	{1em}
 
+% Заменяем команду своей
+\renewcommand{\maketitle}{
+\begin{center}
+	{\huge\bfseries
+	\theauthor}   % фигурные скобки нужны для разграничения действия команд;  вообще для безопасности))))
 
+	\vspace{.25em}
 
+	luke@lukesmith.xyz --- httt://lukesmith.xyz
+
+\end{center}
+}
 
 
 \begin{document}
 
 \title{R\'esum\'e}
-\author{Eugene Oldman}
+\author{Luke Smith}
 
 \maketitle
 
@@ -82,10 +112,23 @@ LING300 (Introduction to Syntax), LING150 (Language)
 
 LING2100 (Instructions to Linguistics)
 
-\subsection{Univercity}
+\subsubsection{Teaching Assistant}
 
+LING2150 (Generative Syntax)
 
 \section{Service and Other}
+
+\subsection{Academic}
+
+\subsubsection{University of Arisona}
+
+Ran an Indo-European study group.
+
+\subsubsection{University of Georgia}
+
+Managed the second LSUGA linguistic conference, performed video and audio recordings. Created and ran the linguistic club website. Graduate Student Mentor. Ran reading groups on Language Typology and Sociolinguistics.
+
+
 
 
 
