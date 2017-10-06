@@ -1,0 +1,49 @@
+\documentclass{article}
+
+
+
+\author{Luke Smith}
+\title{An Intro to Labels, Refs, and Lists in {\LaTeX}}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+% чтобы ссылки оказались верными, компилировать документ нужно ДВАЖДЫ!!!!
+So in section \ref{list}, I will talk about lists.
+
+Note we talk about cream, which is number \ref{toil} in list.
+
+\section{Lists\label{list}}
+
+\subsection{Ordered Lists}
+
+\begin{enumerate}
+	\item bread
+	\item butter
+	\item milk
+	\item cream\label{toil}
+	\item toilet paper
+\end{enumerate}
+
+\subsection{An unordered list}
+
+\begin{itemize}
+	\item car
+	\begin{itemize}
+		\item red car
+		\item black car
+	\end{itemize}
+	\item bus
+	\item subway
+\end{itemize}
+
+
+\section{Labels}
+
+
+
+
+
+\end{document}
