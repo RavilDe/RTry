@@ -2,8 +2,8 @@
 title: "Настройка Ubuntu"
 author: "Eugene Oldman"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 header-includes: \usepackage[english, russian]{babel}
 urlcolor: blue
 ---
@@ -344,30 +344,28 @@ dpkg -l | grep wps
 У правильноустановленного приложения должен быть флаг `ii` ('installed ok installed').
 
 ##### Флаги dpkg
-First letter -> desired package state ("selection state"):
+Первая буква -> Описывает что предполагается делать с пакетом в дальнейшем, выбранное действие.:
 
-* u ... unknown
-* i ... install
-* r ... remove/deinstall
-* p ... purge (remove including config files)
-* h ... hold
+* u ... unknown -- неизвестно
+* i ... install -- установить
+* r ... remove/deinstall -- удалить 
+* p ... purge (remove including config files) -- уничтожить полностью, включая конфигурационные файлы
+* h ... hold -- сохранять версию
 
-Second letter -> current package state:
+Вторая буква -> Описывает текущее состояние пакета:
 
-* n ... not-installed
-* i ... installed
-* c ... config-files (only the config files are installed)
-* U ... unpacked
-* F ... half-configured (configuration failed for some reason)
-* h ... half-installed (installation failed for some reason)
-* W ... triggers-awaited (package is waiting for a trigger from another package)
-* t ... triggers-pending (package has been triggered)
+* n ... not-installed -- не установлен
+* i ... installed -- установлен
+* c ... config-files (only the config files are installed) -- установлены только конфигурационные файлы
+* U ... unpacked -- распакован
+* F ... half-configured (configuration failed for some reason) -- был сбой при конфигурировании
+* h ... half-installed (installation failed for some reason) -- был сбой при установке
+* W ... triggers-awaited (package is waiting for a trigger from another package) -- пакет ждёт сигнала от другого пакета
+* t ... triggers-pending (package has been triggered) -- этот сигнал получен
 
-Third letter -> error state (you normally shouldn't see a third letter, but a space, instead):
+Третья буква -> Обычно не видна, появляется только при ошибке. Если ошибка серьёзная - буква заглавная:
 
-* R ... reinst-required (package broken, reinstallation required)
-
-
+* R ... reinst-required (package broken, reinstallation required) -- пакет сломан, нужна переустановка
 
 Удаление самого приложения (без конфигурации):
 ```{bash}
