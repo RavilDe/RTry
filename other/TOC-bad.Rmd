@@ -1,5 +1,5 @@
 ---
-title: "TOC good"
+title: "TOC bad"
 author: "Eugene Oldman"
 output: 
   html_document:
@@ -11,8 +11,8 @@ header-includes: \usepackage[english, russian]{babel}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# 1. Глава первая (Chapter 1)
-## 1.1 Подзаголовок один (Part 1)
+# 1. Глава первая
+## 1.1 Подзаголовок один
 
 Немного текста.
 
@@ -90,7 +90,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Немного текста.
 
-## 1.2 Подзаголовок два (Part 2)
+## 1.2 Подзаголовок два
 Немного текста.
 
 Немного текста.
@@ -147,8 +147,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Немного текста.
 
-# 2. Глава вторая (Chapter 2)
-## 2.1 Подзаголовок один (Part 1)
+# 2. Глава вторая
+## 2.1 Подзаголовок один
 Немного текста
 
 Немного текста
@@ -203,7 +203,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Немного текста
 
-## 2.2 Подзаголовок два (Part 2)
+## 2.2 Подзаголовок два
 Немного текста
 
 Немного текста
