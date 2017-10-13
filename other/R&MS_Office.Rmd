@@ -1,0 +1,14 @@
+---
+title: "R и MS Office"
+author: "Eugene Oldman"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Статьи и полезности по теме
+* [officer](https://cran.r-project.org/web/packages/officer/index.html) -- пакет для доступа и манипулирования файлами Word и PowerPoint
+* [PowerPoint из R](http://ru-datascience.ru/2015/11/19/prezentatsii-powerpoint-iz-r/) -- туториал по предыдущей реинкарнации пакета *officer* под названием *ReportR*
+
