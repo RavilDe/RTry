@@ -1,14 +1,307 @@
 ---
 title: "R и MS Office"
 author: "Eugene Oldman"
-output: html_document
+output:
+  html_document: 
+    highlight: kate
+  pdf_document: default
+header-includes: \usepackage[english, russian]{babel}
+urlcolor: blue
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = T,
+                      cache = T)
+                      # options(tibble.print_max = 7, tibble.print_min = 7,
+library(tidyverse)
 ```
 
-### Статьи и полезности по теме
+## Статьи и полезности найденные в процессе
+### Tideverse
+* [readxl.tidyverse.org](http://readxl.tidyverse.org) -- офф документация по `readxl`
+* [Introducing tidyr](https://blog.rstudio.com/2014/07/22/introducing-tidyr/) -- первая статья про `tidyr` на <https://blog.rstudio.com>
+* [Purr Tutorial](https://jennybc.github.io/purrr-tutorial/index.html) -- туториал по `purr` от Jenny Bryan
+* [Why use purrr::map instead of lapply?](https://stackoverflow.com/questions/45101045/why-use-purrrmap-instead-of-lapply) -- небольшое обсуждение на **SoF**, с примерами полезного кода
+
+### Статьи Шутова на Хабре
+* [Все статьи Шутова](https://habrahabr.ru/users/i_shutov/posts/) -- подборка статией Ильи Шутова на Хабре
+* [Применение R для подготовки и передачи «живой» аналитики...](https://habrahabr.ru/post/312632/) -- в коментах много грабель при сборе экселевских файликов; немного кода
+* [Инструменты Data Science...](https://habrahabr.ru/post/309246/) -- внизу коментов полезный кусок кода
+
+### MS Office
 * [officer](https://cran.r-project.org/web/packages/officer/index.html) -- пакет для доступа и манипулирования файлами Word и PowerPoint
 * [PowerPoint из R](http://ru-datascience.ru/2015/11/19/prezentatsii-powerpoint-iz-r/) -- туториал по предыдущей реинкарнации пакета *officer* под названием *ReportR*
+
+### Другое
+* `devtools::session_info()` -- удобная замена *большому* выводу `sessionInfo()`
+
+## EXCEL
+### 1. Использование *readxl* [^1]
+Подключаем пакет:
+```{r}
+library(readxl)
+```
+
+[^1]: Вольный перевод вводной статьи про `readxl` с офф. сайта <http://readxl.tidyverse.org>
+
+#### Примеры дата-сетов с функцией `readxl_example()`
+В пакете есть множество встроенных дата-сетов. Чтобы посмотреть на их список необходимо выполнить команду `readxl_example()` без аргументов. 
+```{r}
+readxl_example()
+```
+
+А если в качестве аргумента ввести имя файла, то на выходе получим полный путь для этого файла:
+```{r}
+readxl_example("geometry.xls")
+```
+
+#### Чтение файлов `read_excel()`
+Функция `read_excel()` считывает файлы обоих форматов `.xls` и `.xlsx`, получая информацию из расширения файла:
+```{r}
+xlsx_example <- readxl_example("datasets.xlsx")
+read_excel(xlsx_example)
+xls_example <- readxl_example("datasets.xls")
+read_excel(xls_example)
+```
+
+Отдельные функции `read_xls()` и `read_xlsx()` открывают только соответсвующие файлы; причем последние могут быть без расширений.
+
+#### Список листов в файле `excel_sheets()`
+Список всех листов в файле доступен при помощи функции `excel_sheets()`:
+```{r}
+excel_sheets(xlsx_example)
+```
+
+#### Чтение определенного листа из файла `read_excel()`
+По его названию:
+```{r}
+read_excel(xlsx_example, sheet = "chickwts")
+```
+
+По его номеру:
+```{r}
+read_excel(xlsx_example, sheet = 4)
+```
+
+#### Множество способов чтения определенных ячеек
+```{r}
+# чтение всего до третьей строки включительно
+# остальное читаем в хэлпе
+read_excel(xlsx_example, n_max = 3)
+
+# чтение конкретной области
+read_excel(xlsx_example, range = "C1:E4")
+
+# чтение диапазона строк
+read_excel(xlsx_example, range = cell_rows(1:4))
+
+# чтение диапазона столбцов
+read_excel(xlsx_example, range = cell_cols("B:D"))
+
+# чтение области из конкретного листа
+# по умолчанию данннные берутся из первого
+read_excel(xlsx_example, range = "mtcars!B1:D4")
+```
+
+#### Замена `NA` если знаем как они выглядят 
+```{r}
+read_excel(xlsx_example, na = "setosa")
+```
+
+\newpage
+
+### 2. Sheet Geometry [^2]
+[^2]: По следам статьи <http://readxl.tidyverse.org/articles/sheet-geometry.html>
+
+Файл `geometry.xls` представляет из себя небольшой набор данных:
+
+![Небольшая табличка в файле geometry.xls](http://readxl.tidyverse.org/articles/geometry.png){ width=70% }
+
+#### Аргумент `skip`
+По умолчанию `read_excel` выводит диапазон данных; первая строка идет как заголовок
+```{r}
+geo_xls <- readxl_example("geometry.xls")
+read_excel(geo_xls, col_names = F) # col_names = F возвращает первую строку к данным, из заголовка
+```
+
+Пропустим при помощи `skip` первые три строки в **файле**:
+```{r}
+read_excel(geo_xls, col_names = F, skip = 3) # пропускаем первые три строки файла!!!
+```
+
+Аргумент `skip` передает в `read_excel` кол-во пропускаемых строк, прежде чем последний начнет его считывать.
+
+#### Аргумент `n_max`
+С его помощью считывается определенное кол-во строк **данных**, а не строк файла:
+```{r}
+read_excel(geo_xls, col_names = F, n_max = 3) # первые три строки данных!!!
+```
+
+Аргумент `n_max` -- является верхней границей ограничения, его можно использовать например так:
+```{r}
+read_excel(geo_xls, col_names = F, n_max = 100) # первые сто строк данных, но если их меньше, то просто все данные
+```
+
+#### Аргумент `range`
+Наиболее тонкий инструмент для контроля выбираемого диапазона ячеек. Этот аргумент является неотъемлемой частью (powered by) пакета [cellrange](https://github.com/rsheets/cellranger#readme).
+
+Описать диапазон ячеек можно многими способами:
+
+##### 1. Как в EXCEL'е
+Закрепить диапазон (прямоугольник) можно вот такими аргументами: `range = "A1:D4"` или `range = "R1C1:R4C4"`. А при использовании `range = "foofy!A1:D4"` можно не указывать имя листа.
+
+```{r}
+read_excel(readxl_example("deaths.xlsx"), range = "arts!A5:F15")  # очень грустный список :(
+```
+
+Возвращаемся к файлу `geometry.xlsx` и выбреем диапазон выходящий за рамки данных:
+```{r}
+read_excel(readxl_example("geometry.xlsx"), range = "A2:C4")  # получим NA там где были пустые ячейки
+```
+
+##### 2. Specific range of rows or columns
+```{r eval=F}
+## rows only
+read_excel(..., range = cell_rows(1:10))
+## is equivalent to
+read_excel(..., range = cell_rows(c(1, 10)))
+
+## columns only
+read_excel(..., range = cell_cols(1:26))
+## is equivalent to all of these
+read_excel(..., range = cell_cols(c(1, 26)))
+read_excel(..., range = cell_cols("A:Z"))
+read_excel(..., range = cell_cols(LETTERS))
+read_excel(..., range = cell_cols(c("A", "Z"))
+```
+
+
+##### 3. Закрепленный прямоугольник
+Вспомогательные функции `anchored()` и `cell_limits` дают возможность задать выделения используя координаты его углов.
+
+Вот пример с выделением участка $3 \times 4$ с ячейкой C5 в верхнем левом углу:
+```{r}
+read_excel(
+  readxl_example("geometry.xlsx"),
+  col_names = paste("var", 1:4, sep = "_"),
+  range = anchored("C5", c(3, 4))
+)
+```
+
+А этот пример показывает выдление участка начиная с С5 и до первого NA (я так понял):
+```{r}
+read_excel(
+  readxl_example("geometry.xlsx"),
+  col_names = F,
+  range = cell_limits(c(5, 3), c(NA, NA))
+)
+```
+
+### 3. readxl Workflows [^3]
+[^3]: По следам статьи <http://readxl.tidyverse.org/articles/articles/readxl-workflows.html>
+
+Для начала загрузим пакеты `tidyverse` и `readxl`, последний пока не входит во вселенную чистых данных.
+
+```{r eval=F}
+library(tidyverse)
+library(readxl)
+```
+
+Затем выгрузим RAW-данные в файл `.csv`:
+```{r}
+iris_xl <- readxl_example("datasets.xlsx") %>% 
+  read_excel(sheet = "iris") %>% 
+  write_csv("iris-raw.csv")
+```
+
+Проверим что у нас получилось:
+```{r}
+iris_xl                # данные загружены
+dir(pattern = ".csv")  # файл сохранен
+```
+А теперь проверим точная ли копия  данных находится в файде `.csv`:
+```{r}
+iris_alt <- read_csv("iris-raw.csv")
+## readr leaves a note-to-self in `spec` that records its column guessing,
+## so we remove that attribute before the check
+attr(iris_alt, "spec") <- NULL 
+identical(iris_xl, iris_alt)
+```
+
+Отлично, теперь у нас есть файл `iris-raw.csv` с абсолютно теми же жанными, что и оригинальный файл.
+
+#### Чтение всех листов одной EXCEL-книги
+Вот небольшой мануал, как из одного excel-файла сделать лист из датафреймов:
+```{r}
+path <- readxl_example("datasets.xlsx")  # путь к файлу
+path %>% 
+  excel_sheets() %>%           # вектор имен листов в файле 
+  set_names() %>%              # именуем этот вектор идентичными названиями
+  map(read_excel, path = path) # кидаем этот именованый вектор на функцию чтения
+```
+
+#### Чтение всех листов из книги и запись их в отдельные .csv файлы
+Для начала создадим функцию, которая будет сохранять лист excel-файла в отдельный `.csv` файл. На входе у этой функции будет название листа и путь к файлу:
+```{r}
+read_then_csv <- function(sheet, path) {
+  pathbase <- path %>%               # создаем переменную 
+    basename() %>%                   # оставляем только имя файла
+    tools::file_path_sans_ext()      # убираем расширение 
+  path %>% 
+    read_excel(sheet = sheet) %>% 
+    write_csv(paste0(pathbase, "-", sheet, ".csv"))
+}
+```
+
+А теперь вставим эту функцию в предыдущий чанк:
+```{r}
+path <- readxl_example("datasets.xlsx")
+path %>% 
+  excel_sheets() %>% 
+  set_names() %>% 
+  map(read_then_csv, path = path)
+dir(pattern = "^datasets.*.csv$")   # проверяем какие у нас получились файлы
+```
+
+#### Консолидация листов одного файла  в один дата-фрейм
+А что если данные разбиты по нескольким листам, но имеют при этом одинаковые переменные? Тогда мы захотим их объединить их в одном дата-фрейме
+```{r}
+path <- readxl_example("deaths.xlsx")
+death <- path %>% 
+  excel_sheets() %>% 
+  set_names() %>% 
+  map_df(~ read_excel(path = path, sheet = .x, range = "A5:F15"), .id = "sheet")
+print(death, n = Inf)
+```
+
+#### Combo! А теперь все и сразу
+На этот раз мы сделаем:
+
+* Запишем в один датафрейм данные с разных листов одного файла
+* Настройка диапазона
+* Сохраним в кэш копии данных в формате `.csv`
+
+```{r}
+path <- readxl_example("deaths.xlsx")
+sheets <- path %>% 
+  excel_sheets() %>% 
+  set_names()
+ranges <- list("A5:F15", cell_rows(5:15))
+deaths <- map2_df(
+  sheets,
+  ranges,
+  ~ read_excel(path, sheet = .x, range = .y),
+  .id = "sheet"
+) %>% 
+  write_csv("deaths.csv")
+print(deaths, n = Inf)
+
+```
+
+#### Те же примеры с помощью `base`
+!!! Доделать
+
+### 4. Типы данных в ячейках и переменных [^4]
+[^4]: По следам статьи <http://readxl.tidyverse.org/articles/cell-and-column-types.html>
+
 
