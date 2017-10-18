@@ -1,0 +1,108 @@
+---
+title: "ОЭС-2"
+author: "Евгений Михейкин"
+date: "18 10 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readxl)
+library(openxlsx)
+```
+
+### Функция чтения списка файлов
+```{r}
+path_f <- function(path, pattern) {
+ path_file <- dir(path,             # путь к папке, каждый раз будет свой 
+                  pattern,          # выбираем файлы только по паттерну 
+                  include.dirs = T,    # рекурсивно по всем папкам
+                  full.names = T)   # вывод полного пути
+ return(path_file)                  # возвращаемое из функции значение
+}
+```
+
+### Чтение списка файлов
+```{r}
+path_file <- path_f("~/Desktop/OES_input", "\\.xlsx?$")
+length(path_file)
+head(path_file)
+```
+
+### Переименовка файлов
+```{r}
+# Функция раз
+funfun <- function(path, sheet) { 
+ df <- read_excel(path, sheet, range = "A1:A10", col_names = F)
+ vec <- as.vector(df$X__1)
+ 
+ A <- grepl("^Счет", vec[2])
+ B <- grepl("^Акт", vec[10])
+ 
+ ifelse(A & !B, vec[2], vec[10]) %>%
+   gsub(pattern = "/", replacement = "-") #%>%
+   # gsub(pattern = "\\s+", replacement = "_")
+}
+
+# Функция два
+funfunfun <- function(path_file) {
+  file.rename(from = path_file, 
+             to = paste0("~/Desktop/OES_output/",
+                         path_file %>% funfun(1),
+                         ".xlsx"))
+}
+
+path_file %>%
+  map(funfunfun)
+```
+
+### Вытягивание информации из счет-фактур
+```{r}
+fun1 <- function(path) {
+ df <- read_excel(path, sheet = 1, cell_cols(1:14), col_names = F)
+ df_out <- data_frame("Счет-фактура" = c(df$X__1[2]),
+                      "Продавец" = c(df$X__1[3]) %>% gsub(pattern = "Продавец: ", replacement = ""),
+                      "Адрес" = c(df$X__1[4]) %>% gsub(pattern = "Адрес: ", replacement = ""),
+                      "ИНН/КПП" = c(df$X__1[5]) %>% gsub(pattern = "ИНН/КПП продавца: ", replacement = ""),
+                      "Грузоотправитель и его адрес" = c(df$X__1[6]) %>% gsub(pattern = "Грузоотправитель и его адрес: ", replacement = ""),
+                      "Грузополучатель и его адрес" = c(df$X__1[7]) %>% gsub(pattern = "Грузополучатель и его адрес: ", replacement = ""),
+                      "К платежно-расчетному документу" = c(df$X__1[8]) %>% gsub(pattern = "К платежно-расчетному документу: ", replacement = ""),
+                      "Покупатель" = c(df$X__1[9]) %>% gsub(pattern = "Покупатель: ", replacement = ""),
+                      "Адрес2" = c(df$X__1[10]) %>% gsub(pattern = "Адрес: ", replacement = ""),
+                      "ИНН/КПП покупателя" = c(df$X__1[11]) %>% gsub(pattern = "ИНН/КПП покупателя: ", replacement = ""),
+                      "Расчетный период" = c(df$X__1[13]) %>% gsub(pattern = "Расчетный период: ", replacement = ""),
+                      "Всего к оплате" = c(df$X__10[nrow(df) - 8])
+                      )
+ return(df_out)
+ 
+}
+
+df_bill <- path_file %>% 
+  map_df(fun1) 
+
+write.xlsx(df_bill, file = "~/Desktop/OES_output/Реестр Счет-Фактур.xlsx", asTable = T)
+
+```
+
+### Вытягивание информации из актов
+```{r}
+fun2 <- function(path) {
+ df <- read_excel(path, sheet = 1, cell_cols(1:29), col_names = F)
+ df_out <- data_frame("Акт приема-передачи" = c(df$X__1[10]),
+                      "Отделение ОЭС" = c(df$X__2[7]),
+                      "Кому" = c(df$X__13[6]),
+                      "Расчетный период" = c(df$X__2[12]),
+                      "Договор" = c(df$X__16[4]),
+                      "Всего к оплате" = c(df$X__25[nrow(df) - 15])
+                        )
+ return(df_out)
+}
+
+df_act <- path_file %>% 
+  map_df(fun2) 
+
+write.xlsx(df_act, file = "~/Desktop/OES_output/Реестр Актов.xlsx", asTable = T)
+```
+
+
