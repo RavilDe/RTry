@@ -1,0 +1,82 @@
+---
+title: "ОЭС"
+author: "Евгений Михейкин"
+date: "17 10 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readxl)
+library(openxlsx)
+library(microbenchmark)
+library(XLConnect)
+```
+
+### Функция чтения списка файлов
+```{r}
+path_f <- function(path, pattern) {
+ path_file <- dir(path,             # путь к папке, каждый раз будет свой 
+                  pattern,          # выбираем файлы только по паттерну 
+                  include.dirs = T,    # рекурсивно по всем папкам
+                  full.names = T)   # вывод полного пути
+ return(path_file)                  # возвращаемое из функции значение
+}
+```
+
+### Чтение списка файлов
+```{r}
+path_file <- path_f("/Users/macmini/RTry/other/excel_files", "\\.xlsx?$")
+length(path_file)
+head(path_file)
+```
+
+### Функция по идентификации личстов в книге
+```{r}
+funfun <- function(path, sheet) { 
+ df <- read_excel(path, sheet, range = "A1:A10", col_names = F)
+ vec <- as.vector(df$X__1)
+ 
+ A <- grepl("^Счет", vec[2])
+ B <- grepl("^Акт", vec[10])
+ 
+ ifelse(A & !B, vec[2], vec[10]) %>% 
+   gsub(pattern = "/", replacement = "-") #%>% 
+   # gsub(pattern = "\\s+", replacement = "_")
+}
+```
+
+
+### Функция обработки одного файла
+```{r}
+# функция чтения и сохранения текущего листа с текущим названием
+read_then_xlsx <- function(path, sheet) {
+  path %>% 
+    read_excel(sheet = names(sheet)) %>% 
+    write.xlsx(paste0("/Users/macmini/RTry/other/excel_files/output/", sheet, ".xlsx"))
+}
+
+# функция оболочка для нахождения имени будущего файла
+funfunfun <- function(path_file) {
+    # Название листов
+    a <- path_file %>% 
+      excel_sheets()
+    
+    # Имена для названия листов
+    b <- path_file %>% 
+      excel_sheets() %>% 
+      map(funfun, path = path_file) %>% 
+      unlist()
+    
+    # подстановка ф-ии чтения и сохранения
+    set_names(b, a) %>%
+      map(read_then_xlsx, path = path_file)
+}
+
+
+
+system.time({path_file %>% 
+  map(funfunfun)
+})
+```
