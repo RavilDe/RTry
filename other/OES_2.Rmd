@@ -17,7 +17,8 @@ library(openxlsx)
 path_f <- function(path, pattern) {
  path_file <- dir(path,             # путь к папке, каждый раз будет свой 
                   pattern,          # выбираем файлы только по паттерну 
-                  include.dirs = T,    # рекурсивно по всем папкам
+                  recursive = T,    # рекурсивно по всем папкам
+                  include.dirs = T,    
                   full.names = T)   # вывод полного пути
  return(path_file)                  # возвращаемое из функции значение
 }
@@ -26,8 +27,18 @@ path_f <- function(path, pattern) {
 ### Чтение списка файлов
 ```{r}
 path_file <- path_f("~/Desktop/OES_input", "\\.xlsx?$")
-length(path_file)
+cat("Количество файлов в папке Input: ")
+
+path_file %>% 
+  length() %>% 
+  cat("\n")
 head(path_file)
+
+cat("Количество файлов в папке Output: ")
+
+path_f("~/Desktop/OES_output/", "\\.xlsx?$") %>% 
+  length() %>% 
+  cat("\n")
 ```
 
 ### Переименовка файлов
@@ -45,23 +56,38 @@ funfun <- function(path, sheet) {
  ifelse(A & !B, vec[2], vec[8]) %>%
    gsub(pattern = "/", replacement = "-") #%>%
    # gsub(pattern = "\\s+", replacement = "_")
+ 
+ # if (A & !B) {
+ #   return(vec[2] %>% gsub(pattern = "/", replacement = "-"))
+ # } else if (!A & B) {
+ #   return(vec[8] %>% gsub(pattern = "/", replacement = "-"))
+ # } else {
+ #   return("Пустой файл")
+ # }
+ 
+ 
 }
 
 # Функция два
 funfunfun <- function(path_file) {
-  file.rename(from = path_file, 
+  file.copy(from = path_file, 
              to = paste0("~/Desktop/OES_output/",
                          path_file %>% funfun(1),
-                         ".xlsx"))
+                         # "_", i,
+                         ".xlsx"),
+            overwrite = F)
 }
 
-path_file %>%
+system.time({
+  path_file %>%
   map(funfunfun)
+})
 ```
 
 ### Вытягивание информации из счет-фактур
 ```{r}
 fun1 <- function(path) {
+# path <- "/Users/macmini/Desktop/OES_input/СЧЕТ-ФАКТУРА № Э-281-06-7 от 30 июня 2016 г..xlsx"
  df <- read_excel(path, sheet = 1, cell_cols(1:13), col_names = F)
  df_out <- data_frame("Счет-фактура" = c(df$X__1[2]),
                       "Продавец" = c(df$X__1[4]) %>% gsub(pattern = "Продавец: ", replacement = ""),
@@ -74,7 +100,7 @@ fun1 <- function(path) {
                       "Адрес2" = c(df$X__1[11]) %>% gsub(pattern = "Адрес: ", replacement = ""),
                       "ИНН/КПП покупателя" = c(df$X__1[12]) %>% gsub(pattern = "ИНН/КПП покупателя: ", replacement = ""),
                       # "Расчетный период" = c(df$X__1[13]) %>% gsub(pattern = "Расчетный период: ", replacement = ""),
-                      "Всего к оплате" = c(df$X__13[nrow(df) - 8]),
+                      "Всего к оплате" = c(df$X__13[nrow(df) - 7]),
                       "Договор" = c(df$X__1[14]) %>% gsub(pattern = "Договор ", replacement = "")
                       )
  return(df_out)
@@ -91,11 +117,14 @@ write.xlsx(df_bill, file = "~/Desktop/OES_output/Реестр Счет-Факт�
 ### Вытягивание информации из актов
 ```{r}
 fun2 <- function(path) {
+  # path <- "/Users/macmini/Desktop/OES_input/Акт приема-передачи электрической энергии № Э-298-06-48 от 30 апреля 2016 г..xlsx"
  df <- read_excel(path, sheet = 1, cell_cols(1:19), col_names = F)
  df_out <- data_frame("Акт приема-передачи" = c(df$X__1[8]),
+                      "ОЭС" = c(df$X__2[5]),
                       "Отделение ОЭС" = c(df$X__2[6]),
-                      "Кому" = c(df$X__10[6]),
-                      "Расчетный период" = c(df$X__2[9]),
+                      "Кому" = c(df$X__10[5]),
+                      "Кому2" = c(df$X__10[6]),
+                      "Расчетный период" = c(df$X__2[9]) %>% gsub(pattern = "Расчетный период: ", replacement = ""),
                       "Договор" = c(df$X__12[3]),
                       "Всего к оплате" = c(df$X__18[nrow(df) - 15])
                         )
