@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readxl)
 library(openxlsx)
+library(stringr)
 ```
 
 ### Функция чтения списка файлов
@@ -44,48 +45,82 @@ path_f("~/Desktop/OES_output/", "\\.xlsx?$") %>%
 ### Переименовка файлов
 ```{r}
 # Функция раз
-funfun <- function(path, sheet) { 
+funfun <- function(path) { 
  # path <- "/Users/macmini/Desktop/OES_input/Лист184.xlsx"
  # sheet <- 1
-  df <- read_excel(path, sheet, range = "A1:A10", col_names = F)
+  df <- read_excel(path, sheet = 1, range = "A1:A10", col_names = F)
  vec <- as.vector(df$X__1)
  
  A <- grepl("^С", vec[2])
  B <- grepl("^А", vec[8])
+ C <- grepl("^К", vec[3])
+ D <- grepl("^К", vec[7])
  
- ifelse(A & !B, vec[2], vec[8]) %>%
-   gsub(pattern = "/", replacement = "-") #%>%
-   # gsub(pattern = "\\s+", replacement = "_")
+ # ifelse(A & !B, vec[2], vec[8]) %>%
+ #   gsub(pattern = "/", replacement = "-") #%>%
+ #   # gsub(pattern = "\\s+", replacement = "_")
  
- # if (A & !B) {
- #   return(vec[2] %>% gsub(pattern = "/", replacement = "-"))
- # } else if (!A & B) {
- #   return(vec[8] %>% gsub(pattern = "/", replacement = "-"))
- # } else {
- #   return("Пустой файл")
- # }
- 
+ if (A) {
+   # return(vec[2] %>% gsub(pattern = "/", replacement = "-"))
+   path_path <- vec[2]
+ } else if (B) {
+   # return(vec[8] %>% gsub(pattern = "/", replacement = "-"))
+   path_path <- vec[8]
+ } else if (C) {
+   # return(vec[3] %>% gsub(pattern = "/", replacement = "-"))
+   path_path <- vec[3]
+ } else if (D) {
+   # return(vec[7] %>% gsub(pattern = "/", replacement = "-"))
+   path_path <- vec[7]
+ } else {
+   # return(vec[8] %>% gsub(pattern = "/", replacement = "-"))
+   path_path <- vec[8]
+ }
+ path_path %>% 
+   gsub(pattern = "/", replacement = "-") %>% 
+   gsub(pattern = "\\?", replacement = "-") %>% 
+   gsub(pattern = "\r\n", replacement = "")
+   
  
 }
 
 # Функция два
-funfunfun <- function(path_file) {
+funfunfun <- function(path_file, i) {
   file.copy(from = path_file, 
              to = paste0("~/Desktop/OES_output/",
-                         path_file %>% funfun(1),
-                         # "_", i,
-                         ".xlsx"),
-            overwrite = F)
+                         path_file %>% funfun(),
+                         "_", i,
+                         ".xlsx"))
 }
 
+# system.time({
+#   path_file %>%
+#   map(funfunfun)
+# })
+
 system.time({
-  path_file %>%
-  map(funfunfun)
+for (i in seq_along(path_file)) {
+  funfunfun(path_file[i], i)
+}
 })
 ```
 
-### Вытягивание информации из счет-фактур
+### Список файлов в папке Output
 ```{r}
+path_file_out <- path_f("~/Desktop/OES_output", "\\.xlsx?$")
+cat("Количество файлов в папке Output: ")
+
+path_file_out %>% 
+  length() %>% 
+  cat("\n")
+head(path_file_out)
+```
+
+
+
+### Вытягивание инфу из счет-фактур и сохраняем ее в отделом файле
+```{r}
+# сработало в Уральском и в Южном филиалах
 fun1 <- function(path) {
 # path <- "/Users/macmini/Desktop/OES_input/СЧЕТ-ФАКТУРА № Э-281-06-7 от 30 июня 2016 г..xlsx"
  df <- read_excel(path, sheet = 1, cell_cols(1:13), col_names = F)
@@ -101,23 +136,29 @@ fun1 <- function(path) {
                       "ИНН/КПП покупателя" = c(df$X__1[12]) %>% gsub(pattern = "ИНН/КПП покупателя: ", replacement = ""),
                       # "Расчетный период" = c(df$X__1[13]) %>% gsub(pattern = "Расчетный период: ", replacement = ""),
                       "Всего к оплате" = c(df$X__13[nrow(df) - 7]),
-                      "Договор" = c(df$X__1[14]) %>% gsub(pattern = "Договор ", replacement = "")
+                      "Договор" = c(df$X__1[14]) %>% gsub(pattern = "Договор ", replacement = ""),
+                      "ID" = str_extract(str_extract(path, "_[:digit:]+\\.xlsx$"), "[:digit:]+")
                       )
  return(df_out)
  
 }
+path_file_bill <- path_file_out[path_file_out %>% 
+                            basename() %>% 
+                            grep(pattern = "^СЧЕТ")]
 
-df_bill <- path_file %>% 
+system.time({
+df_bill <- path_file_bill %>% 
   map_df(fun1) 
-
+})
 write.xlsx(df_bill, file = "~/Desktop/OES_output/Реестр Счет-Фактур.xlsx", asTable = T)
 
 ```
 
-### Вытягивание информации из актов
+### Вытягивание инфу из актов и сохраняем ее в отделом файле
 ```{r}
+# сработало в Уральском и Южном и  в СЗ как корректировочный
 fun2 <- function(path) {
-  # path <- "/Users/macmini/Desktop/OES_input/Акт приема-передачи электрической энергии № Э-298-06-48 от 30 апреля 2016 г..xlsx"
+  # path <- "/Users/macmini/Desktop/OES_output/Акт приема-передачи электрической энергии № _______ от \"___\"__________ 20__  г._1132.xlsx"
  df <- read_excel(path, sheet = 1, cell_cols(1:19), col_names = F)
  df_out <- data_frame("Акт приема-передачи" = c(df$X__1[8]),
                       "ОЭС" = c(df$X__2[5]),
@@ -126,15 +167,85 @@ fun2 <- function(path) {
                       "Кому2" = c(df$X__10[6]),
                       "Расчетный период" = c(df$X__2[9]) %>% gsub(pattern = "Расчетный период: ", replacement = ""),
                       "Договор" = c(df$X__12[3]),
-                      "Всего к оплате" = c(df$X__18[nrow(df) - 15])
+                      "Всего к оплате" = c(df$X__18[nrow(df) - 15]),
+                      "ID" = str_extract(str_extract(path, "_[:digit:]+\\.xlsx$"), "[:digit:]+")
                         )
  return(df_out)
 }
 
-df_act <- path_file %>% 
-  map_df(fun2) 
+path_file_act <- path_file_out[path_file_out %>%
+                            basename() %>% 
+                            grep(pattern = "^Акт")]
+                            # grep(pattern = "^Корр")]
 
+system.time({
+  df_act <- path_file_act %>% 
+  map_df(fun2) 
+})
 write.xlsx(df_act, file = "~/Desktop/OES_output/Реестр Актов.xlsx", asTable = T)
+# write.xlsx(df_act, file = "~/Desktop/OES_output/Реестр Корр Актов.xlsx", asTable = T)
 ```
 
+### Вытягиваем инфу из КОРРектировочных счет-фактур и сохраняем ее в отделом файле
+```{r}
+fun3 <- function(path) {
+  # path <- "/Users/macmini/Desktop/OES_input/КОРРЕКТИРОВОЧНЫЙ СЧЕТ-ФАКТУРА № Э-0690-13-217 от 25 мая 2016 г., ИСПРАВЛЕНИЕ КОРРЕКТИРОВОЧНОГО СЧЕТА-ФАКТУРЫ № ---  от  ---_3417.xlsx"
+ df <- read_excel(path, sheet = 1, cell_cols(1:23), col_names = F)
+ df_out <- data_frame("№ Корр счет фактуры" = c(df$X__1[3]),
+                      "№ счет фактуры " = c(df$X__1[4]),
+                      "Продавец" = c(df$X__4[6]),
+                      "Адрес продавца" = c(df$X__4[7]),
+                      "ИНН / КПП продавца" = c(df$X__4[8]),
+                      "Покупатель" = c(df$X__4[9]),
+                      "Адрес покупателя" = c(df$X__4[10]),
+                      "ИНН / КПП покупателя" = c(df$X__4[11]),
+                      "Договор энергоснабжения" = c(df$X__1[13] %>% 
+                                                      gsub(pattern = "Договор энергоснабжения ", replacement = "")),
 
+                      "Всего увеличение" = c(df$X__21[nrow(df) - 7]),
+                      "Всего уменьшение" = c(df$X__21[nrow(df) - 6]),
+                      "ID" = str_extract(str_extract(path, "_[:digit:]+\\.xlsx$"), "[:digit:]+")
+                        )
+ return(df_out)
+}
+
+path_file_bill_corr <- path_file_out[path_file_out %>% 
+                            basename() %>% 
+                            grep(pattern = "^КОРР")]
+
+system.time({
+  df_bill_corr <- path_file_bill_corr %>% 
+  map_df(fun3) 
+})
+write.xlsx(df_bill_corr, file = "~/Desktop/OES_output/Реестр Корр Счет Фактур.xlsx", asTable = T)
+```
+
+### Вытягиваем инфу из Корректировочных актов и сохраняем ее в отделом файле
+```{r}
+fun5 <- function(path) {
+  path <- "~/Desktop/OES_output/Корректировочный акт приема-передачи электрической энергии № Э-1904-04-78 от 31 мая 2016 г._3033.xlsx"
+ df <- read_excel(path, sheet = 1, cell_cols(1:25), col_names = F)
+ df_out <- data_frame("№ Корр акт" = c(df$X__1[7]),
+                      "ОЭС_1" = c(df$X__3[4]),
+                      "ОЭС_2" = c(df$X__3[5]),
+                      "Расчетный период" = c(df$X__3[8]) %>% gsub(pattern = "Расчетный период: ", replacement = ""),
+                      "Кому_1" = c(df$X__14[4]),
+                      "Кому_2" = c(df$X__14[5]),
+                      "Договор энергоснабжения" = c(df$X__17[3]),
+                      "Всего увеличение" = c(df$X__25[nrow(df) - 11]),
+                      "Всего уменьшение" = c(df$X__25[nrow(df) - 10]),
+                      "ID" = str_extract(str_extract(path, "_[:digit:]+\\.xlsx$"), "[:digit:]+")
+                        )
+ return(df_out)
+}
+
+path_file_act_corr <- path_file_out[path_file_out %>% 
+                            basename() %>% 
+                            grep(pattern = "^Корр")]
+
+system.time({
+  df_act_corr <- path_file_act_corr %>% 
+  map_df(fun5) 
+})
+write.xlsx(df_act_corr, file = "~/Desktop/OES_output/Реестр Корр Актов.xlsx", asTable = T)
+```
