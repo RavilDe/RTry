@@ -61,25 +61,24 @@ funfun <- function(path) {
  #   # gsub(pattern = "\\s+", replacement = "_")
  
  if (A) {
-   # return(vec[2] %>% gsub(pattern = "/", replacement = "-"))
    path_path <- vec[2]
  } else if (B) {
-   # return(vec[8] %>% gsub(pattern = "/", replacement = "-"))
    path_path <- vec[8]
  } else if (C) {
-   # return(vec[3] %>% gsub(pattern = "/", replacement = "-"))
    path_path <- vec[3]
  } else if (D) {
-   # return(vec[7] %>% gsub(pattern = "/", replacement = "-"))
    path_path <- vec[7]
  } else {
-   # return(vec[8] %>% gsub(pattern = "/", replacement = "-"))
    path_path <- vec[8]
  }
  path_path %>% 
    gsub(pattern = "/", replacement = "-") %>% 
    gsub(pattern = "\\?", replacement = "-") %>% 
-   gsub(pattern = "\r\n", replacement = "")
+   gsub(pattern = "\r", replacement = "") %>% 
+   gsub(pattern = "\n", replacement = "") #%>%
+  # для капп ДВ
+   # gsub(pattern = "Корректировочный акт приема-передачи электрической энергии", replacement = "Капп ээ") %>% 
+   # gsub(pattern = "к акту приема-передачи электрической энергии", replacement = "к апп ээ")
    
  
 }
@@ -122,8 +121,9 @@ head(path_file_out)
 ```{r}
 # сработало в Уральском и в Южном филиалах
 fun1 <- function(path) {
-# path <- "/Users/macmini/Desktop/OES_input/СЧЕТ-ФАКТУРА № Э-281-06-7 от 30 июня 2016 г..xlsx"
+# path <- "/Users/macmini/Desktop/OES_output/СЧЕТ-ФАКТУРА № K-8026-10-10208 от 31 декабря 2015 г._375.xlsx"
  df <- read_excel(path, sheet = 1, cell_cols(1:13), col_names = F)
+ # df <- read_excel(path, sheet = 1, cell_cols(1:21), col_names = F) # для ДВ исправит
  df_out <- data_frame("Счет-фактура" = c(df$X__1[2]),
                       "Продавец" = c(df$X__1[4]) %>% gsub(pattern = "Продавец: ", replacement = ""),
                       "Адрес" = c(df$X__1[5]) %>% gsub(pattern = "Адрес: ", replacement = ""),
@@ -134,8 +134,8 @@ fun1 <- function(path) {
                       "Покупатель" = c(df$X__1[10]) %>% gsub(pattern = "Покупатель: ", replacement = ""),
                       "Адрес2" = c(df$X__1[11]) %>% gsub(pattern = "Адрес: ", replacement = ""),
                       "ИНН/КПП покупателя" = c(df$X__1[12]) %>% gsub(pattern = "ИНН/КПП покупателя: ", replacement = ""),
-                      # "Расчетный период" = c(df$X__1[13]) %>% gsub(pattern = "Расчетный период: ", replacement = ""),
                       "Всего к оплате" = c(df$X__13[nrow(df) - 7]),
+                      # "Всего к оплате" = c(df$X__19[nrow(df) - 8]), # для дв ИСПРавит
                       "Договор" = c(df$X__1[14]) %>% gsub(pattern = "Договор ", replacement = ""),
                       "ID" = str_extract(str_extract(path, "_[:digit:]+\\.xlsx$"), "[:digit:]+")
                       )
@@ -156,9 +156,9 @@ write.xlsx(df_bill, file = "~/Desktop/OES_output/Реестр Счет-Факт�
 
 ### Вытягивание инфу из актов и сохраняем ее в отделом файле
 ```{r}
-# сработало в Уральском и Южном и  в СЗ как корректировочный
+# сработало в Уральском и Южном и  в СЗ как корректировочный (см коменты внутри)
 fun2 <- function(path) {
-  # path <- "/Users/macmini/Desktop/OES_output/Акт приема-передачи электрической энергии № _______ от \"___\"__________ 20__  г._1132.xlsx"
+# path <- "/Users/macmini/Desktop/OES_output/Акт приема-передачи электрической энергии № _______ от 30 июня 2016 г._1082.xlsx"
  df <- read_excel(path, sheet = 1, cell_cols(1:19), col_names = F)
  df_out <- data_frame("Акт приема-передачи" = c(df$X__1[8]),
                       "ОЭС" = c(df$X__2[5]),
@@ -167,7 +167,8 @@ fun2 <- function(path) {
                       "Кому2" = c(df$X__10[6]),
                       "Расчетный период" = c(df$X__2[9]) %>% gsub(pattern = "Расчетный период: ", replacement = ""),
                       "Договор" = c(df$X__12[3]),
-                      "Всего к оплате" = c(df$X__18[nrow(df) - 15]),
+                      "Всего к оплате" = c(df$X__18[nrow(df) - 15]), # Южный ДВ
+                      # "Всего к оплате" = c(df$X__18[nrow(df) - 12]), # Уральский
                       "ID" = str_extract(str_extract(path, "_[:digit:]+\\.xlsx$"), "[:digit:]+")
                         )
  return(df_out)
@@ -175,7 +176,7 @@ fun2 <- function(path) {
 
 path_file_act <- path_file_out[path_file_out %>%
                             basename() %>% 
-                            grep(pattern = "^Акт")]
+                            grep(pattern = "^Акт приема")]
                             # grep(pattern = "^Корр")]
 
 system.time({
@@ -223,7 +224,7 @@ write.xlsx(df_bill_corr, file = "~/Desktop/OES_output/Реестр Корр Сч
 ### Вытягиваем инфу из Корректировочных актов и сохраняем ее в отделом файле
 ```{r}
 fun5 <- function(path) {
-  path <- "~/Desktop/OES_output/Корректировочный акт приема-передачи электрической энергии № Э-1904-04-78 от 31 мая 2016 г._3033.xlsx"
+  # path <- "~/Desktop/OES_output/Корректировочный акт приема-передачи электрической энергии № Э-2683-10-10208 от 30 апреля 2016 г. к акту приема-передачи электрической энергии № Э-7099-12-0 от 31 декабря 2012 г._2241.xlsx"
  df <- read_excel(path, sheet = 1, cell_cols(1:25), col_names = F)
  df_out <- data_frame("№ Корр акт" = c(df$X__1[7]),
                       "ОЭС_1" = c(df$X__3[4]),
@@ -232,8 +233,10 @@ fun5 <- function(path) {
                       "Кому_1" = c(df$X__14[4]),
                       "Кому_2" = c(df$X__14[5]),
                       "Договор энергоснабжения" = c(df$X__17[3]),
-                      "Всего увеличение" = c(df$X__25[nrow(df) - 11]),
-                      "Всего уменьшение" = c(df$X__25[nrow(df) - 10]),
+                      # "Всего увеличение" = c(df$X__25[nrow(df) - 11]),
+                      # "Всего уменьшение" = c(df$X__25[nrow(df) - 10]),
+                      "Всего увеличение" = c(df$X__25[nrow(df) - 13]), # ДВ
+                      "Всего уменьшение" = c(df$X__25[nrow(df) - 12]), # ДВ
                       "ID" = str_extract(str_extract(path, "_[:digit:]+\\.xlsx$"), "[:digit:]+")
                         )
  return(df_out)
@@ -241,7 +244,8 @@ fun5 <- function(path) {
 
 path_file_act_corr <- path_file_out[path_file_out %>% 
                             basename() %>% 
-                            grep(pattern = "^Корр")]
+                            # grep(pattern = "^Корр")]
+                            grep(pattern = "^Капп")]
 
 system.time({
   df_act_corr <- path_file_act_corr %>% 
@@ -249,3 +253,53 @@ system.time({
 })
 write.xlsx(df_act_corr, file = "~/Desktop/OES_output/Реестр Корр Актов.xlsx", asTable = T)
 ```
+
+### Выявляем дубликаты в южном
+```{r}
+pf_df_raw <- data.frame(pf_col = basename(path_file))
+pf_df <- pf_df_raw %>% 
+  extract(col = pf_col, into = c("pf_col", "id"), regex = "(.*)_([:digit:]+\\.xlsx$)") %>% 
+  group_by(pf_col) %>% 
+  summarise(n = n()) %>% 
+  filter(n != 1) %>% 
+  write.xlsx(file = "~/Desktop/OES_output/Дубли в Южном.xlsx", asTable = T)
+```
+
+### Укорачивание капп в ДВ
+```{r}
+short_kapp <- function(path) {
+  path <- path_file_out[1]
+  path %>% 
+    basename() %>% 
+    gsub(pattern = "Корректировочный акт приема-передачи электрической энергии", replacement = "Капп ээ") %>% 
+    gsub(pattern = "к акту приема-передачи электрической энергии", replacement = "к апп ээ")
+}
+
+ttt <- "/Users/macmini/Desktop/OES_output/Корректировочный акт приема-передачи электрической энергии № Э-0820-10-10214 от 19 апреля 2016 г. к акту приема-передачи электрической энергии № Э-2216-10-10214 от 31 августа 2015 г._160.xlsx"
+
+gsub(x = ttt,
+  pattern = "Корректировочный акт приема-передачи электрической энергии",
+     replacement = "Капп ээ")
+
+rename_file <- function(path) {
+  # path <- "/Users/macmini/Desktop/OES_output/Корректировочный акт приема-передачи электрической энергии № Э-0820-10-10214 от 19 апреля 2016 г. к акту приема-передачи электрической энергии № Э-2216-10-10214 от 31 августа 2015 г._160.xlsx"
+  path <- path_file_out[1]
+  copy_to <- path %>% 
+    basename() %>% 
+    short_kapp() 
+  file.copy(from = path, 
+             to = paste0("/Users/macmini/Desktop/OES_input/", copy_to)
+  )
+}
+
+
+rename_file(path_file_out[1])
+
+system.time({
+  path_file_out %>%
+  map(rename_file)
+})
+
+
+```
+
