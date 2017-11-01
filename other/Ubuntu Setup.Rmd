@@ -229,6 +229,12 @@ sudo apt-get install texmaker
 sudo dpkg -i skypeforlinux-64.deb
 ```
 
+#### 2.6.5 Unrar
+Без этого пакета не будут открываться `.rar`'ы разбитые на части
+```{bash}
+sudo apt-get install unrar
+```
+
 ### 2.7 LaTeX / TexLive / PDF
 #### 2.7.1 Установка LaTeX
 Устанавливает весь TeX:
