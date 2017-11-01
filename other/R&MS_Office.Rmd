@@ -13,7 +13,10 @@ urlcolor: blue
 knitr::opts_chunk$set(echo = T,
                       cache = T)
                       # options(tibble.print_max = 7, tibble.print_min = 7,
-library(tidyverse)
+library(dplyr)
+library(readxl)
+library(readr)
+library(purrr)
 ```
 
 ## Статьи и полезности найденные в процессе
@@ -115,7 +118,7 @@ read_excel(xlsx_example, na = "setosa")
 
 Файл `geometry.xls` представляет из себя небольшой набор данных:
 
-![Небольшая табличка в файле geometry.xls](http://readxl.tidyverse.org/articles/geometry.png){ width=70% }
+<!-- ![Небольшая табличка в файле geometry.xls](http://readxl.tidyverse.org/articles/geometry.png){ width=70% } -->
 
 #### Аргумент `skip`
 По умолчанию `read_excel` выводит диапазон данных; первая строка идет как заголовок
