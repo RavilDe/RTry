@@ -121,9 +121,13 @@ head(path_file_out)
 ```{r}
 # сработало в Уральском и в Южном филиалах
 fun1 <- function(path) {
-# path <- "/Users/macmini/Desktop/OES_output/СЧЕТ-ФАКТУРА № K-8026-10-10208 от 31 декабря 2015 г._375.xlsx"
- df <- read_excel(path, sheet = 1, cell_cols(1:13), col_names = F)
- # df <- read_excel(path, sheet = 1, cell_cols(1:21), col_names = F) # для ДВ исправит
+# path <- "/Users/macmini/Desktop/OES_output/СЧЕТ-ФАКТУРА № К-362-02-40 от 31 марта 2016 г._4568.xlsx"
+# path <- "/Users/macmini/Desktop/OES_output/СЧЕТ-ФАКТУРА № Э-3230-02-150 от 30 июня 2016 г._15522.xlsx"
+# path <- "/Users/macmini/Desktop/OES_output/СЧЕТ-ФАКТУРА № К-3230-02-52 от 30 апреля 2016 г._3291.xlsx"
+# path <- "/Users/macmini/Desktop/OES_output/СЧЕТ-ФАКТУРА № К-2229-02-150 от 30 апреля 2016 г._15977.xlsx"
+ # df <- read_excel(path, sheet = 1, cell_cols(1:13), col_names = F)
+ df <- read_excel(path, sheet = 1, cell_cols(1:21), col_names = F) # для ДВ исправит
+ MMM <- nrow(df) - which(df$X__1 == "Всего к оплате")
  df_out <- data_frame("Счет-фактура" = c(df$X__1[2]),
                       "Продавец" = c(df$X__1[4]) %>% gsub(pattern = "Продавец: ", replacement = ""),
                       "Адрес" = c(df$X__1[5]) %>% gsub(pattern = "Адрес: ", replacement = ""),
@@ -134,7 +138,9 @@ fun1 <- function(path) {
                       "Покупатель" = c(df$X__1[10]) %>% gsub(pattern = "Покупатель: ", replacement = ""),
                       "Адрес2" = c(df$X__1[11]) %>% gsub(pattern = "Адрес: ", replacement = ""),
                       "ИНН/КПП покупателя" = c(df$X__1[12]) %>% gsub(pattern = "ИНН/КПП покупателя: ", replacement = ""),
-                      "Всего к оплате" = c(df$X__13[nrow(df) - 7]),
+                      # "Всего к оплате" = c(df$X__13[nrow(df) - 7]), # дефолтный
+                      "Всего к оплате 1" = c(df$X__19[nrow(df) - MMM]), # для центрального
+                      "Всего к оплате 2" = c(df$X__13[nrow(df) - MMM]), # для центрального
                       # "Всего к оплате" = c(df$X__19[nrow(df) - 8]), # для дв ИСПРавит
                       "Договор" = c(df$X__1[14]) %>% gsub(pattern = "Договор ", replacement = ""),
                       "ID" = str_extract(str_extract(path, "_[:digit:]+\\.xlsx$"), "[:digit:]+")
@@ -244,8 +250,8 @@ fun5 <- function(path) {
 
 path_file_act_corr <- path_file_out[path_file_out %>% 
                             basename() %>% 
-                            # grep(pattern = "^Корр")]
-                            grep(pattern = "^Капп")]
+                            grep(pattern = "^Корр")]
+                            # grep(pattern = "^Капп")]
 
 system.time({
   df_act_corr <- path_file_act_corr %>% 
