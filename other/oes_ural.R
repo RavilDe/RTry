@@ -8,7 +8,7 @@ path <- "~/Desktop/Уральский свод СФ.xlsx" # mac
 
 # загружаем таблицу в гряззном варианте
 df_raw <- read_excel(path, 
-           sheet = "Для папок"
+           sheet = "ВОТ"
            # skip = 3
            )
 # вычищаем строки от слэшей и прочей гадости
@@ -22,31 +22,33 @@ cleaner <- function(vec) {
 
 # формируем нормальный дата-фрейм из грязного
 df <- df_raw %>% 
-  transmute(folder_name = `Название папки` %>% cleaner(),
+  transmute(folder_inn = `ИНН` %>% cleaner(),
+            folder_dog = `Договор` %>% cleaner(),
             bill = `Номер СФ` %>% cleaner(),
             app = `Номер Акта` %>% cleaner(),
-            id_bill = `id сф`,
-            id_app = X__2)
-df %>% 
-  select(folder_name) %>%
-  unique()
-
-
-a <- df %>% 
-  select(1, 3, 4, 2, 5)
+            id_bill = `ид сф`,
+            id_app = `ид апп`)
 
 # путь к папке с файлами
 path_files <- dir(path = "~/Desktop/OES_output", full.names = T)
 
-# создаем папки с именами из покупателя и номера договора
+# создаем папки с именами из ИНН
+fold_inn <- df$folder_inn %>% unique()
+
+for (i in seq_along(fold_inn)) {
+  new_dir <- paste0("~/Desktop/Урал по папкам/", fold_inn[i])
+  dir.create(new_dir)
+}
+
+# создаем в папках ИНН подпапки  с именами из номера договора
 for (i in 1:nrow(df)) {
-  new_dir <- paste0("~/Desktop/Урал по папкам/", df$folder_name[i])
+  new_dir <- paste0("~/Desktop/Урал по папкам/", df$folder_inn[i], "/", df$folder_dog[i])
   dir.create(new_dir)
 }
 
 # раскладываем по этим папкам сф и апп
 for (i in 1:nrow(df)) {
-  new_dir <- paste0("~/Desktop/Урал по папкам/", df$folder_name[i])
+  new_dir <- paste0("~/Desktop/Урал по папкам/", df$folder_inn[i], "/", df$folder_dog[i])
   
   file.copy(from = paste0("~/Desktop/OES_output/", df$bill[i], "_", df$id_bill[i],".xlsx"),
             to = paste0(new_dir, "/", df$bill[i], "_", df$id_bill[i], ".xlsx")
