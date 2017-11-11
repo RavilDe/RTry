@@ -3,28 +3,16 @@
 library(readxl)
 library(dplyr)
 
-
-# предподготовка файлов - удаляеем из имени  СФ строку с ИСПРАВЛЕНИЕМ
-
-# bill_list <- dir(
-#   path = "~/Desktop/Северо-западный Итог/OES_output/",
-#   pattern = "^СЧЕТ",
-#   full.names = T
-# )
-# 
-# to_remome <- " ИСПРАВЛЕНИЕ № --- от --- г."
-# 
-# file.rename(
-#   from = bill_list,
-#   to = sub(to_remome, "", bill_list)
-# )
-
 # путь к файлу с таблицей
 
-path <- "~/Desktop/Северо-западный Итог/СЗФ свод СФ.xlsx"
+path <- "~/Desktop/СЗФ свод СФ.xlsx"
 
 # загружаем таблицу в гряззном варианте
-df_raw <- read_excel(path, sheet = "Лист4")
+df_raw <- read_excel(
+  path, 
+  sheet = "Лист8",
+  col_names = F
+)
 
 # вычищаем строки от слэшей и прочей гадости
 cleaner <- function(vec) {
@@ -37,15 +25,15 @@ cleaner <- function(vec) {
 
 # формируем нормальный дата-фрейм из грязного
 df <- df_raw %>% 
-  transmute(folder_inn = `ИНН` %>% cleaner(),
-            folder_dog = `№ Договора` %>% cleaner(),
-            bill = `№ СФ` %>% cleaner(),
-            app = `№ АПП` %>% cleaner(),
-            id_bill = `ИД СФ`,
-            id_app = `ИД АПП`)
+  transmute(folder_inn = X__2 %>% cleaner(),
+            folder_dog = X__3 %>% cleaner(),
+            bill = X__4 %>% cleaner(),
+            app = X__6 %>% cleaner(),
+            id_bill = X__5,
+            id_app = X__7)
 
 # путь к папке с файлами
-path_files <- dir(path = "~/Desktop/Северо-западный Итог/OES_output/", full.names = T)
+path_files <- dir(path = "~/Desktop/СЗФ разбитый/", full.names = T)
 # path_files <- dir(path = "~/Desktop/Северо-Западный/", full.names = T)
 
 # создаем папки с именами из ИНН
@@ -66,11 +54,23 @@ for (i in 1:nrow(df)) {
 for (i in 1:nrow(df)) {
   new_dir <- paste0("~/Desktop/СЗ по папкам/", df$folder_inn[i], "/", df$folder_dog[i])
   
-  file.copy(from = paste0("~/Desktop/Северо-западный Итог/OES_output/", df$bill[i], "_", df$id_bill[i],".xlsx"),
-            to = paste0(new_dir,"/" ,df$bill[i], "_", df$id_bill[i], ".xlsx")
+  bill_name <- dir(
+    "~/Desktop/СЗФ разбитый",
+    pattern = paste0(".*_", df$id_bill[i], ".xlsx$"),
+    full.names = T
   )
-  file.copy(from = paste0("~/Desktop/Северо-западный Итог/OES_output/", df$app[i], "_", df$id_app[i],".xlsx"),
-            to = paste0(new_dir,"/" ,df$app[i], "_", df$id_app[i], ".xlsx")
+  
+  app_name <- dir(
+    "~/Desktop/СЗФ разбитый",
+    pattern = paste0(".*_", df$id_app[i], ".xlsx$"),
+    full.names = T
+  )
+  
+  file.copy(from = bill_name,
+            to = paste0(new_dir, "/", df$bill[i], "_", df$id_bill[i], ".xlsx")
+  )
+  file.copy(from = app_name,
+            to = paste0(new_dir, "/", df$app[i], "_", df$id_app[i], ".xlsx")
   )
 }
 
@@ -82,7 +82,7 @@ path_files_xlsx <- dir(path = "~/Desktop/СЗ по папкам",
 
 write.xlsx(
   path_files_xlsx,
-  "~/Desktop/СЗ по папкам/Список файлов.xlsx"
+  "~/Desktop/Список файлов СЗФ.xlsx"
 )
 
 
