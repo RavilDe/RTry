@@ -1,5 +1,5 @@
 # RTry
-Trying to learn R
+My notes in R, stat, LaTeX and other lectures.
 
 ## Stepik
 * Stepik_1 - [Основы программирования на R](https://stepik.org/course/497)
