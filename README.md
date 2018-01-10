@@ -1,6 +1,8 @@
 # RTry
 My notes in R, stat, LaTeX and other lectures.
 
+Newest versions of notes are in .Rmd files.
+
 ## Stepik
 * Stepik_1 - [Основы программирования на R](https://stepik.org/course/497)
 * Stepik_2 Analysis - [Анализ данных в R](https://stepik.org/course/129)
