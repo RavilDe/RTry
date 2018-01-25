@@ -213,6 +213,17 @@ winecfg
 sudo apt-get install git
 ```
 
+##### 2.6.1.1 Подключение к GIT уже существующего репозитория
+
+```{bash}
+cd new_rep/
+git remote add origin https://link_to_my_github_or_bitbucket/new_rep.git
+git add .
+git status
+git commit -m "initial commit"
+git push origin master
+```
+
 #### 2.6.2 VLC
 ```{bash}
 sudo apt-get install vlc
