@@ -1,0 +1,14 @@
+---
+title: "Программирование на python"
+author: "Павел Федотов, Тимофей Бондарев"
+date: '25 января 2018 г '
+output: html_document
+header-includes: \usepackage[english, russian]{babel}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 1. Операторы. Переменные. Типы данных. Условия
+## 1.1 Общая информация о курсе

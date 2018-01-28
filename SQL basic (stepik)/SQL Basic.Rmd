@@ -4,6 +4,7 @@ author: "Иван Савин"
 output: 
   html_document:
     highlight: textmate
+header-includes: \usepackage[english, russian]{babel}
 ---
 
 ```{r setup, include=FALSE}

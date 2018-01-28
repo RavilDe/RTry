@@ -213,6 +213,18 @@ winecfg
 sudo apt-get install git
 ```
 
+##### 2.6.1.1 Подключение к GIT уже существующего репозитория
+
+```{bash}
+cd new_rep/
+git remote add origin https://link_to_my_github_or_bitbucket/new_rep.git
+git add .
+git status
+git commit -m "initial commit"
+git push origin master
+git branch --set-upstream-to=origin/master master
+```
+
 #### 2.6.2 VLC
 ```{bash}
 sudo apt-get install vlc
@@ -276,10 +288,17 @@ urlcolor: blue
 
 Для начала необходимо создать директорию `.vim` в домашнем каталоге с помощью команды `mkdir ~/.vim` и скопировать туда ранее скачанный плагин `vim-latex`.
 
+Бросил и не дописал((((
 
+### 2.9 Remmina RDP
+Чтобы появилась возможность обмениваться файлами через `shared folder` неоьходимо ставить версию 1.2и выше.
 
+```{bash}
+sudo apt-add-repository ppa:remmina-ppa-team/remmina-next
+sudo apt-get update
+```
 
-
+Прога обновится ипоявится необходимый пункт в меню!
 
 ## 3. Полезные команды
 ### 3.1 Системные
