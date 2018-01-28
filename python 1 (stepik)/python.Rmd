@@ -1,0 +1,13 @@
+---
+title: "Программирование на Python"
+author: "Павел Федотов, Тимофей Бондарев"
+output: html_document
+header-includes: \usepackage[english, russian]{babel}
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 
