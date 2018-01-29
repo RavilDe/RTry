@@ -1,0 +1,1 @@
+/tmp/RtmpIepe3F/chunk-code-1b106798df63.txt: строка 1: ./iteractor.py: Нет такого файла или каталога
