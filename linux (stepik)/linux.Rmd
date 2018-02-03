@@ -11,6 +11,7 @@ urlcolor: blue
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+library(reticulate)
 ```
 
 # 1. Введение
