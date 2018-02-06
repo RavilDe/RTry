@@ -420,6 +420,19 @@ dpkg -l | grep wps
 
 Подробности здесь <https://unix.stackexchange.com/questions/195794/how-to-uninstall-a-deb-installed-with-dpkg>
 
+#### Удаление всех `rc` и прочих отстатков пакетов
+```{bash}
+dpkg -l | grep "^rc" | cut -d " " -f 3 | xargs sudo dpkg -P
+```
+
+Пройдемся по конвееру:
+
+* `dpkg -l` -- выводит список всех установленных пакетов `-->`
+* `grep "^rc"` -- отбирает только строки начинающеся на **rc** `-->`
+* `cut -d " " -f 3` -- разделяет поля по разделителю (`-d` -- delimiter) и выбирает только нужно поле (`-f` -- field)   `-->`
+* `xargs sudo dpkg -P` -- `xargs` передает очищенный список имен пакетов дальше в `sudo dpkg -P`, который их удаляет
+
+
 #### Удаление с apt-get purge
 Вместо git можно прописать название любого пакета
 ```{bash}
