@@ -373,6 +373,15 @@ dmesg
 ```
 
 ### 3.2 Проверка аккумуляторов
+#### 3.2.1 Мощнейший `tlp`
+Подробности можно узнать [здесь](https://askubuntu.com/questions/285434/is-there-a-power-saving-application-similar-to-jupiter/285681#285681)
+```{bash}
+sudo apt-get install tlp acpi-call #tp-smapi-dkms
+sudo tlp-stat
+```
+
+
+#### 3.2.2 `upower`
 ```{bash}
 upower -e
 ```
