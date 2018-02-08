@@ -322,6 +322,14 @@ man inxi
 inxi -F
 ```
 
+#### Информация по сенсорам
+```{bash}
+sudo apt-get install lm-sensors
+sudo sensors-detect
+sensors
+watch sensors
+```
+
 #### Сбор всей информации о системе
 Эта команда создаст в домашней директории файл `system_info.html` с подробным списком всех устройств компьютера:
 ```{bash}
