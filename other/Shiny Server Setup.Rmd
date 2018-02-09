@@ -1,8 +1,8 @@
 ---
 title: "Shiny Server Setup"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 header-includes: \usepackage[english, russian]{babel}
 urlcolor: blue
 ---
@@ -13,9 +13,9 @@ knitr::opts_chunk$set(echo = TRUE, eval = F)
 
 ## Установка Shiny Server (Open Source)
 ### Полезные ссылки
-Основная страница с шагами по установке [Shiny Server](https://www.rstudio.com/products/shiny/download-server/)
+Основная страница с шагами по установке [Shiny Server](https://www.rstudio.com/products/shiny/download-server/).
 
-Установка `R` на Ubuntu описана [здесь](https://cran.rstudio.com/bin/linux/ubuntu/README.html#installation)
+Установка `R` на Ubuntu описана [здесь](https://cran.rstudio.com/bin/linux/ubuntu/README.html#installation).
 
 ### Шаги установки
 
@@ -38,7 +38,7 @@ sudo gdebi shiny-server-1.5.6.875-amd64.deb
 ```
 
 ## Первые шаги
-Полная документация лежит здесь [Administrator’s Guide](http://docs.rstudio.com/shiny-server/)
+Полная документация лежит здесь [Administrator’s Guide](http://docs.rstudio.com/shiny-server/).
 
 ### Включение, отключение и перезапуск сервера
 ```{bash}
@@ -58,8 +58,32 @@ sudo systemctl enable shiny-server
 sudo systemctl disable shiny-server
 ```
 
-## 
+## Что и где лежит
+### Файл конфигурации shiny-server.conf
+Файл с базовой кофигурацией лежит по адресу `/etc/shiny-server/shiny-server.conf` и представляет из себя обчно что-то такое:
+```
+# Instruct Shiny Server to run applications as the user "shiny"
+run_as shiny;
 
-### Файл shiny-server.conf
+# Define a server that listens on port 3838
+server {
+  listen 3838;
+
+  # Define a location at the base URL
+  location / {
+
+    # Host the directory of Shiny Apps stored in this directory
+    site_dir /srv/shiny-server;
+
+    # Log all Shiny output to files in this directory
+    log_dir /var/log/shiny-server;
+
+    # When a user visits the base URL rather than a particular application,
+    # an index of the applications available in this directory will be shown.
+    directory_index on;
+  }
+}
+```
+Более подробное описание всех настроек и параметров этого файла можно найти  в [Appendix](http://docs.rstudio.com/shiny-server/#appendix)'e Shiny Administrator’s Guide.
 
 
