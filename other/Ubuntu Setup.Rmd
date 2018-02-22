@@ -253,6 +253,11 @@ sudo apt-get install texmaker
 sudo dpkg -i skypeforlinux-64.deb
 ```
 
+Отключение автозагрузки `skype` при старте системы:
+```{bash}
+rm ~/.config/autostart/skypeforlinux.desktop
+```
+
 #### 2.6.5 Unrar
 Без этого пакета не будут открываться `.rar`'ы разбитые на части
 ```{bash}
