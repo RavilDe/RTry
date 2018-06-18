@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 library(ggplot2)
+library(dplyr)
 knitr::opts_chunk$set(echo = TRUE, eval = TRUE)
 ```
 
@@ -72,6 +73,14 @@ ggplot(df, aes(x = agree, y = gender, size = )) +
 
 ```
 
+```{r}
+ggplot(df %>% filter(gender == "F", wave == "third"), aes(x = agree, fill = track)) +
+  geom_bar(position = position_dodge()) +
+  xlab("Did the student agree?") +
+  ylab("Number of cases") +
+  ggtitle("Correlation between agreeing and gender") #+
+  # theme(legend.title = element_text(text = "Track"))
 
+```
 
 
