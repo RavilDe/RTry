@@ -8,6 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 library(ggplot2)
 library(dplyr)
+library(tidyr)
 knitr::opts_chunk$set(echo = TRUE, eval = TRUE)
 ```
 
@@ -46,13 +47,13 @@ xxx: И наконец первый приз: coffe-blyat.sh - ждет 17 се�
 ```
 
 ## Часть 1
-Скачиваем дата-сет
+### Скачиваем дата-сет
 ```{r}
 # df <- read.csv("https://raw.githubusercontent.com/AFenin/lulsha/master/psyexperiment.csv", stringsAsFactors = F)
 df <- read.csv("https://raw.githubusercontent.com/AFenin/lulsha/master/psyexperiment.csv")
 ```
 
-
+### График 1
 ```{r}
 ggplot(df, aes(x = agree, fill = gender)) +
   geom_bar(position = position_dodge()) +
@@ -62,25 +63,51 @@ ggplot(df, aes(x = agree, fill = gender)) +
 
 ```
 
+### График 2
 ```{r}
-ggplot(df, aes(x = agree, y = gender, size = )) +
-  # stat_sum(aes(size = factor(..n..)), geom = "point") +
-  geom_point() +
-  scale_size(range = c(10,30)) +
-  xlab("Did the student agree?") +
-  ylab("Number of cases") +
-  ggtitle("Yet anoter correlation between agreeing and gender")
+# ggplot(df, aes(x = agree, y = gender, size = )) +
+#   # stat_sum(aes(size = factor(..n..)), geom = "point") +
+#   # geom_point() +
+#   scale_size(range = c(10,30)) +
+#   xlab("Did the student agree?") +
+#   ylab("Number of cases") +
+#   ggtitle("Yet anoter correlation between agreeing and gender")
 
 ```
 
+### График 3
 ```{r}
-ggplot(df %>% filter(gender == "F", wave == "third"), aes(x = agree, fill = track)) +
+ggplot(df %>% filter(gender == "F", wave == "third"), 
+       aes(x = agree, fill = track)) +
   geom_bar(position = position_dodge()) +
   xlab("Did the student agree?") +
   ylab("Number of cases") +
-  ggtitle("Correlation between agreeing and gender") #+
-  # theme(legend.title = element_text(text = "Track"))
+  ggtitle("Correlation between agreeing and gender", 
+          subtitle = "Third wave, women") +
+  labs(fill = "Track")
 
 ```
+
+## Часть 2
+### Скачиваем второй дата-сет
+```{r}
+df_2 <- read.csv("https://raw.githubusercontent.com/AFenin/lulsha/master/basketball.csv")
+  
+```
+
+### График 3
+```{r}
+df_mod <- df_2 %>% 
+  gather(key = "test", value = "result", starts_with("test"))
+  
+ggplot(df_mod, aes(x = test, y = result)) +
+  geom_boxplot() +
+  # geom_hline(yintercept = mean(mean)) +
+  xlab("Test numbers") +
+  ylab("Results") +
+  ggtitle("Results by test")
+  
+```
+
 
 
