@@ -111,8 +111,19 @@ That's all! Test it: Lock and unlock screen, log out and back in, try sudo in te
 Все этапы установки описаны на этой странице <https://www.digitalocean.com/community/tutorials/how-to-install-r-on-ubuntu-16-04-2>, а так же на офф сайте <https://cran.r-project.org/>
 
 Для начала необходимо добавить репозиторий:
+Для `3.4`
 ```{bash}
 sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu xenial/"
+```
+
+Для `3.5`
+```{bash}
+sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/"
+```
+
+Либо просто открыв `vim`-ом файл и добавив туда этот deb:
+```{bash}
+sudo vim /etc/apt/sources.list
 ```
 
 Затем подписываем доверенным ключом наш репозитоорий:
