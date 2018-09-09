@@ -2,7 +2,10 @@
 title: "АнДан Тестовое задание"
 author: "Евгений Михейкин"
 date: "18 06 2018"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
+header-includes: \usepackage[english, russian]{babel}
 ---
 
 ```{r setup, include=FALSE}
