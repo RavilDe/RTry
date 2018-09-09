@@ -2,16 +2,32 @@
 title: "Введение в базы данных"
 author: "Александр Мяснов, Иван Савин"
 output:
-  pdf_document: default
   html_document:
     highlight: textmate
     tables: yes
+  pdf_document: default
 header-includes: \usepackage[english, russian]{babel}
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, eval = F)
+# knitr::opts_chunk$set(echo = TRUE, eval = F)
+# knitr::opts_chunk$set(echo = TRUE)
+library(DBI)
+library(RMySQL)
 
+# волшебная функция, убивающая все подключения
+# https://stackoverflow.com/questions/32139596/cannot-allocate-a-new-connection-16-connections-already-opened-rmysql
+killDbConnections <- function() {
+
+  all_cons <- dbListConnections(MySQL())
+
+  print(all_cons)
+
+  for (con in all_cons) dbDisconnect(con)
+
+  print(paste(length(all_cons), " connections killed."))
+
+}
 ```
 
 # 1. Введение в базовые операции SQL
@@ -184,63 +200,48 @@ sudo apt-get install mysql-workbench
 * Дата платежа -- `billing_date`
 * Комментарий -- `comment`
 
-```{r echo=F, eval=F}
-library(DBI)
-library(RMySQL)
-
-# тчетная попытка присоединиться к локальной базе(((((
+```{r echo=F}
 con_sql <- dbConnect(
-  RMySQL::MySQL(), 
+  RMySQL::MySQL(),
   database = 'billing_simple', 
-  # database = 'sys', 
-  host = "127.0.0.1",
-  port = 3306,
-  USEr = "root",
-  password = "root"
+  host = '127.0.0.1',
 )
 
-# dbListTables(con_sql)
-
-# в чанки с запросами при успешном присоединении добавить sql connection=con_sql
 ```
 
 #### Ключевые слова `USE`, `SELECT`, `FROM`
 Чтобы использовать конкретную базу данных, нужно перед ее менем написать ключевое слово `USE`.
 
 Выборка производится с помощью команды `SELECT`, `*` означает все поля, `FROM` имя таблицы. Этоозначает, что выбирутся все поля из таблицы `billing` и отобразятся в результатах выборки. Мы видим все **атрибуты** (переменные, они же столбцы) и все **картежи** (наблюдения, они же строки)
-```{sql eval=F}
-USE billing_simple;
-SELECT * FROM billing; 
+
+```{sql connection=con_sql}
+SELECT * FROM billing_simple.billing;
 ```
 
 Попробуем выбрать конкретный поля, например только имя отправителя и сумму:
-```{sql}
-USE billing_simple;
-SELECT payer_email, sum FROM billing;
+```{sql connection=con_sql}
+SELECT payer_email, sum FROM billing_simple.billing;
 ```
 
 Атрибут `sum` неверно подсвечен как ключевое слово.
 
 #### Ключевое слово `WHERE`
 С помощью ключевого слова `WHERE` мы можем указыввать условия для выборк запроса, т.е. мы вернем картежи удовлетворяющие условию:
-```{sql}
-USE billing_simple;
-SELECT * FROM billing WHERE sum>900;
+```{sql connection=con_sql}
+SELECT * FROM billing_simple.billing WHERE sum>900;
 ```
 
 #### Ключевое слово `AND`
 Условия можно комбинировать при помощи ключевого слова `AND`:
-```{sql}
-USE billing_simple;
-SELECT * FROM billing 
+```{sql connection=con_sql}
+SELECT * FROM billing_simple.billing 
   WHERE sum>900 AND currency='CHF';
 ```
 
 #### Ключевое слово `IN`
 Чтобы указать несколько значений для атрибута, нужно использовать конструкцию IN, указав список возможных значений для нашей выборки:
-```{sql}
-USE billing_simple;
-SELECT * FROM billing 
+```{sql connection=con_sql}
+SELECT * FROM billing_simple.billing 
   WHERE sum>900 AND currency IN ('CHF', 'GBP');
 ```
 
@@ -248,9 +249,8 @@ SELECT * FROM billing
 
 #### Ключевое слово `NOT`
 Добавив к конструкции слово `NOT` мы сможем инверсировать выборку:
-```{sql}
-USE billing_simple;
-SELECT * FROM billing 
+```{sql connection=con_sql}
+SELECT * FROM billing_simple.billing 
   WHERE sum>900 AND currency NOT IN ('CHF', 'GBP');
 ```
 
@@ -259,17 +259,15 @@ SELECT * FROM billing
 
 ### 1.2.5 Задача
 Необходимо вывести поступления денег от пользователя с email `vasya@mail.com`
-```{sql}
-USE billing_simple;
-SELECT * FROM billing WHERE payer_email='vasya@mail.com'
+```{sql connection=con_sql}
+SELECT * FROM billing_simple.billing WHERE payer_email='vasya@mail.com'
 ```
 
 ### 1.2.6 Вставка данных
 #### Вставка данных во все атрибуты
 Чтобы добавить запись в таблицу необходимо использовать конструкцию `INSERT INTO`, и далее перечислить список значений атрибутов, причем в том же порядке, в котором они находятся в таблице:
-```{sql}
-USE billing_simple;
-INSERT INTO billing VALUES (
+```{sql connection=con_sql}
+INSERT INTO billing_simple.billing VALUES (
 'alex@mail.com',
 'leo@mail.com',
 '500',
@@ -280,9 +278,8 @@ INSERT INTO billing VALUES (
 ```
 
 Затем попробуем найти ее следующим запросом:
-```{sql}
-USE billing_simple;
-SELECT * FROM billing 
+```{sql connection=con_sql}
+SELECT * FROM billing_simple.billing 
   WHERE payer_email='alex@mail.com'
   AND recipient_email='leo@mail.com'
   AND sum=500.00;
@@ -290,9 +287,8 @@ SELECT * FROM billing
 
 #### Вставка данных не во все атрибуты
 Для этого нужно перечислить те атрибуты, в которые мы хотим внести данные:
-```{sql}
-USE billing_simple;
-INSERT INTO billing (
+```{sql connection=con_sql}
+INSERT INTO billing_simple.billing (
   payer_email, recipient_email,
   sum, currency, billing_date
 )
@@ -307,13 +303,21 @@ VALUES (
 
 Обратите внимание на конструкцию в скобках после имени таблицы, здесь идет перечисление атрибутов, в которые мы хотим вставить данные.
 
+Проверяем:
+```{sql connection=con_sql}
+SELECT * FROM billing_simple.billing 
+  WHERE payer_email='alex@mail.com'
+  AND recipient_email='leo@mail.com'
+  AND sum=500.00;
+```
+
+
 ### 1.2.7 Обновление записей в таблице
 #### Ключевые слова `UPDATE` и `SET`
 Обновление записей в таблице происходит при помощи ключевого слова `UPDATE` и `SET`. Мы указываем какие именно **поля** и каким **значением** нужно изменить.
 
 ```{sql eval=F}
-USE billing_simple;
-UPDATE billing SET currency='USD';
+UPDATE billing_simple.billing SET currency='USD';
 ```
 
 Данный запрос полностью обновит таблицу `billing` и установит для всех записей `currency` равной **USD**
@@ -321,13 +325,20 @@ UPDATE billing SET currency='USD';
 Так делать не стоит))))
 
 Поэтому нужно указать какие именно картежи мы хотим обновить!
-```{sql}
-USE billing_simple;
-UPDATE billing 
+```{sql connection=con_sql}
+UPDATE billing_simple.billing 
   SET currency='USD'
   WHERE payer_email='alex@mail.com'
     AND recipient_email='leo@mail.com'
     AND sum=500.00;
+```
+
+Проверяем:
+```{sql connection=con_sql}
+SELECT * FROM billing_simple.billing 
+  WHERE payer_email='alex@mail.com'
+  AND recipient_email='leo@mail.com'
+  AND sum=500.00;
 ```
 
 ### 1.2.8 Задача
@@ -340,35 +351,53 @@ UPDATE billing
 * дата операции: *14.02.2016* 
 * комментарии: *'Valentines day present)'*
 
-```{sql}
-USE billing_simple;
-INSERT INTO billing VALUES (
+```{sql connection=con_sql}
+INSERT INTO billing_simple.billing VALUES (
   'pasha@mail.com',
   'katya@mail.com',
   '300.00',
   'EUR',
-  '2016-02-214',
+  '2016-02-14',
   'Valentines day present)'
 );
+```
+
+Проверяем:
+```{sql connection=con_sql}
+SELECT * FROM billing_simple.billing 
+  WHERE payer_email='pasha@mail.com'
+  AND recipient_email='katya@mail.com'
+  AND sum=300.00;
 ```
 
 ### 1.2.9 Задача
 Измените адрес плательщика на *'igor@mail.com'* для всех записей таблицы, где адрес плательщика *'alex@mail.com'*.
 
-```{sql}
-USE billing_simple;
-UPDATE billing 
+```{sql connection=con_sql}
+UPDATE billing_simple.billing 
   SET payer_email='igor@mail.com'
   WHERE payer_email='alex@mail.com';
 ```
 
+Проверяем:
+```{sql connection=con_sql}
+SELECT * FROM billing_simple.billing 
+  WHERE payer_email='igor@mail.com';
+```
+
 ### 1.2.10 Задача
 Удалите из таблицы записи, где адрес плательщика или адрес получателя установлен в неопределенное значение или пустую строку.
-```{sql}
-DELETE FROM billing 
+```{sql connection=con_sql}
+DELETE FROM billing_simple.billing 
 WHERE (payer_email IS NULL OR payer_email = '') or
       (recipient_email IS NULL OR recipient_email = '');
 ```
+### Отключаемся от `billing_simple`
+```{r}
+killDbConnections
+```
+
+
 
 ## 1.3 Агрегация данных
 ### 1.3.1 План урока
@@ -392,37 +421,42 @@ WHERE (payer_email IS NULL OR payer_email = '') or
 * Срок сдачи -- `project_finish`
 * Бюджет -- `budget`
 
+#### Подключаемся к таблице
+```{r echo=F}
+con_sql <- dbConnect(
+  RMySQL::MySQL(),
+  database = 'project_simple', 
+  host = '127.0.0.1'
+)
+```
+
 #### Просто посмотрим на таблицу
-```{sql}
-USE project_simple;
-SELECT * FROM project;
+```{sql connection=con_sql}
+SELECT * FROM project_simple.project;
 ```
 
 #### Подсчет количества строк; `COUNT`
 Для начала, давайте просто подсчитаем кол-во строк в нашей таблице, для этого используем команду аггрегации `COUNT`. В качестве аргумента подставим любое значение
-```{sql}
-USE project_simple;
-SELECT COUNT(1) FROM project;
+```{sql connection=con_sql}
+SELECT COUNT(1) FROM project_simple.project;
 ```
 
 #### Подсчет среднего значения; `AVG`
 Здесь в качестве аргумента нам нужно передат поле, по которому мы хотим посчитать среднее значение:
-```{sql}
-USE project_simple;
-SELECT AVG(budget) FROM project;
+```{sql connection=con_sql}
+SELECT AVG(budget) FROM project_simple.project;
 ```
 
 #### Функция для вычисления разницы дат `DATEDIFF`
 Найдем сколько в среднем дней уходит на выполнение проекта.
 
 Для начала напишем запрос, который покажет нужные нам для отчета картежи:
-```{sql}
-USE project_simple;
+```{sql connection=con_sql}
 SELECT
   project_finish,
   project_start,
   DATEDIFF(project_finish, project_start)
-FROM project
+FROM project_simple.project
 ```
 
 В данном селекте используется функция `DATEDIFF` , которая показывает разницу между двумя датами. 
@@ -430,39 +464,30 @@ FROM project
 Далее в лекции сетуется на большое кол-во `NULL`  в полях с датами; в скачанной базе немного не так :(
 
 Следующий запрос не учитывает `NULL`:
-```{sql}
-USE project_simple;
+```{sql connection=con_sql}
 SELECT
   project_finish,
   project_start,
   DATEDIFF(project_finish, project_start)
-FROM project WHERE project_finish IS NOT NULL;
+FROM project_simple.project WHERE project_finish IS NOT NULL;
 ```
 
 Теперь из этого запроса нам нужно узнать среднее значене затраченных дней на проект. Просто добавим функцию `AVG` в троку с вычислением разницы дат.
 
-```{sql}
-USE project_simple;
+```{sql connection=con_sql}
 SELECT
   AVG(DATEDIFF(project_finish, project_start))
-FROM project WHERE project_finish IS NOT NULL;
-```
-```{sql}
-USE project_simple;
-SELECT
-  AVG(DATEDIFF(project_finish, project_start))
-FROM project WHERE project_finish IS NOT NULL;
+FROM project_simple.project WHERE project_finish IS NOT NULL;
 ```
 
 #### Функции `MAX` и `MIN`
 Давайте вычислим наибольшее и наименьшее значение:
-```{sql}
-USE project_simple;
+```{sql connection=con_sql, eval=FALSE}
 SELECT
   MAX(DATEDIFF(project_finish, project_start))
   MIN(DATEDIFF(project_finish, project_start))
   AVG(DATEDIFF(project_finish, project_start))
-FROM project WHERE project_finish IS NOT NULL;
+FROM project_simple.project WHERE project_finish IS NOT NULL;
 ```
 
 #### Группировка данных `GROUP BY`
@@ -470,55 +495,51 @@ FROM project WHERE project_finish IS NOT NULL;
 
 Давайте выясним наши показатели (среднее, минимально и максимальное) в разрезе каждого клиента. для этого добавим строку с `GROUP BY` в запрос, а так же наименование клиента в выборку:
 
-```{sql}
-USE project_simple;
+```{sql connection=con_sql}
 SELECT
   client_name,
   MAX(datediff(project_finish, project_start)),
   MIN(datediff(project_finish, project_start)),
   AVG(datediff(project_finish, project_start))
-FROM project WHERE project_finish IS NOT NULL
+FROM project_simple.project WHERE project_finish IS NOT NULL
 GROUP BY client_name;
 ```
 
 #### Сортировка данных `ORDER BY`, `DESC`
 Полезным будет сортировка данных, при помощи функции `ORDER BY`. В данном примере мы для наших показателей ввели псевдонимы (**alias**): `MAX_days`, `MIN_days`, `AVG_days`. Сортировка будет произведена от меньшего к большему:
 
-```{sql}
-USE project_simple;
+```{sql connection=con_sql}
 SELECT
   client_name,
   MAX(datediff(project_finish, project_start)) AS MAX_days,
   MIN(datediff(project_finish, project_start)) AS MIN_days,
   AVG(datediff(project_finish, project_start)) AS AVG_days
-FROM project WHERE project_finish IS NOT NULL
+FROM project_simple.project WHERE project_finish IS NOT NULL
 GROUP BY client_name
 ORDER BY MAX_days;
 ```
 
 Чтобы поменять порядок сортировки (на от большего к меньшему), нужно вставить `DESC` после переменной:
-```{sql}
-USE project_simple;
+```{sql connection=con_sql}
 SELECT
   client_name,
   MAX(datediff(project_finish, project_start)) AS MAX_days,
   MIN(datediff(project_finish, project_start)) AS MIN_days,
   AVG(datediff(project_finish, project_start)) AS AVG_days
-FROM project WHERE project_finish IS NOT NULL
+FROM project_simple.project WHERE project_finish IS NOT NULL
 GROUP BY client_name
 ORDER BY MAX_days DESC;
 ```
 
 #### Срез данных `LIMIT`
 Эта функция показывает первые `n` кортежей (строк):
-```{sql}
-USE project_simple;
+```{sql connection=con_sql}
 SELECT
   client_name,
   MAX(datediff(project_finish, project_start)) AS MAX_days,
   MIN(datediff(project_finish, project_start)) AS MIN_days,
   AVG(datediff(project_finish, project_start)) AS AVG_days
-FROM project WHERE project_finish IS NOT NULL
+FROM project_simple.project WHERE project_finish IS NOT NULL
 GROUP BY client_name
 ORDER BY MAX_days DESC
 LIMIT 10;
@@ -527,27 +548,30 @@ LIMIT 10;
 #### Ошибки при составлении отчетов
 Одной из частых ошибок, при составлении отчетов является некорректное указание параметров по которым группируется выражение. 
 
-```{sql}
-USE project_simple;
+```{sql eval=FALSE}
 SELECT
   COUNT(1),
   AVG(budget),
   client_name
-FROM project;
+FROM project_simple.project;
 ```
 
 Данный запрос по словам лектора должен был выдать всего одну строку с рандомным клиентом. Но у меня выдает ошибку, мол не хватает `GROUP BY`; исправляем этот недочет:
-```{sql}
-USE project_simple;
+```{sql connection=con_sql}
 SELECT
   COUNT(1),
   AVG(budget),
   client_name
-FROM project
+FROM project_simple.project
 GROUP BY client_name;
 ```
 
 Вот! Теперь выборка корректна!
+
+### Отключаемся от `project_simple`
+```{r}
+dbDisconnect(con_sql)
+```
 
 ### 1.3.3 База онлайн магазина
 Подключаем модуль `store_simple.mwb` взятый [здесь](https://github.com/amyasnov/stepic-db-intro/blob/master/week_1/store_simple.mwb)
@@ -559,17 +583,25 @@ GROUP BY client_name;
 * Цена -- `price`
 * Количество продаж товара -- `sold_num`
 
+#### Подключаемся к таблице
+```{r echo=F}
+con_sql <- dbConnect(
+  RMySQL::MySQL(),
+  database = 'store_simple', 
+  host = '127.0.0.1'
+)
+```
+
 Количество товаров в каждой категории:
-```{sql}
-USE store_simple;
-SELECT category, COUNT(1) FROM store
+```{sql connection=con_sql}
+SELECT category, COUNT(1) FROM store_simple.store
 GROUP BY category
 ORDER BY category;
 ```
 
 #### Комментарии в SQL
 Чтобы закомментировать текст в запросе, его нужно поместить между `/*`  и `*/`
-```{sql}
+```{sql connection=con_sql}
 /*
 закомментированная строка
 еще одна
@@ -581,9 +613,8 @@ ORDER BY category;
 
 Выведите общее количество заказов компании.
 
-```{sql}
-USE project_simple;
-SELECT COUNT(1) FROM project;
+```{sql eval=FALSE}
+SELECT COUNT(1) FROM project_simple.project;
 ```
 
 ### 1.3.5 Задача
@@ -594,9 +625,8 @@ SELECT COUNT(1) FROM project;
 * название категории, 
 * количество товаров в данной категории.
 
-```{sql}
-USE store_simple;
-SELECT category, COUNT(1) FROM store
+```{sql connection=con_sql}
+SELECT category, COUNT(1) FROM store_simple.store
 GROUP BY category;
 ```
 
@@ -608,12 +638,11 @@ GROUP BY category;
 * название категории,
 * выручка от продажи товаров в данной категории.
 
-```{sql}
-USE store_simple;
+```{sql connection=con_sql}
 SELECT 
   category, 
   SUM(price*sold_num) AS sum_cat
-FROM store
+FROM store_simple.store
 GROUP BY category
 ORDER BY sum_cat DESC
 LIMIT 5;
@@ -626,13 +655,12 @@ LIMIT 5;
 
 NB! Для вычисления длительности проекта удобно использовать встроенную функцию [datediff()](https://dev.mysql.com/doc/refman/5.5/en/date-and-time-functions.html#function_datediff).
 
-```{sql}
-USE project_simple;
+```{sql connection=con_sql}
 SELECT
   COUNT(1),
   SUM(budget),
   AVG(DATEDIFF(project_finish, project_start))
-FROM project
+FROM project_simple.project
 ```
 
 
