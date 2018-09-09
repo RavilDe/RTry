@@ -1,0 +1,55 @@
+---
+title: "SQL Three Ways"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(DBI)
+library(gapminder)
+library(RSQLite)
+```
+
+```{r}
+# Creat an in-memory RSQLite database
+gapminder_sqlite_db <- dbConnect(RSQLite::SQLite(), ":memory:")
+
+dbWriteTable(conn = gapminder_sqlite_db, "gapminder", gapminder)
+```
+
+Use a SQL code chunk:
+
+```{r}
+# set variables in R, then use them in SQL
+year <- 1987
+country <- "Rwanda"
+```
+
+```{sql, connection = gapminder_sqlite_db, output.var = "queried_gapminder_data"}
+SELECT * FROM gapminder WHERE year = ?year AND country = ?country
+```
+
+```{r}
+queried_gapminder_data
+```
+
+
+
+```{sql, connection = gapminder_sqlite_db}
+SELECT * FROM gapminder WHERE year = ?year AND country = ?country
+```
+
+Use dplyr in R chunk:
+
+```{r}
+tbl(gapminder_sqlite_db, "gapminder") %>% 
+  filter(year == "1987", country == "Germany")
+```
+
+
+SQL via `DBI` Package
+```{r}
+DBI::dbGetQuery(con = gapminder_sqlite_db, "SELECT * FROM gapminder WHERE year = 2007 AND country = \"Argentina\"")
+```
+
