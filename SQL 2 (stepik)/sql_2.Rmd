@@ -1,0 +1,64 @@
+---
+title: "Погружение в СУБД"
+author: "Дмитрий Барашев"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(RPostgreSQL)
+library(dplyr)
+```
+
+
+Создаем базу в памяти
+```{r}
+postgresql_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+```
+
+```{sql connection = postgresql_db}
+CREATE TABLE Planet(
+    id INT, name VARCHAR(128));
+CREATE TABLE Spacecraft(
+    id INT, name VARCHAR(128));
+CREATE TABLE Flight(
+    planet_id        INT,  
+    spacecraft_id    INT,  
+    flight_date      DATE,  
+    passengers_count INT);
+INSERT INTO Planet(id, name) VALUES (1,'Leetisa');
+INSERT INTO Planet(id, name) VALUES (2,'Onusorle');
+INSERT INTO Spacecraft(id, name) VALUES(10, 'Синяя Чайка');
+INSERT INTO Spacecraft(id, name) VALUES(11, 'Пегас');
+INSERT INTO Flight(planet_id, spacecraft_id, flight_date, passengers_count)
+  VALUES(1, 10, '2180-09-04', 10);
+INSERT INTO Flight(planet_id, spacecraft_id, flight_date, passengers_count)
+  VALUES(1, 11, '2180-09-04', 8);
+INSERT INTO Flight(planet_id, spacecraft_id, flight_date, passengers_count)
+  VALUES(2, 11, '2181-06-12', 5);
+
+```
+
+```{sql connection = postgresql_db}
+DROP TABLE Planet;
+DROP TABLE Spacecraft;
+DROP TABLE Flight;
+```
+
+```{sql connection = postgresql_db}
+SELECT * FROM Spacecraft
+```
+
+
+
+```{sql connection = postgresql_db}
+SELECT SUM(passengers_count)
+FROM
+  Spacecraft JOIN Flight ON (Spacecraft.id = Flight.spacecraft_id)
+WHERE Spacecraft.name = 'Пегас';
+```
+
+```{r}
+dbDisconnect(postgresql_db)
+```
+
