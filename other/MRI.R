@@ -1,6 +1,7 @@
 # attach pachages
-library(DATforDCEMRI) # this package you already have
-library(oro.dicom)    # this you must install by install.packages("oro.dicom")
+library(DATforDCEMRI)
+library(oro.dicom)
+library(oro.nifti)
 library(dplyr)
 
 # links:
@@ -45,3 +46,21 @@ unique(extractHeader(hk40$hdr, "SliceThickness"))
 extractHeader(hk40$hdr, "Manufacturer", numeric = FALSE) %>% unique()
 
 
+
+# Third data-set ----------------------------------------------------------
+fname <- system.file(file.path("dcm", "MR-sonata-3D-as-Tile.dcm"), 
+                     package="oro.dicom")
+dcm <- readDICOMFile(fname)
+dim(dcm$img)
+
+dcmImage <- create3D(dcm, mosaic = TRUE)
+dim(dcmImage)
+
+
+# new format NIfTI  ------------------------------------------------------
+dput(formals(dicom2nifti))
+
+(hk40n <- dicom2nifti(hk40))
+
+image(hk40n)
+orthographic(hk40n, col.crosshairs="green")
