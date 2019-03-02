@@ -2,7 +2,9 @@ library(googlesheets)
 library(dplyr)
 library(tidyr)
 library(stringr)
+library(tibble)
 
+options(tibble.print_min = Inf)
 
 movie <- gs_title("Кино по заявкам")
 
@@ -11,11 +13,11 @@ gs_ws_ls(movie)
 df_movie <- movie %>% 
   gs_read(ws = "movie") %>% 
   slice(-(184:187)) %>% 
-  gather(- film, key = "player", value = "foo") %>% 
+  gather(-film, key = "player", value = "foo") %>% 
   mutate(
     foo = tolower(foo),
     foo = case_when(
-      str_detect(foo, "^не помню ничего") ~ "не помню ничего",
+      str_detect(foo, "^не помню") ~ "не помню ничего",
       str_detect(foo, "ебанина") ~ "да",
       str_detect(foo, "^да") ~ "да",
       T ~ foo
@@ -31,6 +33,7 @@ df_movie$player %>% unique()
 
 df_movie %>% 
   filter(!is.na(foo)) %>% 
+  filter(!(player %in% c("Антон М", "Алиса Дмитриевна", "Лена Ч"))) %>% 
   group_by(film) %>% 
   summarise(
     count_no = sum(foo == "нет"),
@@ -39,5 +42,6 @@ df_movie %>%
   ) %>% 
   arrange(-count_no, -count_x3) %>% 
   filter(count_yes == 0)
+
+
   
-options(tibble.min_count = Inf)
