@@ -58,6 +58,7 @@ library(lazyeval)
 ```{r eval=F}
 install.packages("dplyr")
 library(dplyr)
+library(ggplot2) # тут все дата-сеты живут
 ```
 
 #### Различия между data.frame и data_frame
